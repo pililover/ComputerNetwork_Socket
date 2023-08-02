@@ -1,5 +1,6 @@
 import socket
 import threading
+import json
 
 HOST = "127.0.1.1"
 PORT = 66789
@@ -25,18 +26,21 @@ except s.error as error:
     print("Disconnected to server: ", addr)
     conn.close()
 
+
 def doServer(Cli_Sock, Cli_Addr):
     try:
         while True:
             print("Server is running... Wait a second")
             Client_Socket, Client_Address = s.accept()
-            threading.Thread(target=doClient, args=(Client_Socket, Client_Address)).start()
+            threading.Thread(target=doClient, args=(
+                Client_Socket, Client_Address)).start()
     except s.timeout as timeout:
         print("Timeout to server: ", Cli_Addr)
-        s.close()      
+        s.close()
     finally:
         s.close()
-        
+
+
 def doClient(Cli_Sock, Cli_Addr):
     try:
         while True:
@@ -44,18 +48,18 @@ def doClient(Cli_Sock, Cli_Addr):
             print("Client option: " + option)
             if option == LOGIN:
                 Cli_Sock.sendall(bytes("Login success", "utf8"))
-                
+
             elif option == REGISTER:
                 Cli_Sock.sendall(bytes("Register success", "utf8"))
-                
+
             elif option == LOGOUT:
                 Cli_Sock.sendall(bytes("Logout success", "utf8"))
-                
+
             elif option == EXIT:
                 Cli_Sock.sendall(bytes("Exit success", "utf8"))
                 break
             else:
-                Cli_Sock.sendall(bytes("Option not found", "utf8")) 
+                Cli_Sock.sendall(bytes("Option not found", "utf8"))
                 break
         Cli_Sock.close()
         print("Client close: ", Cli_Addr)
@@ -67,12 +71,13 @@ def doClient(Cli_Sock, Cli_Addr):
         Cli_Sock.close()
     finally:
         Cli_Sock.close()
-        
+
+
 class Account:
     def __init__(self, user, password):
         self.user = user
         self.password = password
-    
+
     def checkAvailable(self):
         with open("account.csv", "r") as fin:
             for line in fin:
@@ -93,29 +98,111 @@ class Account:
         else:
             print("Create account fail")
             return False
-    
+
+    def isOnlineAccountStored(self, user, password, Cli_Addr):
+        with open("AccountLive.json", "r") as file:
+            file_data = json.load(file)
+        for stored_user, stored_password, stored_Cli_Addr in zip(file_data["Account"], file_data["Password"], file_data["Address"]):
+            if stored_user == user and stored_password == password and stored_Cli_Addr == Cli_Addr:
+                return True
+        return False
+
+    def storeOnlineAccount(self, Cli_Addr):
+        account_info = {"Account": self.user,
+                        "Password": self.password, "Address": Cli_Addr}
+
+        # Load the existing JSON data
+        try:
+            with open("AccountLive.json", "r") as file:
+                file_data = json.load(file)
+        except FileNotFoundError:
+            file_data = {"Account": [], "Password": [], "Address": []}
+
+        # Check for duplicates before appending to the list
+        if not self.isOnlineAccountStored(self.user, self.password, Cli_Addr):
+            file_data["Account"].append(account_info["Account"])
+            file_data["Password"].append(account_info["Password"])
+            file_data["Address"].append(account_info["Address"])
+
+            with open("AccountLive.json", "w") as file:
+                json.dump(file_data, file, indent=4)
+
+            return True
+        else:
+            return False
+
 
 def register(Cli_Sock, Cli_Addr):
     user = Cli_Sock.recv(1024).decode("utf8")
     print("Client register: " + s)
     print("Username: ", user)
     Cli_Sock.sendall(user.encode('utf8'))
-    
+
     password = Cli_Sock.recv(1024).decode("utf8")
     print("Password: ", password)
     Cli_Sock.sendall(password.encode('utf8'))
-    
+
     acc = Account(user, password)
     valid_acc = acc.checkAvailable()
-    
+
     if valid_acc == True:
         Cli_Sock.sendall(bytes("Account is available", "utf8"))
     else:
         Cli_Sock.sendall(bytes("Account is not available", "utf8"))
         acc.createAccount()
-    
-    print ("Register process is done")
-    
+
+    print("Register process is done")
+
+
 def login(Cli_Sock, Cli_Addr):
-    
-    
+    user = Cli_Sock.recv(1024).decode("utf8")
+    print("Client login: " + s)
+    print("Username: ", user)
+    Cli_Sock.sendall(user.encode('utf8'))
+
+    password = Cli_Sock.recv(1024).decode("utf8")
+    print("Password: ", password)
+    Cli_Sock.sendall(password.encode('utf8'))
+
+    acc = Account(user, password)
+    valid_acc = acc.checkAvailable()
+
+    if valid_acc == True:
+        Cli_Sock.sendall(bytes("Login success", "utf8"))
+    else:
+        Cli_Sock.sendall(bytes("Login fail", "utf8"))
+
+    print("Login process is done")
+
+
+def deleteOnlineAccount(user, password, addr):
+    try:
+        with open('AccountLive.json', 'r') as file:
+            file_data = json.load(file)
+
+        if Account(user, password).isOnlineAccountStored(file_data, user, password, addr):
+            remaining_accounts = []
+            for stored_user, stored_password, stored_addr in zip(file_data["Account"], file_data["Password"], file_data["Address"]):
+                if stored_user == user and stored_password == password and stored_addr == addr:
+                    continue
+                remaining_accounts.append(
+                    {"Account": stored_user, "Password": stored_password, "Address": stored_addr})
+
+            with open('AccountLive.json', 'w') as data_file:
+                json.dump(remaining_accounts, data_file, indent=4)
+            print("Deleting success!")
+            return True
+        else:
+            print("No account found!")
+            return False
+    except Exception as e:
+        print("Error: ", str(e))
+        return False
+
+
+# json file structure
+# {
+#   "Account": ["user1", "user2", ...],
+#   "Password": ["pass1", "pass2", ...],
+#   "Address": ["addr1", "addr2", ...]
+# }
