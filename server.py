@@ -10,7 +10,7 @@ import os
 import subprocess
 
 HOST = "127.0.1.1"
-PORT = 66789
+PORT = 64444
 
 FONT = ("Arial", 20, "bold")
 LOGIN = "login"
