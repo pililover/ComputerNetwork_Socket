@@ -93,6 +93,7 @@ class Client:
         # handle_response("PROCESS")
 
 # Create the main GUI window
+class GUI:
 
 
 # Create a Client instance
