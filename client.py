@@ -92,15 +92,72 @@ class Client:
         self.send_command("PROCESS")
         # handle_response("PROCESS")
 
+    
+def blank():
+    root=tk.Tk()
+    text=tk.Label(root, text="This is a blanked scene!")
+    text.pack(padx=20, pady = 20)
+    
+    root.mainloop()
+    
 # Create the main GUI window
 class GUI:
-
+    def __init__(self, client):
+        self.client = client
+    
+    
+    def clientScene(self):
+        root = tk.Tk()
+        root.title("Client")
+        # Input Box
+        text = tk.Label(root, text="Enter IP:")
+        text.grid (row=0, column=0, pady=10)
+        
+        inputBox = tk.Entry(root, width = 50)
+        inputBox.grid (row = 0, column = 1, columnspan=3, pady=10)
+                
+        def connect_wrapper():
+            ip = inputBox.get()
+            self.client.connect(ip)
+            
+        # Connect Button
+        connectButt = tk.Button(root, text="Connect", width=10, command=connect_wrapper) 
+        connectButt.grid (row = 0, column=6, padx = 10, pady =10)
+        
+        # Process Running
+        processButt = tk.Button(root, text="Process Running", padx = 20, pady = 20, command=self.client.process_click)
+        processButt.grid (row = 1, column=0, padx=40, pady=10, columnspan=2)
+        
+        # Application Running
+        appButt = tk.Button(root, text="App Running", padx = 30, pady = 20, command=self.client.app_click)
+        appButt.grid(row=1, column=2, pady=10)
+        
+        #Shut Down
+        shutDownButt = tk.Button(root, text="Shut Down", padx=35, pady= 20, command=self.client.shutdown_click)
+        shutDownButt.grid(row=2, column=0,padx=40, pady=10, columnspan=2)
+        
+        # Screenshot
+        screenShotButt = tk.Button(root, text="Screenshot", padx=34, pady=20, command=self.client.pic_click)
+        screenShotButt.grid(row = 2, column=2, pady=10)
+        
+        # Keystroke
+        keyStrokeButt = tk.Button(root, text="Keystroke", padx = 39, pady=20, command=self.client.key_lock_click)
+        keyStrokeButt.grid(row=3, column=0, padx=40, pady =10, columnspan=2)
+        
+        # Registry
+        registryButt = tk.Button(root, text="Edit Registry", padx = 33, pady=20, command=self.client.registry_click)
+        registryButt.grid(row=3, column=2, pady =10)
+        
+        # Exit
+        exit = tk.Button(root, text="Quit", bg="red", padx = 30, pady = 10, command = self.client.exit_click)
+        exit.grid(row=2, column=6, padx = 10, pady = 20)
+        root.mainloop()
 
 # Create a Client instance
 client = Client(HOST, PORT)
 
 # Create a GUI instance and pass in the client
-# gui = GUI(client)
-
+gui = GUI(client)
+gui.clientScene()
 # Start the main event loop
-#gui.root.mainloop()
+# gui.root.mainloop()
