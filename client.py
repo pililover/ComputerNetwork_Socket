@@ -1,19 +1,14 @@
-from PIL import Image, ImageGrab
-from tkinter import ttk, messagebox
-import os
+import socket
 import pyautogui
-from PIL import ImageGrab
+from PIL import Image, ImageGrab
 from PyQt6.QtCore import Qt, QBuffer
 from PyQt6.QtGui import QPixmap, QImage, QColor, QPainter
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QTabWidget, QLabel, \
     QMessageBox, QFileDialog
-import time
 import io
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
-import socket
-import subprocess
 
 HOST = "127.0.1.1"
 PORT = 64444
@@ -297,6 +292,61 @@ class GUI:
 
         self.root.mainloop()
 
+    def ScreenshotScene(self):
+        self.root = tk.Tk()
+        self.root.title("Pic")
+
+        # Create the picture label
+        self.picture = tk.Label(self.root)
+        self.picture.pack(side=tk.LEFT)
+
+        # Create the Take button
+        self.butTake = tk.Button(
+            self.root, text="Screenshot", command=self.butTake_click)
+        self.butTake.pack(side=tk.TOP)
+
+        # Create the Save button
+        self.button1 = tk.Button(
+            self.root, text="SAVE", command=self.buttonSAVE_click)
+        self.button1.pack(side=tk.TOP)
+
+    def butTake_click(self):
+        try:
+            self.Cli_Sock.sendall(b"TAKEPIC")
+            img_bytes = self.Cli_Sock.recv(4096)
+
+            # Display screenshot in a new tab
+            new_tab = ttk.Frame(self.tabs)
+            tab_label = tk.Label(new_tab)
+            tab_pil_img = Image.open(io.BytesIO(img_bytes))
+            tab_img = ImageTk.PhotoImage(tab_pil_img)
+            tab_label.config(image=tab_img)
+            tab_label.image = tab_img
+            tab_label.pack()
+
+            save_btn = ttk.Button(
+                new_tab, text="Save", command=lambda: self.save_screenshot(img_bytes))
+            save_btn.pack()
+
+            self.tabs.add(new_tab, text="Screenshot")
+        except Exception as ex:
+            messagebox.showerror("Error", str(ex))
+
+    def buttonSAVE_click(self):
+        # Show the save file dialog
+        filename = filedialog.asksaveasfilename(
+            title="Save Screenshot",
+            filetypes=(("PNG Files", "*.png"), ("All Files", "*.*")),
+            defaultextension=".png"
+        )
+        if filename:
+            with open(filename, 'wb') as f:
+                f.write(img_bytes)
+
+    def pic_closing(self):
+        if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
+            self.Cli_Sock.sendall(b"EXIT")
+            self.Cli_Sock.close()
 
 
 # Create a Client instance
@@ -305,9 +355,12 @@ client = Client(HOST, PORT)
 # Create a GUI instance and pass in the client
 gui = GUI(client)
 gui.clientScene()
+gui.ScreenshotScene()
 
 # Show the process scene (added step)
 gui.processScene()
 gui.registryScene()
+
+# Show the screenshot scene (added step)
 # Start the main event loop
 # gui.root.mainloop()
