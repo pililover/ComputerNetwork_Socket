@@ -196,7 +196,74 @@ class GUI:
         process_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
 
         process_window.mainloop()
+    def registryScene(self):
+ 
+        self.root = tk.Tk()
+        self.root.title("Registry")
+        
+        def butSend_click():
+            # Implement the send action
+            pass
 
+        def butBro_click():
+            # Implement the browser action
+            pass
+
+        def button1_click():
+            # Implement the button1 action
+            pass
+
+        def butXoa_click():
+            # Implement the Xóa action
+            pass
+    
+        self.butBro = tk.Button(self.root, text="Browser...",command=butBro_click, width=15)
+        self.butBro.grid(row=0, column=3, padx=10, pady=10)
+
+        self.butSend = tk.Button(self.root, text="Gửi nội dung", pady=33, command=butSend_click, width=15)
+        self.butSend.grid(row=1, column=3, padx=10,  pady=10)
+
+        self.txtBro = tk.Entry(self.root, width=67)
+        self.txtBro.grid(row=0, column=0, padx=10, pady=10)
+
+        self.txtReg = tk.Text(self.root, height=5, width=50)
+        self.txtReg.grid(row=1, column=0, padx=10, pady=10)
+
+        self.groupBox1 = ttk.LabelFrame(self.root, text="  Sửa giá trị trực tiếp  ")
+        self.groupBox1.grid(row=2, column=0, columnspan=4, padx=10, pady=10)
+
+        self.opApp = ttk.Combobox(self.groupBox1, values=["Get value", "Set value", "Delete value", "Create key", "Delete key"])
+        self.opApp.set("Chọn chức năng")
+        self.opApp.grid(row=0, column=0, padx=10, pady=10,sticky=tk.W)
+
+        self.txtLink = tk.Entry(self.groupBox1, width=50)
+        self.txtLink.insert(0, "Đường dẫn")
+        self.txtLink.grid(row=1, column=0, columnspan=2, padx=10, pady=10,sticky=tk.W)
+
+        self.txtValue = tk.Entry(self.groupBox1, width=20)
+        self.txtValue.insert(0, "Name value")
+        self.txtValue.grid(row=2, column=0, padx=10, pady=10,sticky=tk.W)
+
+        self.txtNameValue = tk.Entry(self.groupBox1, width=20)
+        self.txtNameValue.insert(0, "Value")
+        self.txtNameValue.grid(row=2, column=1, padx=10, pady=10)
+
+        self.opTypeValue = ttk.Combobox(self.groupBox1, values=["String", "Binary", "DWORD", "QWORD", "Multi-String", "Expandable String"])
+        self.opTypeValue.set("Kiểu dữ liệu")
+        self.opTypeValue.grid(row=2, column=2, padx=10, pady=10)
+
+        self.txtKQ = tk.Text(self.groupBox1, height=5, width=60)
+        self.txtKQ.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
+        
+        self.button1 = tk.Button(self.groupBox1, text="Gởi", command=button1_click, width=15)
+        self.button1.grid(row=4, column=0, padx=10, pady=10, sticky=tk.E)
+
+        self.butXoa = tk.Button(self.groupBox1, text="Xóa", command=butXoa_click, width=15)
+        self.butXoa.grid(row=4, column=2, padx=10, pady=10, sticky=tk.W)
+
+    
+        self.root.mainloop()
+        
 # Create a Client instance
 client = Client(HOST, PORT)
 
@@ -206,5 +273,6 @@ gui.clientScene()
 
 # Show the process scene (added step)
 gui.processScene()
+gui.registryScene()
 # Start the main event loop
 # gui.root.mainloop()
