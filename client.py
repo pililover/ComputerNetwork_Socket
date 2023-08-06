@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 import socket
 import subprocess
 
@@ -151,7 +152,50 @@ class GUI:
         # Exit
         exit = tk.Button(root, text="Quit", bg="red", padx = 30, pady = 10, command = self.client.exit_click)
         exit.grid(row=2, column=6, padx = 10, pady = 20)
+    
         root.mainloop()
+        
+    def processScene(self):
+        process_window = tk.Tk()
+        process_window.title("Process")
+
+        def kill_click():
+            # Implement the kill action
+            pass
+
+        def view_click():
+            # Implement the view action
+            pass
+
+        def start_click():
+            # Implement the start action
+            pass
+
+        def delete_click():
+            # Implement the delete action
+            pass
+
+        # Buttons
+        kill_button = tk.Button(process_window, text="Kill", width=10, command=kill_click)
+        kill_button.grid(row=0, column=0, padx=10, pady=10)
+
+        view_button = tk.Button(process_window, text="Xem", width=10, command=view_click)
+        view_button.grid(row=0, column=1, padx=10, pady=10)
+
+        delete_button = tk.Button(process_window, text="Xóa", width=10, command=delete_click)
+        delete_button.grid(row=0, column=2, padx=10, pady=10)
+
+        start_button = tk.Button(process_window, text="Start", width=10, command=start_click)
+        start_button.grid(row=0, column=3, padx=10, pady=10)
+
+        # TreeView
+        process_list = ttk.Treeview(process_window, columns=("Name Process", "ID Process", "Count Thread"), show="headings")
+        process_list.heading("#1", text="Name Process")
+        process_list.heading("#2", text="ID Process")
+        process_list.heading("#3", text="Count Thread")
+        process_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
+
+        process_window.mainloop()
 
 # Create a Client instance
 client = Client(HOST, PORT)
@@ -159,5 +203,8 @@ client = Client(HOST, PORT)
 # Create a GUI instance and pass in the client
 gui = GUI(client)
 gui.clientScene()
+
+# Show the process scene (added step)
+gui.processScene()
 # Start the main event loop
 # gui.root.mainloop()
