@@ -8,6 +8,8 @@ import time
 import platform
 import os
 import subprocess
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
 
 HOST = "127.0.1.1"
 PORT = 64444
@@ -367,3 +369,35 @@ def ShutDown():
         os.system("sudo shutdown -h now")
     else:
         print("Shutdown command not supported on this platform.")
+
+
+class ServerGUI(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowTitle("Server")
+        self.setGeometry(100, 100, 200, 100)
+
+        self.button1 = QPushButton("Mở server", self)
+        self.button1.setGeometry(50, 20, 100, 50)
+        self.button1.clicked.connect(self.open_server)
+
+    def open_server(self):
+        # Here you can put the logic from your C# button1_Click event handling
+        # For example, you can call your existing process_click method here
+        self.process_click()
+
+    def process_click(self):
+        """Send the PROCESS command to the server and handle the response."""
+        # Your server processing code here (not implemented in this example)
+        print("PROCESS command sent to the server.")
+
+
+if __name__ == "__main__":
+    threading.Thread(target=doServer).start()
+    app = QApplication(sys.argv)
+    server_app = ServerGUI()
+    server_app.show()
+    sys.exit(app.exec_())
