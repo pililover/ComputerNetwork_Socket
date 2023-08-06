@@ -9,7 +9,7 @@ import platform
 import os
 import subprocess
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
 
 HOST = "127.0.1.1"
 PORT = 64444

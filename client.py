@@ -1,3 +1,14 @@
+from PIL import Image, ImageGrab
+from tkinter import ttk, messagebox
+import os
+import pyautogui
+from PIL import ImageGrab
+from PyQt6.QtCore import Qt, QBuffer
+from PyQt6.QtGui import QPixmap, QImage, QColor, QPainter
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QTabWidget, QLabel, \
+    QMessageBox, QFileDialog
+import time
+import io
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -93,68 +104,77 @@ class Client:
         self.send_command("PROCESS")
         # handle_response("PROCESS")
 
-    
+
 def blank():
-    root=tk.Tk()
-    text=tk.Label(root, text="This is a blanked scene!")
-    text.pack(padx=20, pady = 20)
-    
+    root = tk.Tk()
+    text = tk.Label(root, text="This is a blanked scene!")
+    text.pack(padx=20, pady=20)
+
     root.mainloop()
-    
+
 # Create the main GUI window
+
+
 class GUI:
     def __init__(self, client):
         self.client = client
-    
-    
+
     def clientScene(self):
         root = tk.Tk()
         root.title("Client")
         # Input Box
         text = tk.Label(root, text="Enter IP:")
-        text.grid (row=0, column=0, pady=10)
-        
-        inputBox = tk.Entry(root, width = 50)
-        inputBox.grid (row = 0, column = 1, columnspan=3, pady=10)
-                
+        text.grid(row=0, column=0, pady=10)
+
+        inputBox = tk.Entry(root, width=50)
+        inputBox.grid(row=0, column=1, columnspan=3, pady=10)
+
         def connect_wrapper():
             ip = inputBox.get()
             self.client.connect(ip)
-            
+
         # Connect Button
-        connectButt = tk.Button(root, text="Connect", width=10, command=connect_wrapper) 
-        connectButt.grid (row = 0, column=6, padx = 10, pady =10)
-        
+        connectButt = tk.Button(root, text="Connect",
+                                width=10, command=connect_wrapper)
+        connectButt.grid(row=0, column=6, padx=10, pady=10)
+
         # Process Running
-        processButt = tk.Button(root, text="Process Running", padx = 20, pady = 20, command=self.client.process_click)
-        processButt.grid (row = 1, column=0, padx=40, pady=10, columnspan=2)
-        
+        processButt = tk.Button(root, text="Process Running",
+                                padx=20, pady=20, command=self.client.process_click)
+        processButt.grid(row=1, column=0, padx=40, pady=10, columnspan=2)
+
         # Application Running
-        appButt = tk.Button(root, text="App Running", padx = 30, pady = 20, command=self.client.app_click)
+        appButt = tk.Button(root, text="App Running", padx=30,
+                            pady=20, command=self.client.app_click)
         appButt.grid(row=1, column=2, pady=10)
-        
-        #Shut Down
-        shutDownButt = tk.Button(root, text="Shut Down", padx=35, pady= 20, command=self.client.shutdown_click)
-        shutDownButt.grid(row=2, column=0,padx=40, pady=10, columnspan=2)
-        
+
+        # Shut Down
+        shutDownButt = tk.Button(
+            root, text="Shut Down", padx=35, pady=20, command=self.client.shutdown_click)
+        shutDownButt.grid(row=2, column=0, padx=40, pady=10, columnspan=2)
+
         # Screenshot
-        screenShotButt = tk.Button(root, text="Screenshot", padx=34, pady=20, command=self.client.pic_click)
-        screenShotButt.grid(row = 2, column=2, pady=10)
-        
+        screenShotButt = tk.Button(
+            root, text="Screenshot", padx=34, pady=20, command=self.client.pic_click)
+        screenShotButt.grid(row=2, column=2, pady=10)
+
         # Keystroke
-        keyStrokeButt = tk.Button(root, text="Keystroke", padx = 39, pady=20, command=self.client.key_lock_click)
-        keyStrokeButt.grid(row=3, column=0, padx=40, pady =10, columnspan=2)
-        
+        keyStrokeButt = tk.Button(
+            root, text="Keystroke", padx=39, pady=20, command=self.client.key_lock_click)
+        keyStrokeButt.grid(row=3, column=0, padx=40, pady=10, columnspan=2)
+
         # Registry
-        registryButt = tk.Button(root, text="Edit Registry", padx = 33, pady=20, command=self.client.registry_click)
-        registryButt.grid(row=3, column=2, pady =10)
-        
+        registryButt = tk.Button(
+            root, text="Edit Registry", padx=33, pady=20, command=self.client.registry_click)
+        registryButt.grid(row=3, column=2, pady=10)
+
         # Exit
-        exit = tk.Button(root, text="Quit", bg="red", padx = 30, pady = 10, command = self.client.exit_click)
-        exit.grid(row=2, column=6, padx = 10, pady = 20)
-    
+        exit = tk.Button(root, text="Quit", bg="red", padx=30,
+                         pady=10, command=self.client.exit_click)
+        exit.grid(row=2, column=6, padx=10, pady=20)
+
         root.mainloop()
-        
+
     def processScene(self):
         process_window = tk.Tk()
         process_window.title("Process")
@@ -176,31 +196,37 @@ class GUI:
             pass
 
         # Buttons
-        kill_button = tk.Button(process_window, text="Kill", width=10, command=kill_click)
+        kill_button = tk.Button(
+            process_window, text="Kill", width=10, command=kill_click)
         kill_button.grid(row=0, column=0, padx=10, pady=10)
 
-        view_button = tk.Button(process_window, text="Xem", width=10, command=view_click)
+        view_button = tk.Button(
+            process_window, text="Xem", width=10, command=view_click)
         view_button.grid(row=0, column=1, padx=10, pady=10)
 
-        delete_button = tk.Button(process_window, text="Xóa", width=10, command=delete_click)
+        delete_button = tk.Button(
+            process_window, text="Xóa", width=10, command=delete_click)
         delete_button.grid(row=0, column=2, padx=10, pady=10)
 
-        start_button = tk.Button(process_window, text="Start", width=10, command=start_click)
+        start_button = tk.Button(
+            process_window, text="Start", width=10, command=start_click)
         start_button.grid(row=0, column=3, padx=10, pady=10)
 
         # TreeView
-        process_list = ttk.Treeview(process_window, columns=("Name Process", "ID Process", "Count Thread"), show="headings")
+        process_list = ttk.Treeview(process_window, columns=(
+            "Name Process", "ID Process", "Count Thread"), show="headings")
         process_list.heading("#1", text="Name Process")
         process_list.heading("#2", text="ID Process")
         process_list.heading("#3", text="Count Thread")
         process_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
 
         process_window.mainloop()
+
     def registryScene(self):
- 
+
         self.root = tk.Tk()
         self.root.title("Registry")
-        
+
         def butSend_click():
             # Implement the send action
             pass
@@ -216,11 +242,13 @@ class GUI:
         def butXoa_click():
             # Implement the Xóa action
             pass
-    
-        self.butBro = tk.Button(self.root, text="Browser...",command=butBro_click, width=15)
+
+        self.butBro = tk.Button(
+            self.root, text="Browser...", command=butBro_click, width=15)
         self.butBro.grid(row=0, column=3, padx=10, pady=10)
 
-        self.butSend = tk.Button(self.root, text="Gửi nội dung", pady=33, command=butSend_click, width=15)
+        self.butSend = tk.Button(
+            self.root, text="Gửi nội dung", pady=33, command=butSend_click, width=15)
         self.butSend.grid(row=1, column=3, padx=10,  pady=10)
 
         self.txtBro = tk.Entry(self.root, width=67)
@@ -229,41 +257,48 @@ class GUI:
         self.txtReg = tk.Text(self.root, height=5, width=50)
         self.txtReg.grid(row=1, column=0, padx=10, pady=10)
 
-        self.groupBox1 = ttk.LabelFrame(self.root, text="  Sửa giá trị trực tiếp  ")
+        self.groupBox1 = ttk.LabelFrame(
+            self.root, text="  Sửa giá trị trực tiếp  ")
         self.groupBox1.grid(row=2, column=0, columnspan=4, padx=10, pady=10)
 
-        self.opApp = ttk.Combobox(self.groupBox1, values=["Get value", "Set value", "Delete value", "Create key", "Delete key"])
+        self.opApp = ttk.Combobox(self.groupBox1, values=[
+                                  "Get value", "Set value", "Delete value", "Create key", "Delete key"])
         self.opApp.set("Chọn chức năng")
-        self.opApp.grid(row=0, column=0, padx=10, pady=10,sticky=tk.W)
+        self.opApp.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
 
         self.txtLink = tk.Entry(self.groupBox1, width=50)
         self.txtLink.insert(0, "Đường dẫn")
-        self.txtLink.grid(row=1, column=0, columnspan=2, padx=10, pady=10,sticky=tk.W)
+        self.txtLink.grid(row=1, column=0, columnspan=2,
+                          padx=10, pady=10, sticky=tk.W)
 
         self.txtValue = tk.Entry(self.groupBox1, width=20)
         self.txtValue.insert(0, "Name value")
-        self.txtValue.grid(row=2, column=0, padx=10, pady=10,sticky=tk.W)
+        self.txtValue.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
 
         self.txtNameValue = tk.Entry(self.groupBox1, width=20)
         self.txtNameValue.insert(0, "Value")
         self.txtNameValue.grid(row=2, column=1, padx=10, pady=10)
 
-        self.opTypeValue = ttk.Combobox(self.groupBox1, values=["String", "Binary", "DWORD", "QWORD", "Multi-String", "Expandable String"])
+        self.opTypeValue = ttk.Combobox(self.groupBox1, values=[
+                                        "String", "Binary", "DWORD", "QWORD", "Multi-String", "Expandable String"])
         self.opTypeValue.set("Kiểu dữ liệu")
         self.opTypeValue.grid(row=2, column=2, padx=10, pady=10)
 
         self.txtKQ = tk.Text(self.groupBox1, height=5, width=60)
         self.txtKQ.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
-        
-        self.button1 = tk.Button(self.groupBox1, text="Gởi", command=button1_click, width=15)
+
+        self.button1 = tk.Button(
+            self.groupBox1, text="Gởi", command=button1_click, width=15)
         self.button1.grid(row=4, column=0, padx=10, pady=10, sticky=tk.E)
 
-        self.butXoa = tk.Button(self.groupBox1, text="Xóa", command=butXoa_click, width=15)
+        self.butXoa = tk.Button(
+            self.groupBox1, text="Xóa", command=butXoa_click, width=15)
         self.butXoa.grid(row=4, column=2, padx=10, pady=10, sticky=tk.W)
 
-    
         self.root.mainloop()
-        
+
+
+
 # Create a Client instance
 client = Client(HOST, PORT)
 
