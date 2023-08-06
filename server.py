@@ -385,13 +385,9 @@ class ServerGUI(QWidget):
         self.button1.clicked.connect(self.open_server)
 
     def open_server(self):
-        # Here you can put the logic from your C# button1_Click event handling
-        # For example, you can call your existing process_click method here
         self.process_click()
 
     def process_click(self):
-        """Send the PROCESS command to the server and handle the response."""
-        # Your server processing code here (not implemented in this example)
         print("PROCESS command sent to the server.")
 
 
