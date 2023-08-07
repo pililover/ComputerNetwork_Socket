@@ -217,6 +217,99 @@ class GUI:
 
         process_window.mainloop()
 
+    def appScene(self):
+        
+        app_window = tk.Tk()
+        app_window.title("App")
+
+        def kill_click():
+            # Implement the kill action
+            pass
+
+        def view_click():
+            # Implement the view action
+            pass
+
+        def start_click():
+            # Implement the start action
+            pass
+
+        def delete_click():
+            # Implement the delete action
+            pass
+
+        # Buttons
+        kill_button = tk.Button(
+            app_window, text="Kill", width=10, command=kill_click)
+        kill_button.grid(row=0, column=0, padx=10, pady=10)
+
+        view_button = tk.Button(
+            app_window, text="Xem", width=10, command=view_click)
+        view_button.grid(row=0, column=1, padx=10, pady=10)
+
+        delete_button = tk.Button(
+            app_window, text="Xóa", width=10, command=delete_click)
+        delete_button.grid(row=0, column=2, padx=10, pady=10)
+
+        start_button = tk.Button(
+            app_window, text="Start", width=10, command=start_click)
+        start_button.grid(row=0, column=3, padx=10, pady=10)
+
+        # TreeView
+        app_list = ttk.Treeview(app_window, columns=(
+            "Name App", "ID App", "Count Thread"), show="headings")
+        app_list.heading("#1", text="Name App")
+        app_list.heading("#2", text="ID App")
+        app_list.heading("#3", text="Count Thread")
+        app_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
+
+        app_window.mainloop()
+
+    def keystrokeScene(self):
+
+        key_window = tk.Tk()
+        key_window.title("Keystroke Log")
+
+        def hook_click():
+            # Implement the hook action
+            pass
+
+        def unhook_click():
+            # Implement the unhook action
+            pass
+
+        def print_click():
+            # Implement the print action
+            pass
+
+        def delete_click():
+            # Implement the delete action
+            pass
+
+        # Buttons
+        hook_button = tk.Button(
+            key_window, text="Hook", width=10, command=hook_click)
+        hook_button.grid(row=0, column=0, padx=10, pady=10)
+
+        view_button = tk.Button(
+            key_window, text="Unhook", width=10, command=unhook_click)
+        view_button.grid(row=0, column=1, padx=10, pady=10)
+
+        delete_button = tk.Button(
+            key_window, text="Xóa", width=10, command=delete_click)
+        delete_button.grid(row=0, column=2, padx=10, pady=10)
+
+        start_button = tk.Button(
+            key_window, text="In", width=10, command=print_click)
+        start_button.grid(row=0, column=3, padx=10, pady=10)
+
+        # KeyLog text box
+        Text = "Thay cái này bằng trong code bằng câu lệnh cho biết text người bên server dùng nhập"
+        
+        key_list = ttk.Label(key_window, Text)
+
+        key_window.mainloop()
+    
     def registryScene(self):
 
         self.root = tk.Tk()
