@@ -273,18 +273,6 @@ class GUI:
         self.root = tk.Tk()  # Create the main GUI window
         self.root.title("Client")  # Set the title of the window
 
-        # Input Box
-        text = tk.Label(self.root, text="Enter IP:")
-        text.grid(row=0, column=0, pady=10)
-
-        self.inputBox = tk.Entry(self.root, width=50)
-        self.inputBox.grid(row=0, column=1, columnspan=3, pady=10)
-
-        # Connect Button
-        connectButt = tk.Button(self.root, text="Connect",
-                                width=10, command=self.client.connect)
-        connectButt.grid(row=0, column=6, padx=10, pady=10)
-
     def clientScene(self):
         root = tk.Tk()
         root.title("Client")
