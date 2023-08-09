@@ -188,7 +188,6 @@ class Server:
 
     def pc_registry(self, conn):
         try:
-            # ... (Your registry code)
             self = conn.recv(4092).decode("utf8")
 
             # Parse the received data to get base_key, link, value_name, value, and value_type
@@ -212,7 +211,6 @@ class Server:
 
 
 class ServerGUI(QWidget):
-    # ... (Rest of your code)
     def __init__(self):
         super().__init__()
         self.init_ui()
