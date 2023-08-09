@@ -12,6 +12,8 @@ from tkinter import ttk, filedialog, messagebox
 
 HOST = "127.0.1.1"
 PORT = 64444
+img_bytes = b'\x00\x01\x02...'  
+# Replace with actual binary image data
 
 
 class Account:
