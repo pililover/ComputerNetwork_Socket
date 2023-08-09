@@ -1,17 +1,76 @@
 import socket
-import pyautogui
-from PIL import Image, ImageGrab
+import json
+from PIL import Image, ImageTk
 from PyQt6.QtCore import Qt, QBuffer
 from PyQt6.QtGui import QPixmap, QImage, QColor, QPainter
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QTabWidget, QLabel, \
     QMessageBox, QFileDialog
 import io
+from io import BytesIO
 import tkinter as tk
-from tkinter import messagebox
-from tkinter import ttk
+from tkinter import ttk, filedialog, messagebox
 
 HOST = "127.0.1.1"
 PORT = 64444
+
+
+class Account:
+    def __init__(self, user, password):
+        self.user = user
+        self.password = password
+
+    def checkAvailable(self):
+        with open("account.csv", "r") as fin:
+            for line in fin:
+                user, password = line.strip().split(',')
+                if user == self.user and password == self.password:
+                    return True
+        return False
+
+    def addNewAcc2File(self):
+        with open("account.csv", "a") as fin:
+            fin.write(self.user + "," + self.password + "\n")
+
+    def createAccount(self):
+        if not self.checkAvailable():
+            self.addNewAcc2File()
+            print("Create account success")
+            return True
+        else:
+            print("Create account fail")
+            return False
+
+    def isOnlineAccountStored(self, user, password, Cli_Addr):
+        with open("AccountLive.json", "r") as file:
+            file_data = json.load(file)
+        for stored_user, stored_password, stored_Cli_Addr in zip(file_data["Account"], file_data["Password"], file_data["Address"]):
+            if stored_user == user and stored_password == password and stored_Cli_Addr == Cli_Addr:
+                return True
+        return False
+
+    def storeOnlineAccount(self, Cli_Addr):
+        account_info = {"Account": self.user,
+                        "Password": self.password, "Address": Cli_Addr}
+
+        # Load the existing JSON data
+        try:
+            with open("AccountLive.json", "r") as file:
+                file_data = json.load(file)
+        except FileNotFoundError:
+            file_data = {"Account": [], "Password": [], "Address": []}
+
+        # Check for duplicates before appending to the list
+        if not self.isOnlineAccountStored(self.user, self.password, Cli_Addr):
+            file_data["Account"].append(account_info["Account"])
+            file_data["Password"].append(account_info["Password"])
+            file_data["Address"].append(account_info["Address"])
+
+            with open("AccountLive.json", "w") as file:
+                json.dump(file_data, file, indent=4)
+
+            return True
+        else:
+            return False
 
 
 class Client:
@@ -20,6 +79,9 @@ class Client:
         self.port = port
         self.Cli_Sock = None
         self.network_file = None
+        self.root = None  # Store the main Tkinter window reference here
+
+        self.connect(self.host)  # Automatically connect on initialization
 
     def connect(self, ip):
         """Connect to the server."""
@@ -97,7 +159,100 @@ class Client:
     def process_click(self):
         """Send the PROCESS command to the server and handle the response."""
         self.send_command("PROCESS")
-        # handle_response("PROCESS")
+        # handle_response("PROCESS"
+
+    def register(Cli_Sock, Cli_Addr):
+        user = Cli_Sock.recv(1024).decode("utf8")
+        print("Client register: " + Cli_Sock)
+        print("Username: ", user)
+        Cli_Sock.sendall(user.encode('utf8'))
+
+        password = Cli_Sock.recv(1024).decode("utf8")
+        print("Password: ", password)
+        Cli_Sock.sendall(password.encode('utf8'))
+
+        acc = Account(user, password)
+        valid_acc = acc.checkAvailable()
+
+        if valid_acc == True:
+            Cli_Sock.sendall(bytes("Account is available", "utf8"))
+        else:
+            Cli_Sock.sendall(bytes("Account is not available", "utf8"))
+            acc.createAccount()
+
+        print("Register process is done")
+
+    def login(Cli_Sock, Cli_Addr):
+        user = Cli_Sock.recv(1024).decode("utf8")
+        print("Client login: " + Cli_Sock)
+        print("Username: ", user)
+        Cli_Sock.sendall(user.encode('utf8'))
+
+        password = Cli_Sock.recv(1024).decode("utf8")
+        print("Password: ", password)
+        Cli_Sock.sendall(password.encode('utf8'))
+
+        acc = Account(user, password)
+        valid_acc = acc.checkAvailable()
+
+        if valid_acc == True:
+            Cli_Sock.sendall(bytes("Login success", "utf8"))
+        else:
+            Cli_Sock.sendall(bytes("Login fail", "utf8"))
+
+        print("Login process is done")
+
+    def deleteOnlineAccount(user, password, addr):
+        try:
+            with open('AccountLive.json', 'r') as file:
+                file_data = json.load(file)
+
+            if Account(user, password).isOnlineAccountStored(file_data, user, password, addr):
+                remaining_accounts = []
+                for stored_user, stored_password, stored_addr in zip(file_data["Account"], file_data["Password"], file_data["Address"]):
+                    if stored_user == user and stored_password == password and stored_addr == addr:
+                        continue
+                    remaining_accounts.append(
+                        {"Account": stored_user, "Password": stored_password, "Address": stored_addr})
+
+                with open('AccountLive.json', 'w') as data_file:
+                    json.dump(remaining_accounts, data_file, indent=4)
+                print("Deleting success!")
+                return True
+            else:
+                print("No account found!")
+                return False
+        except Exception as e:
+            print("Error: ", str(e))
+            return False
+
+    # json file structure
+    # {
+    #   "Account": ["user1", "user2", ...],
+    #   "Password": ["pass1", "pass2", ...],
+    #   "Address": ["addr1", "addr2", ...]
+    # }
+
+    def logout(Cli_Sock, Cli_Addr, user, password):
+        if Account.deleteOnlineAccount(user, password, Cli_Addr):
+            try:
+                Cli_Sock.sendall(bytes("Logout success", "utf8"))
+            except:
+                pass
+        print("Logout process is done")
+
+    def exit(Cli_Sock, Cli_Addr, user, password):
+        Account.deleteOnlineAccount(user, password, Cli_Addr)
+        try:
+            Cli_Sock.sendall(bytes("Exit success", "utf8"))
+        except:
+            pass
+        Cli_Sock.close()
+        print("Exit process is done")
+
+    def mainloop(self):
+        if self.root:
+            self.root.mainloop()
 
 
 def blank():
@@ -113,24 +268,34 @@ def blank():
 class GUI:
     def __init__(self, client):
         self.client = client
+        self.root = tk.Tk()  # Create the main GUI window
+        self.root.title("Client")  # Set the title of the window
+
+        # Input Box
+        text = tk.Label(self.root, text="Enter IP:")
+        text.grid(row=0, column=0, pady=10)
+
+        self.inputBox = tk.Entry(self.root, width=50)
+        self.inputBox.grid(row=0, column=1, columnspan=3, pady=10)
+
+        # Connect Button
+        connectButt = tk.Button(self.root, text="Connect",
+                                width=10, command=self.client.connect)
+        connectButt.grid(row=0, column=6, padx=10, pady=10)
 
     def clientScene(self):
         root = tk.Tk()
         root.title("Client")
         # Input Box
-        text = tk.Label(root, text="Enter IP:")
+        text = tk.Label(self.root, text="Enter IP:")
         text.grid(row=0, column=0, pady=10)
 
-        inputBox = tk.Entry(root, width=50)
-        inputBox.grid(row=0, column=1, columnspan=3, pady=10)
-
-        def connect_wrapper():
-            ip = inputBox.get()
-            self.client.connect(ip)
+        self.inputBox = tk.Entry(self.root, width=50)
+        self.inputBox.grid(row=0, column=1, columnspan=3, pady=10)
 
         # Connect Button
-        connectButt = tk.Button(root, text="Connect",
-                                width=10, command=connect_wrapper)
+        connectButt = tk.Button(self.root, text="Connect",
+                                width=10, command=self.client.connect)
         connectButt.grid(row=0, column=6, padx=10, pady=10)
 
         # Process Running
@@ -218,7 +383,7 @@ class GUI:
         process_window.mainloop()
 
     def appScene(self):
-        
+
         app_window = tk.Tk()
         app_window.title("App")
 
@@ -305,11 +470,11 @@ class GUI:
 
         # KeyLog text box
         Text = "Thay cái này bằng trong code bằng câu lệnh cho biết text người bên server dùng nhập"
-        
+
         key_list = ttk.Label(key_window, Text)
 
         key_window.mainloop()
-    
+
     def registryScene(self):
 
         self.root = tk.Tk()
@@ -441,19 +606,15 @@ class GUI:
             self.Cli_Sock.sendall(b"EXIT")
             self.Cli_Sock.close()
 
+    def run(self):
+        self.root.mainloop()  # Start the main event loop
+
 
 # Create a Client instance
 client = Client(HOST, PORT)
 
 # Create a GUI instance and pass in the client
 gui = GUI(client)
-gui.clientScene()
-gui.ScreenshotScene()
 
-# Show the process scene (added step)
-gui.processScene()
-gui.registryScene()
-
-# Show the screenshot scene (added step)
-# Start the main event loop
-# gui.root.mainloop()
+# Run the GUI
+gui.run()
