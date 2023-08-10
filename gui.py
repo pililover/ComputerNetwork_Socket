@@ -2,15 +2,15 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
-from PyQt6.QtCore import Qt, QBuffer
-from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QtWidgets
+import PyQt6
 import io
 from io import BytesIO
 import pynput.keyboard
 import pynput.mouse
 from Process import Start, Kill, Process
 import Keylog
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
+
 img_bytes = b'\x00\x01\x02...'
 
 # Create the main GUI window

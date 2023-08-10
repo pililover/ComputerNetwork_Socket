@@ -1,9 +1,5 @@
-from PIL import Image, ImageTk
-from PyQt6.QtCore import Qt, QBuffer
-from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QtWidgets
-import io
-from io import BytesIO
+import socket
+import json
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
@@ -84,6 +80,7 @@ class Kill(tk.Tk):
 
 class Process(tk.Tk):
     def __init__(self, client):
+        super().__init__()
         self.client = client
 
         def kill_click():
@@ -143,9 +140,7 @@ class Process(tk.Tk):
         self.process_list.heading("#2", text="ID Process")
         self.process_list.heading("#3", text="Count Thread")
         self.process_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
-
-        # ... (other widgets and settings)
-
+        
         self.protocol("WM_DELETE_WINDOW", self.process_closing)
 
     def process_closing(self):

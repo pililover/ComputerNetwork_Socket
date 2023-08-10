@@ -1,55 +1,43 @@
 import socket
 import json
 from PIL import Image, ImageTk
-from PyQt6.QtCore import Qt, QBuffer
-from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QtWidgets
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import pynput.keyboard
 
 class Keylog(tk.Tk):
     def __init__(self, client):
+        super().__init__()
         self.client = client
         self.init_ui()
 
     def init_ui(self):
-        # ... (your existing init_ui function)
-        self.button1 = QtWidgets.QPushButton('HOOK', self)
-        self.button1.clicked.connect(self.hook_button_clicked)
+        self.button1 = ttk.Button(self, text='HOOK', command=self.hook_button_clicked)
+        self.button1.pack()
 
-        self.button2 = QtWidgets.QPushButton('UNHOOK', self)
-        self.button2.clicked.connect(self.unhook_button_clicked)
+        self.button2 = ttk.Button(self, text='UNHOOK', command=self.unhook_button_clicked)
+        self.button2.pack()
 
-        self.button3 = QtWidgets.QPushButton('PRINT', self)
-        self.button3.clicked.connect(self.print_button_clicked)
+        self.button3 = ttk.Button(self, text='PRINT', command=self.print_button_clicked)
+        self.button3.pack()
 
-        self.txtKQ = QtWidgets.QTextEdit(self)
+        self.txtKQ = tk.Text(self)
+        self.txtKQ.pack()
 
-        self.butXoa = QtWidgets.QPushButton('Clear', self)
-        self.butXoa.clicked.connect(self.clear_button_clicked)
+        self.butXoa = ttk.Button(self, text='Clear', command=self.clear_button_clicked)
+        self.butXoa.pack()
 
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(self.button1)
-        layout.addWidget(self.button2)
-        layout.addWidget(self.button3)
-        layout.addWidget(self.txtKQ)
-        layout.addWidget(self.butXoa)
-
-        self.setLayout(layout)
-        self.setWindowTitle('Keylog')
+        self.title('Keylog')
 
     def hook_button_clicked(self):
         command = "HOOK\n"
         # You need to send this data to the server here
         self.client.send_command(command)
-        pass
 
     def unhook_button_clicked(self):
         command = "UNHOOK\n"
         # You need to send this data to the server here
         self.client.send_command(command)
-        pass
 
     def print_button_clicked(self):
         command = "PRINT\n"
@@ -62,4 +50,4 @@ class Keylog(tk.Tk):
         self.txtKQ.delete('1.0', tk.END)
 
     def run(self):
-        self.root.mainloop()
+        self.mainloop()
