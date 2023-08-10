@@ -5,7 +5,14 @@ from PIL import Image, ImageTk
 from PyQt6.QtCore import Qt, QBuffer
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QtWidgets
-import client
+import io
+from io import BytesIO
+import pynput.keyboard
+import pynput.mouse
+from Process import Start, Kill, Process
+import Keylog
+img_bytes = b'\x00\x01\x02...'
+
 # Create the main GUI window
 
 
@@ -210,12 +217,13 @@ class GUI:
             response = self.client.receive_data()
 
             # Update the result textbox
-            self.txtKQ.insert(tk.END, response + "\n")            
+            self.txtKQ.insert(tk.END, response + "\n")
 
         def butBro_click():
             try:
                 # Open the file dialog to choose a .reg file
-                file_path = filedialog.askopenfilename(filetypes=[("Registry Files", "*.reg")])
+                file_path = filedialog.askopenfilename(
+                    filetypes=[("Registry Files", "*.reg")])
 
                 if file_path:
                     # Update the file path in the entry widget
@@ -225,15 +233,14 @@ class GUI:
                     # Read the content of the selected file and populate the text box
                     with open(file_path, "r") as file:
                         reg_content = file.read()
-                        self.txtReg.delete(1.0, tk.END)  # Clear existing content
+                        # Clear existing content
+                        self.txtReg.delete(1.0, tk.END)
                         self.txtReg.insert(tk.END, reg_content)
             except Exception as e:
                 messagebox.showerror("Error", str(e))
 
-
         def button1_click():
             pass
-
 
         def butXoa_click():
             self.txtKQ.delete(1.0, tk.END)

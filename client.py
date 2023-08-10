@@ -10,82 +10,12 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import pynput.keyboard
 import Account
-import gui
+from gui import GUI
 
 HOST = "127.0.1.1"
 PORT = 64444
 img_bytes = b'\x00\x01\x02...'
 # Replace with actual binary image data
-
-class Start(tk.Tk):
-    def __init__(self, client):
-        super().__init__()
-
-        self.client = client
-
-        self.title("Start")
-
-        self.protocol("WM_DELETE_WINDOW", self.start_closing)
-
-        self.label = tk.Label(self, text="Enter ID:")
-        self.label.grid(row=0, column=0, padx=10, pady=10)
-
-        self.txtID = tk.Entry(self, width=20)
-        self.txtID.grid(row=0, column=1, padx=10, pady=10)
-
-        self.butStart = tk.Button(self, text="Start", width=10, command=self.butStart_click)
-        self.butStart.grid(row=0, column=2, padx=10, pady=10)
-
-    def start_closing(self):
-        try:
-            self.client.send_command("QUIT")
-        except Exception as ex:
-            pass
-        self.destroy()
-
-    def butStart_click(self):
-        try:
-            self.client.send_command("STARTID")
-            self.client.send_data(self.txtID.get())
-            response = self.client.receive_data()
-            messagebox.showinfo("Start Result", response)
-        except Exception as ex:
-            messagebox.showerror("Error", str(ex))
-
-class Kill(tk.Tk):
-    def __init__(self, client):
-        super().__init__()
-
-        self.client = client
-
-        self.title("Kill")
-
-        self.protocol("WM_DELETE_WINDOW", self.kill_closing)
-
-        self.label = tk.Label(self, text="Enter ID:")
-        self.label.grid(row=0, column=0, padx=10, pady=10)
-
-        self.txtID = tk.Entry(self, width=20)
-        self.txtID.grid(row=0, column=1, padx=10, pady=10)
-
-        self.butNhap = tk.Button(self, text="Kill", width=10, command=self.butNhap_click)
-        self.butNhap.grid(row=0, column=2, padx=10, pady=10)
-
-    def butNhap_click(self):
-        try:
-            self.client.send_command("KILLID")
-            self.client.send_data(self.txtID.get())
-            response = self.client.receive_data()
-            messagebox.showinfo("Kill Result", response)
-        except Exception as ex:
-            messagebox.showerror("Error", str(ex))
-
-    def kill_closing(self):
-        try:
-            self.client.send_command("QUIT")
-        except Exception as ex:
-            pass
-        self.destroy()
 
 class Client:
     def __init__(self, host, port):
