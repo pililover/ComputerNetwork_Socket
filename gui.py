@@ -10,6 +10,7 @@ import pynput.mouse
 from Process import Start, Kill, Process
 import Keylog
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
+import Program
 
 img_bytes = b'\x00\x01\x02...'
 
@@ -115,8 +116,9 @@ class GUI:
                 messagebox.showerror("Error", str(ex))
 
         def delete_click():
-            # Implement the delete action
-            pass
+            if self.app_list.selection():
+                selected_item = self.app_list.selection()[0]
+                self.app_list.delete(selected_item)
 
         # TreeView for App List
         self.app_list = ttk.Treeview(app_window, columns=(
@@ -138,6 +140,10 @@ class GUI:
         start_button = tk.Button(
             app_window, text="Start", width=10, command=start_click)
         start_button.grid(row=0, column=2, padx=10, pady=10)
+
+        delete_button = tk.Button(
+            app_window, text="Xóa", width=10, command=delete_click)
+        delete_button.grid(row=0, column=3, padx=10, pady=10)
 
         app_window.mainloop()
 
@@ -239,12 +245,30 @@ class GUI:
             except Exception as e:
                 messagebox.showerror("Error", str(e))
 
-        def button1_click():
-            pass
+        def button1_click(self):
+            s = "SEND"
+            Program.nw.write(s + "\n")
+            Program.nw.flush()
+            s = self.opApp.get()
+            Program.nw.write(s + "\n")
+            Program.nw.flush()
+            s = self.txtLink.get()
+            Program.nw.write(s + "\n")
+            Program.nw.flush()
+            s = self.txtNameValue.get()
+            Program.nw.write(s + "\n")
+            Program.nw.flush()
+            s = self.txtValue.get()
+            Program.nw.write(s + "\n")
+            Program.nw.flush()
+            s = self.opTypeValue.get()
+            Program.nw.write(s + "\n")
+            Program.nw.flush()
+            s = Program.nr.readline().strip()
+            self.txtKQ.insert(tk.END, s + "\n")
 
         def butXoa_click():
             self.txtKQ.delete(1.0, tk.END)
-            pass
 
         self.butBro = tk.Button(
             self.root, text="Browser...", command=butBro_click, width=15)
@@ -283,7 +307,7 @@ class GUI:
         self.txtNameValue.grid(row=2, column=1, padx=10, pady=10)
 
         self.opTypeValue = ttk.Combobox(self.groupBox1, values=[
-                                        "String", "Binary", "DWORD", "QWORD", "Multi-String", "Expandable String"])
+            "String", "Binary", "DWORD", "QWORD", "Multi-String", "Expandable String"])
         self.opTypeValue.set("Kiểu dữ liệu")
         self.opTypeValue.grid(row=2, column=2, padx=10, pady=10)
 
@@ -340,7 +364,7 @@ class GUI:
         except Exception as ex:
             messagebox.showerror("Error", str(ex))
 
-    def buttonSAVE_click(self):
+    def buttonSAVE_click(self, img_bytes):
         # Show the save file dialog
         filename = filedialog.asksaveasfilename(
             title="Save Screenshot",
