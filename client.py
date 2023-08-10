@@ -2,15 +2,14 @@ import socket
 import json
 from PIL import Image, ImageTk
 from PyQt6.QtCore import Qt, QBuffer
-from PyQt6.QtGui import QPixmap, QImage, QColor, QPainter
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QTabWidget, QLabel, \
-    QMessageBox, QFileDialog, QtWidgets
+from PyQt6.QtGui import QImage, QPixmap
+from PyQt6.QtWidgets import QtWidgets
 import io
 from io import BytesIO
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import pynput.keyboard
-from io import StringIO
+import Account
 
 HOST = "127.0.1.1"
 PORT = 64444
@@ -18,66 +17,7 @@ img_bytes = b'\x00\x01\x02...'
 # Replace with actual binary image data
 
 
-class Account:
-    def __init__(self, user, password):
-        self.user = user
-        self.password = password
-
-    def checkAvailable(self):
-        with open("account.csv", "r") as fin:
-            for line in fin:
-                user, password = line.strip().split(',')
-                if user == self.user and password == self.password:
-                    return True
-        return False
-
-    def addNewAcc2File(self):
-        with open("account.csv", "a") as fin:
-            fin.write(self.user + "," + self.password + "\n")
-
-    def createAccount(self):
-        if not self.checkAvailable():
-            self.addNewAcc2File()
-            print("Create account success")
-            return True
-        else:
-            print("Create account fail")
-            return False
-
-    def isOnlineAccountStored(self, user, password, Cli_Addr):
-        with open("AccountLive.json", "r") as file:
-            file_data = json.load(file)
-        for stored_user, stored_password, stored_Cli_Addr in zip(file_data["Account"], file_data["Password"], file_data["Address"]):
-            if stored_user == user and stored_password == password and stored_Cli_Addr == Cli_Addr:
-                return True
-        return False
-
-    def storeOnlineAccount(self, Cli_Addr):
-        account_info = {"Account": self.user,
-                        "Password": self.password, "Address": Cli_Addr}
-
-        # Load the existing JSON data
-        try:
-            with open("AccountLive.json", "r") as file:
-                file_data = json.load(file)
-        except FileNotFoundError:
-            file_data = {"Account": [], "Password": [], "Address": []}
-
-        # Check for duplicates before appending to the list
-        if not self.isOnlineAccountStored(self.user, self.password, Cli_Addr):
-            file_data["Account"].append(account_info["Account"])
-            file_data["Password"].append(account_info["Password"])
-            file_data["Address"].append(account_info["Address"])
-
-            with open("AccountLive.json", "w") as file:
-                json.dump(file_data, file, indent=4)
-
-            return True
-        else:
-            return False
-
-
-class Keylog(QtWidgets.QWidget):
+class Keylog(tk.Tk):
     def __init__(self, client):
         self.client = client
         self.init_ui()
@@ -134,7 +74,7 @@ class Keylog(QtWidgets.QWidget):
         self.root.mainloop()
 
 
-class Process:
+class Process(tk.Tk):
     def __init__(self, client):
         self.client = client
 
@@ -240,7 +180,7 @@ class Start(tk.Tk):
         except Exception as ex:
             messagebox.showerror("Error", str(ex))
 
-class Kill(tk.Toplevel):
+class Kill(tk.Tk):
     def __init__(self, client):
         super().__init__()
 
