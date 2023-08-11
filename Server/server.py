@@ -8,10 +8,10 @@ import platform
 import os
 import subprocess
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
 import psutil
 from ipaddress import ip_address
 from contextlib import closing
+import tkinter as tk
 import pynput.keyboard
 import Program
 import Keylog
@@ -453,19 +453,20 @@ class Server:
         client.shutdown(socket.SHUT_RDWR)
         client.close()
 
-
-class ServerGUI(QWidget):
-    def __init__(self):
-        super().__init__()
+class ServerGUI(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.master = master
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Server")
-        self.setGeometry(100, 100, 200, 100)
+        self.master.title("Server")
+        self.master.geometry("200x100")
 
-        self.button1 = QPushButton("Mở server", self)
-        self.button1.setGeometry(50, 20, 100, 50)
-        self.button1.clicked.connect(self.open_server)
+        self.button1 = tk.Button(self, text="Mở server", command=self.open_server)
+        self.button1.pack(pady=20)
+
+        self.pack()
 
     def open_server(self):
         self.process_click()
@@ -473,15 +474,14 @@ class ServerGUI(QWidget):
     def process_click(self):
         print("PROCESS command sent to the server.")
 
-
 def main():
     server = Server()
-    threading.Thread(target=server.start).start()
+    server_thread = threading.Thread(target=server.start)
+    server_thread.start()
 
-    app = QApplication(sys.argv)  # Initialize PyQt6 app here
-    server_app = ServerGUI(server)
-    server_app.show()
-    sys.exit(app.exec_())
+    root = tk.Tk()
+    server_app = ServerGUI(master=root)
+    server_app.mainloop()
 
 if __name__ == "__main__":
     main()

