@@ -13,11 +13,11 @@ class Program:
 
     @staticmethod
     def main():
-        root = Tk()
-        app = client(master=root)
-        app.mainloop()
-        root.destroy()
-
+        # root = Tk()
+        # app = client(master=root)
+        # app.mainloop()
+        # root.destroy()
+        client
 
 if __name__ == "__main__":
     Program.main()
