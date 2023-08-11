@@ -124,9 +124,6 @@ class Server:
     def PCRegistryKey(self, conn):
         try:
             s = conn.recv(4092).decode("utf8")
-
-            # Parse the received data to get base_key, link, value_name, value, and value_type
-            # Format of data: "<base_key>;<link>;<value_name>;<value>;<value_type>"
             base_key, link, value_name, value, value_type = s.split(";")
 
             if value_type == "DELETE_VALUE":
@@ -161,7 +158,6 @@ class Server:
             with winreg.OpenKey(base_key, link, 0, winreg.KEY_SET_VALUE) as key:
                 if value_type in value_types:
                     if value_type == "Binary":
-                        # Convert value to bytes before setting
                         value_bytes = bytes(int(byte)
                                             for byte in value.split())
                         winreg.SetValueEx(key, value_name, 0,
@@ -199,23 +195,19 @@ class Server:
 
     def screenshot(self, conn):
         try:
-            # Wait for a short time to reduce frequent screenshots (rate limiting)
             time.sleep(1)
 
             # Screenshot
             screenshot = pyautogui.screenshot()
 
-            # Resize the screenshot to a smaller resolution (e.g., 800x600)
             resized_screenshot = screenshot.resize((800, 600))
 
-            # Convert screenshot to bytes
             img_bytes = io.BytesIO()
             resized_screenshot.save(img_bytes, format='PNG')
             img_bytes = img_bytes.getvalue()
 
-            # Send screenshot 2 client
 
-            conn.sendall(img_bytes)  # Corrected variable name
+            conn.sendall(img_bytes)  
         except Exception as ex:
             conn.sendall(bytes("Error: " + str(ex), "utf8"))
 
@@ -233,8 +225,6 @@ class Server:
         try:
             data = conn.recv(4092).decode("utf8")
 
-            # Parse the received data to get base_key, link, value_name, value, and value_type
-            # Format of data: "<base_key>;<link>;<value_name>;<value>;<value_type>"
             base_key, link, value_name, value, value_type = data.split(";")
 
             if value_type == "DELETE_VALUE":
