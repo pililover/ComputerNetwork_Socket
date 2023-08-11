@@ -1,15 +1,10 @@
 import socket
-import json
-from PIL import Image, ImageTk
-import io
 from io import BytesIO
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-import pynput.keyboard
-import Account
-from gui import GUI
+from tkinter import messagebox
+import gui
 
-HOST = "127.0.1.1"
+HOST = 'localhost'
 PORT = 64444
 img_bytes = b'\x00\x01\x02...'
 # Replace with actual binary image data
@@ -155,7 +150,7 @@ def blank():
 client = Client(HOST, PORT)
 
 # Create a GUI instance and pass in the client
-gui = GUI(client)
+gui = gui.GUI(client)
 
 # Run the GUI
 gui.run()

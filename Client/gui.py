@@ -2,7 +2,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
-import PyQt6
 import io
 from io import BytesIO
 import pynput.keyboard
