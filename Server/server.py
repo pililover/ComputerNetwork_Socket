@@ -19,6 +19,7 @@ import Keylog
 
 HOST = "127.0.1.1"
 PORT = 64444
+img_bytes = b'\x00\x01\x02...'
 
 FONT = ("Arial", 20, "bold")
 LOGIN = "login"
