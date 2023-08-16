@@ -1,5 +1,6 @@
 import socket
 import json
+import sys
 from PIL import Image, ImageTk
 import io
 from io import BytesIO
@@ -111,20 +112,21 @@ class Client:
 
     def exit_click(self):
         """Send the QUIT command to the server, close the connection, and exit the application."""
-        if not messagebox.askokcancel("Quit", "Do you want to quit?"):
-            return
-
-        if (self.Cli_Sock is not None):
-            try:
-                # Send QUIT command to server
-                self.send_command("QUIT")
-                # Close socket connection
-                self.Cli_Sock.close()
-                # Close main Tkinter window
-                if (self.root is not None):
-                    self.root.destroy()
-            except Exception as ex:
-                messagebox.showerror("Error", f"Error quitting: {ex}")
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            if (self.Cli_Sock is not None):
+                try:
+                    print("Quitting...")
+                    # Send QUIT command to server
+                    self.send_command("QUIT")
+                    # Close socket connection
+                    self.Cli_Sock.close()
+                    # Close main Tkinter window
+                    #if (self.root is not None): 
+                except Exception as ex:
+                    messagebox.showerror("Error", f"Error quitting: {ex}")
+            
+            #self.destroy()
+            sys.exit(0)
 
     def pic_click(self):
         """Send the TAKEPIC command to the server and handle the response."""

