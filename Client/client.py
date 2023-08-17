@@ -25,15 +25,14 @@ class Client:
         self.gui = gui.GUI(self)
         self.root = self.gui.root  # Store the main Tkinter window reference here
         self.ip = self.gui.ip    
-        print(self.ip)
+        #print(self.ip)
         # self.connect(self.host)  # Automatically connect on initialization
-    def connect(self, ip):
+    def connect(self,ip):
         """Connect to the server."""
         try:
             self.Cli_Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print(ip)
             self.Cli_Sock.connect((ip, self.port))
-            print(self.ip)
-            print(self.port)
             self.ns = self.Cli_Sock.makefile('rwb')
             self.nr = self.ns.makefile('r')
             self.nw = self.ns.makefile('w')
