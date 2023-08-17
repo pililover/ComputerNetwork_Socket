@@ -33,8 +33,8 @@ class Client:
             print(ip)
             self.Cli_Sock.connect((ip, self.port))
             self.ns = self.Cli_Sock.makefile('rwb')
-            self.nr = self.ns.makefile('r')
-            self.nw = self.ns.makefile('w')
+            self.nr = self.Cli_Sock.makefile('r')
+            self.nw = self.Cli_Sock.makefile('w')
             messagebox.showinfo(
                 "Connected", "Connected to the server successfully")
         except socket.error as ex:
