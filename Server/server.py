@@ -473,7 +473,7 @@ class ServerGUI(tk.Frame):
         print("PROCESS command sent to the server.")
 
 def main():
-    server = Server('10.0.2.15')
+    server = Server('0.0.0.0')
     server_thread = threading.Thread(target=server.start)
     server_thread.start()
 
