@@ -87,15 +87,15 @@ class Client:
         if res == "APPLICATION":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.root, text=data).pack()
+            tk.Label(self, text=data).pack()
         elif res == "SHUTDOWN":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.root, text=data).pack()
+            tk.Label(self, text=data).pack()
         elif res == "REGISTRY":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.root, text=data).pack()
+            tk.Label(self, text=data).pack()
 
     def app_click(self):
         """Send the APPLICATION command to the server and handle the response."""
