@@ -16,7 +16,6 @@ import pynput.keyboard
 import Program
 import Keylog
 
-HOST = '0.0.0.0'
 PORT = 64444
 img_bytes = b'\x00\x01\x02...'
 
@@ -28,28 +27,27 @@ EXIT = "exit"
 
 
 class Server:
-    def __init__(self):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def __init__(self, host):
+        self.host = host
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind((self.host, PORT))
+        self.server.listen(100)
         self.clients = []
-        self.nw_lock = threading.Lock()
-        self.nr_lock = threading.Lock()
+        self.ns = None
+        self.nr = None
+        self.nw = None
 
     def start(self):
         try:
-            self.s.bind((HOST, PORT))
-            self.s.listen(2)
             print("Waiting for Clients")
             while True:
-                conn, addr = self.s.accept()
-                print("Connected by ", addr)
-                threading.Thread(target=self.handle_client,
-                                 args=(conn, addr)).start()
-        except socket.timeout as timeout:
-            print("Timeout to server: ", addr)
-        except socket.error as error:
-            print("Disconnected to server: ", addr)
+                conn, addr = self.server.accept()
+                print("Connected by", addr)
+                threading.Thread(target=self.handle_client, args=(conn,)).start()
+        except socket.error as ex:
+            print("Server error:", ex)
         finally:
-            self.s.close()
+            self.server.close()
 
     def handle_client(self, conn, addr):
         self.clients.append(conn)
@@ -57,27 +55,25 @@ class Server:
             while True:
                 option = conn.recv(1024).decode("utf8")
                 print("Client option: " + option)
-                if option == "LOGIN":
-                    conn.sendall(bytes("Login success", "utf8"))
-
-                elif option == "REGISTER":
-                    conn.sendall(bytes("Register success", "utf8"))
-
-                elif option == "LOGOUT":
-                    conn.sendall(bytes("Logout success", "utf8"))
-
-                elif option == "EXIT":
-                    conn.sendall(bytes("Exit success", "utf8"))
-                    break
-                elif option == "TAKEPIC":
+                if option == "TAKEPIC":
                     self.screenshot(conn)
                 elif option == "SHUTDOWN":
                     self.shutdown()
                 elif option == "REGISTRY":
                     self.pc_registry(conn)
+                elif option == "KEYLOG":
+                    self.keylog(conn)
+                elif option == "PROCESS":
+                    self.process(conn)
+                elif option == "APPLICATION":
+                    self.application(conn)
+                elif option == "QUIT":
+                    break
                 else:
                     conn.sendall(bytes("Option not found", "utf8"))
                     break
+            self.client.shutdown(socket.SHUT_RDWR)
+            self.client.close()
         except socket.timeout as timeout:
             print("Timeout to client: ", addr)
         except socket.error as error:
@@ -463,7 +459,7 @@ class ServerGUI(tk.Frame):
         self.master.title("Server")
         self.master.geometry("200x100")
 
-        self.button1 = tk.Button(self, text="Mở server", command=self.open_server)
+        self.button1 = tk.Button(self, text="Open server", command=self.open_server)
         self.button1.pack(pady=20)
 
         self.pack()
@@ -475,7 +471,7 @@ class ServerGUI(tk.Frame):
         print("PROCESS command sent to the server.")
 
 def main():
-    server = Server()
+    server = Server('0.0.0.0')
     server_thread = threading.Thread(target=server.start)
     server_thread.start()
 

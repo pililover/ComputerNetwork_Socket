@@ -17,8 +17,7 @@ img_bytes = b'\x00\x01\x02...'
 
 
 class Client:
-    def __init__(self, host, port):
-        self.host = host
+    def __init__(self, port):
         self.port = port
         self.Cli_Sock = None
         self.network_file = None
@@ -156,7 +155,7 @@ def blank():
 
 
 # Create a Client instance
-client = Client(HOST, PORT)
+client = Client(PORT)
 
 # Create a GUI instance and pass in the client
 gui = gui.GUI(client)
