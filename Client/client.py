@@ -10,7 +10,7 @@ import pynput.keyboard
 import gui
 import os
 
-HOST = 'localhost'
+HOST = '0.0.0.0'
 PORT = 64444
 img_bytes = b'\x00\x01\x02...'
 # Replace with actual binary image data
