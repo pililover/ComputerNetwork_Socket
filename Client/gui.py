@@ -1,4 +1,5 @@
 # gui.py
+import logging
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
@@ -8,6 +9,7 @@ import pynput.keyboard
 import pynput.mouse
 from Process import Start, Kill, Process
 import Keylog
+import whois
 img_bytes = b'\x00\x01\x02...'
 
 # Create the main GUI window
@@ -18,6 +20,7 @@ class GUI:
         self.client = client
         self.root = tk.Tk()  # Create the main GUI window
         self.root.title("Client")  # Set the title of the window
+        self.ip = None
         self.clientScene()
 
     def clientScene(self):
@@ -32,7 +35,12 @@ class GUI:
 
         # Connect Button
         def connect_wrapper():
-            self.client.connect(self.inputBox.get())
+            logging.info("Connecting to the server...")
+            ip = self.inputBox.get()
+            self.client.connect(ip)
+            self.ip = ip
+            #print(self.inputBox.get())
+            logging.info("Connected to the server")
         connectButt = tk.Button(self.root, text="Connect",
                                 width=10, command=connect_wrapper)
         connectButt.grid(row=0, column=6, padx=10, pady=10)
