@@ -32,7 +32,7 @@ class Server:
     def __init__(self, host):
         self.host = host
         print(self.host + " " + str(PORT))
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM = TCP
         self.server.bind((self.host, PORT))
         self.server.listen(10)
         print("Server started listening on port " + str(PORT))
@@ -53,12 +53,10 @@ class Server:
         finally:
             self.server.close()
 
-    # def stop(self, signal, frame):
-    #     # Quit on ctrl-c
-    #     print("\nSIGINT received, stopping\n")
-    #     self.server.close()
-    #     sys.exit(0)
-    
+    def stop(self):
+        self.is_running = False  # Signal the server loop to stop
+        sys.exit(0)  # Close the socket to unlock the port
+        
     def handle_client(self, conn, addr):
         self.clients.append(conn)
         try:
@@ -460,9 +458,10 @@ class Server:
         client.close()
 
 class ServerGUI(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master=None, server=None):
         super().__init__(master)
         self.master = master
+        self.server = server  # Store the server instance
         self.init_ui()
 
     def init_ui(self):
@@ -473,8 +472,6 @@ class ServerGUI(tk.Frame):
         self.button1.pack(pady=20)
 
         self.pack()
-        # Bind the window close event to the method
-        self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def open_server(self):
         self.process_click()
@@ -483,14 +480,8 @@ class ServerGUI(tk.Frame):
         print("PROCESS command sent to the server.")
         
     def on_closing(self):
-        # This method is called when the user clicks the "X" button to close the window
-        print("Closing the server...")
-        # Perform your cleanup and shutdown operations here
-        
-        # For example, you could call a method to shut down the server gracefully
-        self.shutdown_server()
-        
-        # Close the Tkinter window
+        if self.server:
+            self.server.stop()  # Call the server's stop method
         self.master.destroy()
 
     def shutdown_server(self):
@@ -505,8 +496,11 @@ def main():
 
     root = tk.Tk()
     server_app = ServerGUI(master=root)
-    #signal.signal(signal.SIGINT, server.stop)
+    root.protocol("WM_DELETE_WINDOW", server_app.on_closing)  # Handle window closing event
     server_app.mainloop()
+    
+    server.stop()  # You should implement this method in your Server class
+    server_thread.join()  # Wait for the server thread to finish before exiting
     
 if __name__ == "__main__":
     main()
