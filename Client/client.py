@@ -96,6 +96,24 @@ class Client:
             data = self.receive_data()
             # Display data in a tkinter widget
             tk.Label(self, text=data).pack()
+        elif res == "TAKEPIC":
+            data = self.receive_data()
+            # Display data in a tkinter widget
+            tk.Label(self, text=data).pack()
+        elif res == "KEYLOG":
+            data = self.receive_data()
+            # Display data in a tkinter widget
+            tk.Label(self, text=data).pack()
+        elif res == "PROCESS":
+            data = self.receive_data()
+            # Display data in a tkinter widget
+            tk.Label(self, text=data).pack()
+        elif res == "QUIT":
+            data = self.receive_data()
+            # Display data in a tkinter widget
+            tk.Label(self, text=data).pack()
+        else:
+            messagebox.showerror("Error", f"Unknown response: {res}")
 
     def app_click(self):
         """Send the APPLICATION command to the server and handle the response."""
@@ -163,4 +181,3 @@ client = Client(PORT)
 
 # Run the GUI
 #gui.run()
-io.socket.off()
