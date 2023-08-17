@@ -29,6 +29,7 @@ EXIT = "exit"
 class Server:
     def __init__(self, host):
         self.host = host
+        print(self.host + " " + str(PORT))
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.host, PORT))
         self.server.listen(100)
