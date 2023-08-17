@@ -10,6 +10,8 @@ import pynput.mouse
 from Process import Start, Kill, Process
 import Keylog
 import whois
+import Program
+
 img_bytes = b'\x00\x01\x02...'
 
 # Create the main GUI window
