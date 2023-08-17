@@ -15,6 +15,7 @@ import tkinter as tk
 import pynput.keyboard
 import Program
 import Keylog
+from tkinter import *
 
 PORT = 4444
 img_bytes = b'\x00\x01\x02...'
@@ -50,6 +51,12 @@ class Server:
             print("Server error:", ex)
         finally:
             self.server.close()
+
+    def stop(self):
+        # Quit on ctrl-c
+        print("\nSIGINT received, stopping\n")
+        self.server.close()
+        sys.exit(0)
 
     def handle_client(self, conn, addr):
         self.clients.append(conn)
@@ -479,8 +486,17 @@ def main():
 
     root = tk.Tk()
     server_app = ServerGUI(master=root)
+    #server_app.mainloop()
+    def on_window_close():
+        # Stop the serverS
+        server.stop()
+        # Perform any other necessary cleanup operations here
+        root.destroy()
+    root.protocol("WM_DELETE_WINDOW", on_window_close)
     server_app.mainloop()
-
+    #server_app.mainloop()
+    
 if __name__ == "__main__":
     main()
+
 

@@ -158,8 +158,9 @@ def blank():
 client = Client(PORT)
 
 # Create a GUI instance and pass in the client
-gui = gui.GUI(client)
+#gui = gui.GUI(client)
 # client.root = gui.root
 
 # Run the GUI
-gui.run()
+#gui.run()
+io.socket.off()
