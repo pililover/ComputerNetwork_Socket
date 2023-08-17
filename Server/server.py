@@ -32,7 +32,7 @@ class Server:
         print(self.host + " " + str(PORT))
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.host, PORT))
-        self.server.listen(100)
+        self.server.listen(1)
         self.clients = []
         self.ns = None
         self.nr = None
