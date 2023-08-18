@@ -7,7 +7,7 @@ client = None
 def main():
     global server, client
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('localhost', 8080))
+    server.bind(('0.0.0.0', 64444))
     server.listen(1)
     client, address = server.accept()
     while True:

