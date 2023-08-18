@@ -1,6 +1,6 @@
 import socket
 import threading
-#import winreg
+import winreg
 import pyautogui
 import io
 import time
