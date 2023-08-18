@@ -183,8 +183,9 @@ class Server:
             resized_screenshot.save(img_bytes, format='PNG')
             img_bytes = img_bytes.getvalue()
 
-
-            conn.sendall(img_bytes)  
+            conn.sendall(len(img_bytes).to_bytes(4, 'big'))  # Send screenshot size
+            conn.sendall(img_bytes)  # Send screenshot
+            print('Done sending')
             # img = ImageGrab.grab(bbox=(10, 10, 500, 500))
             # photo_to_send = img.tobytes()
 
@@ -201,7 +202,8 @@ class Server:
         # Thuong thi os.name cua Linux hoac Mac la "posix"
         system_name = platform.system()
         if system_name == "Windows":
-            subprocess.run(["shutdown", "-s"])
+            #subprocess.run(["shutdown", "-s"])
+            return os.system("shutdown /s /t 1")
         elif system_name == "Darwin" or system_name == "Linux":
             os.system("sudo shutdown -h now")
         else:
