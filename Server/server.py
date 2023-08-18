@@ -93,8 +93,8 @@ class Server:
         except socket.error as error:
             print("Disconnected to client: ", addr)
         finally:
-            self.clients.close()
-            self.clients.remove(conn)
+            conn.close()
+            self.clients.remove((conn, addr))
 
     def PCRegistryKey(self, conn):
         try:
