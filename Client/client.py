@@ -51,7 +51,7 @@ class Client:
             messagebox.showerror("Error", "Not connected to the server")
             return
         try:
-            self.nw.write((command + "\n"))
+            self.nw.write(command)
             self.nw.flush()
         except socket.timeout as ex:
             messagebox.showerror("Error", f"Timeout: {ex}")
@@ -116,12 +116,12 @@ class Client:
             tk.Label(self.root, text=data).pack()            
         elif res == "KEYLOG":
             data = self.receive_data()
-            gui.GUI.keystrokeScene
+            # gui.GUI.keystrokeScene
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         elif res == "PROCESS":
             data = self.receive_data()
-            gui.GUI.processScene
+            # gui.GUI.processScene
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         elif res == "QUIT":

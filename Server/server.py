@@ -64,10 +64,10 @@ class Server:
         sys.exit(0)  # Close the socket to unlock the port
         
     def handle_client(self, conn):
-        self.clients.append(conn)
         try:
             while True:
                 option = conn.recv(1024).decode("utf8")
+                print("Client option: " + option)
                 print("Client option: " + option)
                 if option == "TAKEPIC":
                     self.screenshot(conn)
@@ -92,7 +92,7 @@ class Server:
             print("Timeout to client: ", conn.getpeername())
         except socket.error as error:
             print("Disconnected to client: ", conn.getpeername())
-        finally:
+        finally:    
             conn.close()
             self.clients.remove(conn)
 
