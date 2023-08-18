@@ -42,6 +42,8 @@ class Server:
         self.ns = None
         self.nr = None
         self.nw = None
+        self.nr_lock = threading.Lock()
+        self.nw_lock = threading.Lock()
 
     def start(self):
         try:
