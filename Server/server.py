@@ -49,8 +49,8 @@ class Server:
             while True:
                 conn, addr = self.server.accept()
                 print("Connected by", addr)
-                self.clients.append((conn, addr))
-                threading.Thread(target=self.handle_client, args=(conn,addr)).start()
+                self.clients.append(conn)
+                threading.Thread(target=self.handle_client, args=(conn,)).start()
         except socket.error as ex:
             print("Server error:", ex)
         finally:
@@ -63,7 +63,7 @@ class Server:
         self.server.close()
         sys.exit(0)  # Close the socket to unlock the port
         
-    def handle_client(self, conn, addr):
+    def handle_client(self, conn):
         self.clients.append(conn)
         try:
             while True:
@@ -86,15 +86,15 @@ class Server:
                 else:
                     conn.sendall(bytes("Option not found", "utf8"))
                     break
-            self.clients.shutdown(socket.SHUT_RDWR)
-            self.clients.close()
+            conn.shutdown(socket.SHUT_RDWR)
+            conn.close()
         except socket.timeout as timeout:
-            print("Timeout to client: ", addr)
+            print("Timeout to client: ", conn.getpeername())
         except socket.error as error:
-            print("Disconnected to client: ", addr)
+            print("Disconnected to client: ", conn.getpeername())
         finally:
             conn.close()
-            self.clients.remove((conn, addr))
+            self.clients.remove(conn)
 
     def PCRegistryKey(self, conn):
         try:

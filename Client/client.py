@@ -88,7 +88,7 @@ class Client:
         self.root = tk.Tk()
         if res == "APPLICATION":
             data = self.receive_data()
-            self.gui.appScene
+            # gui.GUI.appScene
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         elif res == "SHUTDOWN":
@@ -102,7 +102,7 @@ class Client:
         elif res == "TAKEPIC":
             # Receive image data from the server
             data = self.receive_data()
-            self.gui.ScreenshotScene
+            # gui.GUI.ScreenshotScene
             size = int(self.Cli_Sock.recv(10).decode('utf-8'))
             print(size)
 
@@ -116,12 +116,12 @@ class Client:
             tk.Label(self.root, text=data).pack()            
         elif res == "KEYLOG":
             data = self.receive_data()
-            self.gui.keystrokeScene
+            gui.GUI.keystrokeScene
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         elif res == "PROCESS":
             data = self.receive_data()
-            self.gui.processScene
+            gui.GUI.processScene
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         elif res == "QUIT":
