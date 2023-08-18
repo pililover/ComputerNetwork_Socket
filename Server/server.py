@@ -166,28 +166,28 @@ class Server:
 
     def screenshot(self, conn):
         try:
-            # time.sleep(1)
+            time.sleep(1)
 
-            # # Screenshot
-            # screenshot = pyautogui.screenshot()
+            # Screenshot
+            screenshot = pyautogui.screenshot()
 
-            # resized_screenshot = screenshot.resize((800, 600))
+            resized_screenshot = screenshot.resize((800, 600))
 
-            # img_bytes = io.BytesIO()
-            # resized_screenshot.save(img_bytes, format='PNG')
-            # img_bytes = img_bytes.getvalue()
+            img_bytes = io.BytesIO()
+            resized_screenshot.save(img_bytes, format='PNG')
+            img_bytes = img_bytes.getvalue()
 
 
-            # conn.sendall(img_bytes)  
-            img = ImageGrab.grab(bbox=(10, 10, 500, 500))
-            photo_to_send = img.tobytes()
+            conn.sendall(img_bytes)  
+            # img = ImageGrab.grab(bbox=(10, 10, 500, 500))
+            # photo_to_send = img.tobytes()
 
-            size = len(photo_to_send)
-            print(size)
-            print(photo_to_send)
-            self.clients.send(bytes(str(size), 'utf-8'))
+            # size = len(photo_to_send)
+            # print(size)
+            # print(photo_to_send)
+            # conn.send(bytes(str(size), 'utf-8'))
 
-            self.clients.send(photo_to_send)
+            # conn.send(photo_to_send)
         except Exception as ex:
             conn.sendall(bytes("Error: " + str(ex), "utf8"))
 
