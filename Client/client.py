@@ -88,6 +88,7 @@ class Client:
         self.root = tk.Tk()
         if res == "APPLICATION":
             data = self.receive_data()
+            self.gui.appScene
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         elif res == "SHUTDOWN":
@@ -101,6 +102,7 @@ class Client:
         elif res == "TAKEPIC":
             # Receive image data from the server
             data = self.receive_data()
+            self.gui.ScreenshotScene
             size = int(self.Cli_Sock.recv(10).decode('utf-8'))
             print(size)
 
@@ -114,10 +116,12 @@ class Client:
             tk.Label(self.root, text=data).pack()            
         elif res == "KEYLOG":
             data = self.receive_data()
+            self.gui.keystrokeScene
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         elif res == "PROCESS":
             data = self.receive_data()
+            self.gui.processScene
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         elif res == "QUIT":
@@ -131,7 +135,6 @@ class Client:
         """Send the APPLICATION command to the server and handle the response."""
         self.send_command("APPLICATION")
         self.handle_response("APPLICATION")
-        self.gui.appScene
 
     def shutdown_click(self):
         """Send the SHUTDOWN command to the server and handle the response."""
@@ -169,19 +172,16 @@ class Client:
         """Send the TAKEPIC command to the server and handle the response."""
         self.send_command("TAKEPIC")
         self.handle_response("TAKEPIC")
-        self.gui.ScreenshotScene
 
     def key_lock_click(self):
         """Send the KEYLOG command to the server and handle the response."""
         self.send_command("KEYLOG")
         self.handle_response("KEYLOG")
-        self.gui.keystrokeScene
 
     def process_click(self):
         """Send the PROCESS command to the server and handle the response."""
         self.send_command("PROCESS")
         self.handle_response("PROCESS")
-        self.gui.processScene
 
 
 def blank():

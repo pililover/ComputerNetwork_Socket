@@ -19,7 +19,7 @@ from tkinter import *
 import signal
 from PIL import ImageGrab
 
-HOST = '192.168.1.3'
+# HOST = '192.168.1.3'
 PORT = 4444 #Server Port is listening
 img_bytes = b'\x00\x01\x02...'
 
@@ -32,7 +32,7 @@ EXIT = "exit"
 
 class Server:
     def __init__(self, host):
-        self.host =HOST  # host
+        self.host = ''# host
         print(self.host + " " + str(PORT))
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM = TCP
         self.server.bind((self.host, PORT))
@@ -49,7 +49,8 @@ class Server:
             while True:
                 conn, addr = self.server.accept()
                 print("Connected by", addr)
-                threading.Thread(target=self.handle_client, args=(conn,)).start()
+                self.clients.append((conn, addr))
+                threading.Thread(target=self.handle_client, args=(conn,addr)).start()
         except socket.error as ex:
             print("Server error:", ex)
         finally:
@@ -57,6 +58,9 @@ class Server:
 
     def stop(self):
         self.is_running = False  # Signal the server loop to stop
+        for conn, _ in self.clients:
+            conn.close()
+        self.server.close()
         sys.exit(0)  # Close the socket to unlock the port
         
     def handle_client(self, conn, addr):
@@ -436,7 +440,7 @@ class Server:
                         break
 
     def button1_Click(self):
-        ip = '192.168.1.3'
+        ip = '' #'192.168.1.3'
         port = PORT
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as server:
             server.bind((ip, port))
