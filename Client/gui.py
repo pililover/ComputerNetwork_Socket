@@ -353,8 +353,8 @@ class GUI:
 
     def butTake_click(self):
         try:
-            self.Cli_Sock.sendall(b"TAKEPIC")
-            img_bytes = self.Cli_Sock.recv(4096)
+            self.client.sendall(b"TAKEPIC")
+            img_bytes = self.client.recv(4096)
 
             # Display screenshot in a new tab
             new_tab = ttk.Frame(self.tabs)
@@ -386,8 +386,8 @@ class GUI:
 
     def pic_closing(self):
         if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
-            self.Cli_Sock.sendall(b"EXIT")
-            self.Cli_Sock.close()
+            self.client.sendall(b"EXIT")
+            self.client.close()
 
     def run(self):
         self.root.mainloop()  # Start the main event loop

@@ -89,35 +89,44 @@ class Client:
         if res == "APPLICATION":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.gui.root, text=data).pack()
+            tk.Label(self.root, text=data).pack()
         elif res == "SHUTDOWN":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.gui.root, text=data).pack()
+            tk.Label(self.root, text=data).pack()
         elif res == "REGISTRY":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.gui.root, text=data).pack()
+            tk.Label(self.root, text=data).pack()
         elif res == "TAKEPIC":
+            # Receive image data from the server
             data = self.receive_data()
+            size = int(self.Cli_Sock.recv(10).decode('utf-8'))
+            print(size)
+
+            the_photo = self.Cli_Sock.recv(size)
+
+            print(the_photo)
+            img_to_save = Image.frombytes("RGB", (490, 490), the_photo)
+            img_to_save.save("screenshot.png")
+
             # Display data in a tkinter widget
-            tk.Label(self.gui.root, text=data).pack()
+            tk.Label(self.root, text=data).pack()            
         elif res == "KEYLOG":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.gui.root, text=data).pack()
+            tk.Label(self.root, text=data).pack()
         elif res == "PROCESS":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self.gui.root, text=data).pack()
+            tk.Label(self.root, text=data).pack()
         elif res == "QUIT":
             data = self.receive_data()
             # Display data in a tkinter widget
             tk.Label(self.root, text=data).pack()
         else:
             messagebox.showerror("Error", f"Unknown response: {res}")
-        self.root.mainloop()
-
+            
     def app_click(self):
         """Send the APPLICATION command to the server and handle the response."""
         self.send_command("APPLICATION")
