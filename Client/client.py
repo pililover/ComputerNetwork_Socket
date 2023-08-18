@@ -131,6 +131,7 @@ class Client:
         """Send the APPLICATION command to the server and handle the response."""
         self.send_command("APPLICATION")
         self.handle_response("APPLICATION")
+        self.gui.appScene
 
     def shutdown_click(self):
         """Send the SHUTDOWN command to the server and handle the response."""
@@ -168,16 +169,19 @@ class Client:
         """Send the TAKEPIC command to the server and handle the response."""
         self.send_command("TAKEPIC")
         self.handle_response("TAKEPIC")
+        self.gui.ScreenshotScene
 
     def key_lock_click(self):
         """Send the KEYLOG command to the server and handle the response."""
         self.send_command("KEYLOG")
         self.handle_response("KEYLOG")
+        self.gui.keystrokeScene
 
     def process_click(self):
         """Send the PROCESS command to the server and handle the response."""
         self.send_command("PROCESS")
         self.handle_response("PROCESS")
+        self.gui.processScene
 
 
 def blank():
