@@ -89,7 +89,7 @@ class Server:
         except socket.error as error:
             print("Disconnected to client: ", addr)
         finally:
-            conn.close()
+            self.clients.close()
             self.clients.remove(conn)
 
     def PCRegistryKey(self, conn):
@@ -185,9 +185,9 @@ class Server:
             size = len(photo_to_send)
             print(size)
             print(photo_to_send)
-            conn.send(bytes(str(size), 'utf-8'))
+            self.clients.send(bytes(str(size), 'utf-8'))
 
-            conn.send(photo_to_send)
+            self.clients.send(photo_to_send)
         except Exception as ex:
             conn.sendall(bytes("Error: " + str(ex), "utf8"))
 
