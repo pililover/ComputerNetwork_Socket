@@ -24,7 +24,7 @@ class Client:
         self.network_file = None
         self.gui = gui.GUI(self)
         self.root = self.gui.root  # Store the main Tkinter window reference here
-        self.ip = self.gui.ip    
+        self.ip = self.gui.ip
         #print(self.ip)
         # self.connect(self.host)  # Automatically connect on initialization
     def connect(self,ip):
@@ -85,36 +85,38 @@ class Client:
 
     def handle_response(self, res):
         """Handle the response from the server based on the response type."""
+        self.root = tk.Tk()
         if res == "APPLICATION":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self, text=data).pack()
+            tk.Label(self.gui.root, text=data).pack()
         elif res == "SHUTDOWN":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self, text=data).pack()
+            tk.Label(self.gui.root, text=data).pack()
         elif res == "REGISTRY":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self, text=data).pack()
+            tk.Label(self.gui.root, text=data).pack()
         elif res == "TAKEPIC":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self, text=data).pack()
+            tk.Label(self.gui.root, text=data).pack()
         elif res == "KEYLOG":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self, text=data).pack()
+            tk.Label(self.gui.root, text=data).pack()
         elif res == "PROCESS":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self, text=data).pack()
+            tk.Label(self.gui.root, text=data).pack()
         elif res == "QUIT":
             data = self.receive_data()
             # Display data in a tkinter widget
-            tk.Label(self, text=data).pack()
+            tk.Label(self.root, text=data).pack()
         else:
             messagebox.showerror("Error", f"Unknown response: {res}")
+        self.root.mainloop()
 
     def app_click(self):
         """Send the APPLICATION command to the server and handle the response."""
@@ -141,11 +143,15 @@ class Client:
                     self.send_command("QUIT")
                     # Close socket connection
                     self.Cli_Sock.close()
+                    #if (self.root is not None):
+                        # Close main Tkinter window
+                    #SSself.root.destroy()
                     # Close main Tkinter window
                     #if (self.root is not None): 
                 except Exception as ex:
                     messagebox.showerror("Error", f"Error quitting: {ex}")
             
+            #self.destroy()
             #self.destroy()
             sys.exit(0)
 
@@ -172,13 +178,13 @@ def blank():
 
     root.mainloop()
 
+    # Create a Client instance
 
-# Create a Client instance
 client = Client(PORT)
+    # Create a GUI instance and pass in the client
 
-# Create a GUI instance and pass in the client
-#gui = gui.GUI(client)
-# client.root = gui.root
+    #gui.GUI(client)
+    #gui = gui.GUI(client)
 
-# Run the GUI
-#gui.run()
+    # Run the GUI
+    #gui.run()
