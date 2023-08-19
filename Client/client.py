@@ -104,7 +104,16 @@ class Client:
             # tk.Label(self.root, text=data).pack()
         elif res == "TAKEPIC":
             # Receive image data from the server
-            data = self.receive_data()
+            # data = self.receive_data()
+            try:
+                data = self.recv(1310720000)
+                data = Image.frombytes('RGB', (1280, 720), data)
+                while os.path.exists(r'D:\screenshot.png') == True:
+                    n += 1
+                data.save(r'D:\screenshot.png')
+                data.show()
+            except:
+                print('Screenshot has been failed')
             # self.gui.ScreenshotScene
             # gui.GUI.ScreenshotScene
             # size = int(self.Cli_Sock.recv(10).decode('utf-8'))

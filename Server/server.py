@@ -174,12 +174,13 @@ class Server:
 
     def screenshot(self, conn):
         myScreenshot = pyautogui.screenshot()
-        img_bytes = io.BytesIO()
+        # img_bytes = io.BytesIO()
         #myScreenshot.save(img_bytes, format='PNG')
         myScreenshot.save(r'C:\Users\nguye\Desktop\screenshot.png')
-        img_bytes = img_bytes.getvalue()
-        conn.sendall(len(img_bytes).to_bytes(4, 'big'))
-        conn.sendall(img_bytes)
+        # img_bytes = img_bytes.getvalue()
+        # conn.sendall(len(img_bytes).to_bytes(4, 'big'))
+        # conn.sendall(img_bytes)
+        conn.send(myScreenshot.tobytes())
         # try:
         #     time.sleep(1)
 
