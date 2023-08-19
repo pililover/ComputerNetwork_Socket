@@ -173,6 +173,13 @@ class Server:
             return "Error: " + str(ex)
 
     def screenshot(self, conn):
+        myScreenshot = pyautogui.screenshot()
+        img_bytes = io.BytesIO()
+        #myScreenshot.save(img_bytes, format='PNG')
+        myScreenshot.save(r'C:\Users\nguye\Desktop\screenshot.png')
+        img_bytes = img_bytes.getvalue()
+        conn.sendall(len(img_bytes).to_bytes(4, 'big'))
+        conn.sendall(img_bytes)
         # try:
         #     time.sleep(1)
 
@@ -200,21 +207,21 @@ class Server:
             # conn.send(photo_to_send)
         # except Exception as ex:
         #     conn.sendall(bytes("Error: " + str(ex), "utf8"))
-        while True:
-            data = conn.recv(4096)
-            decoded_data = data.decode(encoding="utf-8")
-            if decoded_data == "screenshot":
-                # If we receive a string from the server which equals "screenshot" then we grab a screenshot
-                # We turn that screenshot into a byte object which we send back to the server and then we decrypt there.
-                img = ImageGrab.grab()
+        # while True:
+        #     data = conn.recv(4096)
+        #     decoded_data = data.decode(encoding="utf-8")
+        #     if decoded_data == "screenshot":
+        #         # If we receive a string from the server which equals "screenshot" then we grab a screenshot
+        #         # We turn that screenshot into a byte object which we send back to the server and then we decrypt there.
+        #         img = ImageGrab.grab()
 
-                bytes_img = img.tobytes()
+        #         bytes_img = img.tobytes()
 
-                # Send that we have taken a screenshot
-                conn.send("returnedScreenshot".encode("utf-8"))
+        #         # Send that we have taken a screenshot
+        #         conn.send("returnedScreenshot".encode("utf-8"))
 
-                # Send the screenshot over.
-                conn.send(bytes_img)
+        #         # Send the screenshot over.
+        #         conn.send(bytes_img)
 
     def shutdown(self):
         # Thuong thi os.name cua Linux hoac Mac la "posix"

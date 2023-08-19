@@ -107,17 +107,18 @@ class Client:
             data = self.receive_data()
             # self.gui.ScreenshotScene
             # gui.GUI.ScreenshotScene
-            size = int(self.Cli_Sock.recv(10).decode('utf-8'))
-            print(size)
+            # size = int(self.Cli_Sock.recv(10).decode('utf-8'))
+            # print(size)
 
-            the_photo = self.Cli_Sock.recv(size)
+            # the_photo = self.Cli_Sock.recv(size)
 
-            print(the_photo)
-            img_to_save = Image.frombytes("RGB", (500, 500), the_photo)
-            img_to_save.save("screen.png")
+            # print(the_photo)
+            # img_to_save = Image.frombytes("RGB", (500, 500), the_photo)
+            # img_to_save.save("screen.png")
 
             # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()            
+            # tk.Label(self.root, text=data).pack()
+                        
         elif res == "KEYLOG":
             data = self.receive_data()
             # self.gui.keystrokeScene
