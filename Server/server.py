@@ -379,19 +379,23 @@ class Server:
     def application(self, conn):
         while True:
             ss = self.receiveSignal(conn)
-            if ss == "XEM" or ss == "view":
-                response = self.view_apps()
-                conn.send(response.encode())
-            elif ss == "KILL":
-                app_name = self.receiveSignal(conn)
-                response = self.kill_app(app_name)
-                conn.send(response.encode())
-            elif ss == "START":
-                app_name = self.receiveSignal(conn)
-                response = self.run_app(app_name)
-                conn.send(response.encode())
-            elif ss == "QUIT":
-                return
+            response = self.handle_request(ss, conn)
+            conn.send(response.encode())
+        # while True:
+        #     ss = self.receiveSignal(conn)
+        #     if ss == "XEM" or ss == "view":
+        #         response = self.view_apps()
+        #         conn.send(response.encode())
+        #     elif ss == "KILL":
+        #         app_name = self.receiveSignal(conn)
+        #         response = self.kill_app(app_name)
+        #         conn.send(response.encode())
+        #     elif ss == "START":
+        #         app_name = self.receiveSignal(conn)
+        #         response = self.run_app(app_name)
+        #         conn.send(response.encode())
+        #     elif ss == "QUIT":
+        #         return
         # while True:
         #     ss = self.receiveSignal(conn)
         #     if ss == "XEM":

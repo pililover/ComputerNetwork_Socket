@@ -11,6 +11,7 @@ from Process import Start, Kill, Process
 import Keylog
 import whois
 import Program
+import subprocess
 
 img_bytes = b'\x00\x01\x02...'
 
@@ -40,6 +41,13 @@ class GUI:
 
         app_window = tk.Tk()
         app_window.title("App")
+
+        def get_running_apps(self):
+            # Get the list of running applications on the server
+            cmd = 'tasklist'
+            proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            output = proc.communicate()[0].decode('utf-8')
+            return output
 
         def kill_click():
             try:
