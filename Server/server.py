@@ -379,7 +379,7 @@ class Server:
     def application(self, conn):
         while True:
             ss = self.receiveSignal(conn)
-            if ss == "XEM":
+            if ss == "XEM" or ss == "view":
                 response = self.view_apps()
                 conn.send(response.encode())
             elif ss == "KILL":
