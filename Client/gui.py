@@ -63,6 +63,18 @@ class GUI:
 
         def view_click():
             try:
+                self.client.send("XEM".encode())
+                response = self.client.recv(1024).decode()
+                # Clear the app_list
+                for item in self.app_list.get_children():
+                    self.app_list.delete(item)
+                # Update the app_list with the received data
+                for line in response.split("\n"):
+                    if line.startswith("Name App"):
+                        continue
+                    columns = line.split()
+                    if len(columns) == 3:
+                        self.app_list.insert("", "end", values=columns)
                 # self.client.send_data("XEM")
                 # soprocess = int(self.client.receive_data())
                 # for _ in range(soprocess):
@@ -73,8 +85,9 @@ class GUI:
                 #         s3 = self.client.receive_data()
                 #         one = (s1, s2, s3)
                 #         self.app_list.insert("", "end", values=one)
-                self.client.send("view".encode())
-                response = self.client.recv(1024).decode()
+                
+                # self.client.send("view".encode())
+                # response = self.client.recv(1024).decode()
                 messagebox.showinfo("Response", response)
             except Exception as ex:
                 messagebox.showerror("Error", str(ex))
@@ -349,26 +362,35 @@ class GUI:
         self.button1.pack(side=tk.TOP)
 
     def butTake_click(self):
-        try:
-            self.client.sendall(b"TAKEPIC")
-            img_bytes = self.client.recv(4096)
+        #try:
+        #self.client.sendall(b"TAKEPIC")
+            # img_bytes = self.client.recv(4096)
 
             # Display screenshot in a new tab
-            new_tab = ttk.Frame(self.tabs)
-            tab_label = tk.Label(new_tab)
-            tab_pil_img = Image.open(io.BytesIO(img_bytes))
-            tab_img = ImageTk.PhotoImage(tab_pil_img)
-            tab_label.config(image=tab_img)
-            tab_label.image = tab_img
-            tab_label.pack()
+            # new_tab = ttk.Frame(self.tabs)
+            # tab_label = tk.Label(new_tab)
+            # tab_pil_img = Image.open(io.BytesIO(img_bytes))
+            # tab_img = ImageTk.PhotoImage(tab_pil_img)
+            # tab_label.config(image=tab_img)
+            # tab_label.image = tab_img
+            # tab_label.pack()
 
-            save_btn = ttk.Button(
-                new_tab, text="Save", command=lambda: self.buttonSAVE_click(img_bytes))
-            save_btn.pack()
+            # save_btn = ttk.Button(
+            #     new_tab, text="Save", command=lambda: self.buttonSAVE_click(img_bytes))
+            # save_btn.pack()
 
-            self.tabs.add(new_tab, text="Screenshot")
-        except Exception as ex:
-            messagebox.showerror("Error", str(ex))
+            # self.tabs.add(new_tab, text="Screenshot")      
+        #except Exception as ex:
+            #messagebox.showerror("Error", str(ex))
+        while True:
+            succesful_screenshot = self.client.recv(4096).decode(encoding="utf-8")
+            if succesful_screenshot == "returnedScreenshot":
+                self.client.settimeout(5.0)
+                screenshot = self.client.recv(4096)
+
+                img = Image.frombytes(data=screenshot, size=(500, 500), mode="RGB")
+                img.show()
+
 
     def buttonSAVE_click(self, img_bytes):
         # Show the save file dialog

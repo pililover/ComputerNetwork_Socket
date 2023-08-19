@@ -173,21 +173,22 @@ class Server:
             return "Error: " + str(ex)
 
     def screenshot(self, conn):
-        try:
-            time.sleep(1)
+        # try:
+        #     time.sleep(1)
 
-            # Screenshot
-            screenshot = pyautogui.screenshot()
+        #     # Screenshot
+        #     screenshot = pyautogui.screenshot()
 
-            resized_screenshot = screenshot.resize((800, 600))
+        #     resized_screenshot = screenshot.resize((800, 600))
 
-            img_bytes = io.BytesIO()
-            resized_screenshot.save(img_bytes, format='PNG')
-            img_bytes = img_bytes.getvalue()
+        #     img_bytes = io.BytesIO()
+        #     resized_screenshot.save(img_bytes, format='PNG')
+        #     img_bytes = img_bytes.getvalue()
 
-            conn.sendall(len(img_bytes).to_bytes(4, 'big'))  # Send screenshot size
-            conn.sendall(img_bytes)  # Send screenshot
-            print('Done sending')
+        #     conn.sendall(len(img_bytes).to_bytes(4, 'big'))  # Send screenshot size
+        #     conn.sendall(img_bytes)  # Send screenshot
+        #     print('Done sending')
+        
             # img = ImageGrab.grab(bbox=(10, 10, 500, 500))
             # photo_to_send = img.tobytes()
 
@@ -197,8 +198,23 @@ class Server:
             # conn.send(bytes(str(size), 'utf-8'))
 
             # conn.send(photo_to_send)
-        except Exception as ex:
-            conn.sendall(bytes("Error: " + str(ex), "utf8"))
+        # except Exception as ex:
+        #     conn.sendall(bytes("Error: " + str(ex), "utf8"))
+        while True:
+            data = conn.recv(4096)
+            decoded_data = data.decode(encoding="utf-8")
+            if decoded_data == "screenshot":
+                # If we receive a string from the server which equals "screenshot" then we grab a screenshot
+                # We turn that screenshot into a byte object which we send back to the server and then we decrypt there.
+                img = ImageGrab.grab()
+
+                bytes_img = img.tobytes()
+
+                # Send that we have taken a screenshot
+                conn.send("returnedScreenshot".encode("utf-8"))
+
+                # Send the screenshot over.
+                conn.send(bytes_img)
 
     def shutdown(self):
         # Thuong thi os.name cua Linux hoac Mac la "posix"
@@ -378,24 +394,21 @@ class Server:
     
     def application(self, conn):
         while True:
-            ss = self.receiveSignal(conn)
-            response = self.handle_request(ss, conn)
-            conn.send(response.encode())
         # while True:
-        #     ss = self.receiveSignal(conn)
-        #     if ss == "XEM" or ss == "view":
-        #         response = self.view_apps()
-        #         conn.send(response.encode())
-        #     elif ss == "KILL":
-        #         app_name = self.receiveSignal(conn)
-        #         response = self.kill_app(app_name)
-        #         conn.send(response.encode())
-        #     elif ss == "START":
-        #         app_name = self.receiveSignal(conn)
-        #         response = self.run_app(app_name)
-        #         conn.send(response.encode())
-        #     elif ss == "QUIT":
-        #         return
+            ss = self.receiveSignal(conn)
+            if ss == "XEM" or ss == "view":
+                response = self.view_apps()
+                conn.send(response.encode())
+            elif ss == "KILL":
+                app_name = self.receiveSignal(conn)
+                response = self.kill_app(app_name)
+                conn.send(response.encode())
+            elif ss == "START":
+                app_name = self.receiveSignal(conn)
+                response = self.run_app(app_name)
+                conn.send(response.encode())
+            elif ss == "QUIT":
+                return
         # while True:
         #     ss = self.receiveSignal(conn)
         #     if ss == "XEM":
