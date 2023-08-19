@@ -334,75 +334,125 @@ class Server:
     def receiveSignal(self, conn):
         try:
             with self.nr_lock:
-                signal_size = int(conn.recv(4).decode("utf-8"))
-                signal_data = conn.recv(signal_size).decode("utf-8")
+                # signal_size = int(conn.recv(4).decode("utf-8"))
+                signal_data = conn.recv(1024).decode("utf-8")
                 return signal_data
         except Exception as e:
             print("Error receiving signal:", str(e))
             return ""
 
+    def run_app(app_name):
+        try:
+            subprocess.Popen(app_name)
+            return f"{app_name} started successfully"
+        except Exception as e:
+            return f"Error starting {app_name}: {e}"
+
+    def kill_app(app_name):
+        try:
+            os.system(f"taskkill /f /im {app_name}")
+            return f"{app_name} killed successfully"
+        except Exception as e:
+            return f"Error killing {app_name}: {e}"
+
+    def view_apps():
+        try:
+            apps = subprocess.check_output('tasklist', shell=True)
+            return apps.decode()
+        except Exception as e:
+            return f"Error viewing apps: {e}"
+    
+    def handle_request(self, request, conn):
+        request = request.strip().split()
+        command = request[0]
+        if command == "run":
+            app_name = request[1]
+            return self.run_app(app_name)
+        elif command == "kill":
+            app_name = request[1]
+            return self.kill_app(app_name)
+        elif command == "view":
+            return self.view_apps()
+        else:
+            return "Invalid command"
+    
     def application(self, conn):
         while True:
             ss = self.receiveSignal(conn)
             if ss == "XEM":
-                pr = psutil.process_iter(
-                    ['pid', 'name', 'num_threads', 'num_handles', 'memory_info'])
-                self.nw.write(str(len(list(pr))) + "\n")
-                for p in pr:
-                    try:
-                        if p.info['name'] and p.info['name'] != "":
-                            self.nw.write("ok\n")
-                            self.nw.write(p.info['name'] + "\n")
-                            self.nw.write(str(p.info['pid']) + "\n")
-                            self.nw.write(str(p.info['num_threads']) + "\n")
-                            self.nw.flush()
-                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                        pass
-
+                response = self.view_apps()
+                conn.send(response.encode())
             elif ss == "KILL":
-                while True:
-                    ss = self.receiveSignal()
-                    if ss == "KILLID":
-                        u = self.receive()
-                        test2 = False
-                        if u:
-                            try:
-                                process = psutil.Process(int(u))
-                                process.terminate()
-                                self.nw.write("Đã diệt chương trình\n")
-                                self.nw.flush()
-                                test2 = True
-                            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                                pass
-
-                        if not test2:
-                            self.nw.write("Không tìm thấy chương trình\n")
-                            self.nw.flush()
-                    elif ss == "QUIT":
-                        break
-
+                app_name = self.receiveSignal(conn)
+                response = self.kill_app(app_name)
+                conn.send(response.encode())
             elif ss == "START":
-                while True:
-                    ss = self.receiveSignal()
-                    if ss == "STARTID":
-                        u = self.receive()
-                        if u:
-                            u += ".exe"
-                            try:
-                                subprocess.Popen(u, shell=True)
-                                self.nw.write("Chương trình đã được bật\n")
-                                self.nw.flush()
-                            except Exception as ex:
-                                self.nw.write("Lỗi\n")
-                                self.nw.flush()
-                        else:
-                            self.nw.write("Lỗi\n")
-                            self.nw.flush()
-                    elif ss == "QUIT":
-                        break
-
+                app_name = self.receiveSignal(conn)
+                response = self.run_app(app_name)
+                conn.send(response.encode())
             elif ss == "QUIT":
                 return
+        # while True:
+        #     ss = self.receiveSignal(conn)
+        #     if ss == "XEM":
+        #         pr = psutil.process_iter(
+        #             ['pid', 'name', 'num_threads', 'num_handles', 'memory_info'])
+        #         self.nw.write(str(len(list(pr))) + "\n")
+        #         for p in pr:
+        #             try:
+        #                 if p.info['name'] and p.info['name'] != "":
+        #                     self.nw.write("ok\n")
+        #                     self.nw.write(p.info['name'] + "\n")
+        #                     self.nw.write(str(p.info['pid']) + "\n")
+        #                     self.nw.write(str(p.info['num_threads']) + "\n")
+        #                     self.nw.flush()
+        #             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+        #                 pass
+
+        #     elif ss == "KILL":
+        #         while True:
+        #             ss = self.receiveSignal()
+        #             if ss == "KILLID":
+        #                 u = self.receiveSignal()
+        #                 test2 = False
+        #                 if u:
+        #                     try:
+        #                         process = psutil.Process(int(u))
+        #                         process.terminate()
+        #                         self.nw.write("Đã diệt chương trình\n")
+        #                         self.nw.flush()
+        #                         test2 = True
+        #                     except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+        #                         pass
+
+        #                 if not test2:
+        #                     self.nw.write("Không tìm thấy chương trình\n")
+        #                     self.nw.flush()
+        #             elif ss == "QUIT":
+        #                 break
+
+        #     elif ss == "START":
+        #         while True:
+        #             ss = self.receiveSignal()
+        #             if ss == "STARTID":
+        #                 u = self.receiveSignal()
+        #                 if u:
+        #                     u += ".exe"
+        #                     try:
+        #                         subprocess.Popen(u, shell=True)
+        #                         self.nw.write("Chương trình đã được bật\n")
+        #                         self.nw.flush()
+        #                     except Exception as ex:
+        #                         self.nw.write("Lỗi\n")
+        #                         self.nw.flush()
+        #                 else:
+        #                     self.nw.write("Lỗi\n")
+        #                     self.nw.flush()
+        #             elif ss == "QUIT":
+        #                 break
+
+        #     elif ss == "QUIT":
+        #         return
 
     def process(conn):
         while True:
