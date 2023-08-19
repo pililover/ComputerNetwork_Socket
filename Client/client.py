@@ -64,7 +64,7 @@ class Client:
             messagebox.showerror("Error", "Not connected to the server")
             return
         try:
-            self.nw.write((data + "\n").encode())
+            self.nw.write(data)
             self.nw.flush()
         except socket.timeout as ex:
             messagebox.showerror("Error", f"Timeout: {ex}")
