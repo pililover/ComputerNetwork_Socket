@@ -18,7 +18,8 @@ img_bytes = b'\x00\x01\x02...'
 
 
 class GUI:
-    def __init__(self, data):
+    def __init__(self, client, data):
+        self.client = client
         if data == "APPLICATION":
             self.appScene()
         elif data == "TAKEPIC":
