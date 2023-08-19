@@ -368,9 +368,10 @@ class GUI:
         self.client.sendall(b"TAKEPIC")
         img_size = int.from_bytes(self.client.recv(4), 'big')
         img_data = self.client.recv(img_size)
-        with open('C:\Users\Admin\Desktop\screenshot.png', 'wb') as f:
+        with open(r'C:\Users\Admin\Desktop\screenshot.png', 'wb') as f:
             f.write(img_data)
-        os.startfile('C:\Users\Admin\Desktop\screenshot.png')
+        os.startfile(r'C:\Users\Admin\Desktop\screenshot.png')
+
 
         #     #Display screenshot in a new tab
         #     new_tab = ttk.Frame(self.tabs)
