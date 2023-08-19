@@ -83,10 +83,14 @@ class GUI:
             except Exception as ex:
                 messagebox.showerror("Error", str(ex))
 
-        # def delete_click():
-        #     if self.app_list.selection():
-        #         selected_item = self.app_list.selection()[0]
-        #         self.app_list.delete(selected_item)
+        def delete_click():
+            if self.app_list.selection():
+                selected_item = self.app_list.selection()[0]
+                app_name = self.app_list.item(selected_item)["values"][0]
+                self.client.send(f"delete {app_name}".encode())
+                response = self.client.recv(1024).decode()
+                messagebox.showinfo("Response", response)
+                self.app_list.delete(selected_item)
 
         # # TreeView for App List
         # self.app_list = ttk.Treeview(app_window, columns=(
@@ -134,6 +138,10 @@ class GUI:
         start_button = tk.Button(
             app_window, text="Start", width=10, command=start_click)
         start_button.grid(row=0, column=2, padx=10, pady=10)
+        
+        delete_button = tk.Button(
+            app_window, text="Delete", width=10, command=delete_click) 
+        delete_button.grid(row=0, column=3, padx=10, pady=10)
 
         app_window.mainloop()
         
