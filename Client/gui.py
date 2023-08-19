@@ -43,40 +43,77 @@ class GUI:
 
         def kill_click():
             try:
-                self.client.send_data("KILL")
-                view_kill = Kill(self.client)
-                view_kill.run()
+                # self.client.send_data("KILL")
+                # view_kill = Kill(self.client)
+                # view_kill.run()
+                app_name = input("Enter the name of the app to kill: ")
+                self.client.send(f"kill {app_name}".encode())
+                response = self.client.recv(1024).decode()
+                messagebox.showinfo("Response", response)
             except Exception as ex:
                 messagebox.showerror("Error", str(ex))
 
         def view_click():
             try:
-                self.client.send_data("XEM")
-                soprocess = int(self.client.receive_data())
-                for _ in range(soprocess):
-                    s1 = self.client.receive_data()
-                    if s1 == "ok":
-                        s1 = self.client.receive_data()
-                        s2 = self.client.receive_data()
-                        s3 = self.client.receive_data()
-                        one = (s1, s2, s3)
-                        self.app_list.insert("", "end", values=one)
+                # self.client.send_data("XEM")
+                # soprocess = int(self.client.receive_data())
+                # for _ in range(soprocess):
+                #     s1 = self.client.receive_data()
+                #     if s1 == "ok":
+                #         s1 = self.client.receive_data()
+                #         s2 = self.client.receive_data()
+                #         s3 = self.client.receive_data()
+                #         one = (s1, s2, s3)
+                #         self.app_list.insert("", "end", values=one)
+                self.client.send("view".encode())
+                response = self.client.recv(1024).decode()
+                messagebox.showinfo("Response", response)
             except Exception as ex:
                 messagebox.showerror("Error", str(ex))
 
         def start_click():
             try:
-                self.client.send_data("START")
-                view_start = Start(self.client)
-                view_start.run()
+            #     self.client.send_data("START")
+            #     view_start = Start(self.client)
+            #     view_start.run()
+                app_name = input("Enter the name of the app to start: ")
+                self.client.send(f"run {app_name}".encode())
+                response = self.client.recv(1024).decode()
+                messagebox.showinfo("Response", response)
             except Exception as ex:
                 messagebox.showerror("Error", str(ex))
 
-        def delete_click():
-            if self.app_list.selection():
-                selected_item = self.app_list.selection()[0]
-                self.app_list.delete(selected_item)
+        # def delete_click():
+        #     if self.app_list.selection():
+        #         selected_item = self.app_list.selection()[0]
+        #         self.app_list.delete(selected_item)
 
+        # # TreeView for App List
+        # self.app_list = ttk.Treeview(app_window, columns=(
+        #     "Name App", "ID App", "Count Thread"), show="headings")
+        # self.app_list.heading("#1", text="Name App")
+        # self.app_list.heading("#2", text="ID App")
+        # self.app_list.heading("#3", text="Count Thread")
+        # self.app_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
+
+        # # Buttons
+        # kill_button = tk.Button(app_window, text="Kill",
+        #                         width=10, command=kill_click)
+        # kill_button.grid(row=0, column=0, padx=10, pady=10)
+
+        # view_button = tk.Button(app_window, text="Xem",
+        #                         width=10, command=view_click)
+        # view_button.grid(row=0, column=1, padx=10, pady=10)
+
+        # start_button = tk.Button(
+        #     app_window, text="Start", width=10, command=start_click)
+        # start_button.grid(row=0, column=2, padx=10, pady=10)
+
+        # delete_button = tk.Button(
+        #     app_window, text="Xóa", width=10, command=delete_click)
+        # delete_button.grid(row=0, column=3, padx=10, pady=10)
+
+        # app_window.mainloop()
         # TreeView for App List
         self.app_list = ttk.Treeview(app_window, columns=(
             "Name App", "ID App", "Count Thread"), show="headings")
@@ -90,7 +127,7 @@ class GUI:
                                 width=10, command=kill_click)
         kill_button.grid(row=0, column=0, padx=10, pady=10)
 
-        view_button = tk.Button(app_window, text="Xem",
+        view_button = tk.Button(app_window, text="View",
                                 width=10, command=view_click)
         view_button.grid(row=0, column=1, padx=10, pady=10)
 
@@ -98,12 +135,8 @@ class GUI:
             app_window, text="Start", width=10, command=start_click)
         start_button.grid(row=0, column=2, padx=10, pady=10)
 
-        delete_button = tk.Button(
-            app_window, text="Xóa", width=10, command=delete_click)
-        delete_button.grid(row=0, column=3, padx=10, pady=10)
-
         app_window.mainloop()
-
+        
     def keystrokeScene(self):
 
         key_window = tk.Tk()
