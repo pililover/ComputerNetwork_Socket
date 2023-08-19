@@ -53,6 +53,8 @@ class Server:
                 print("Connected by", addr)
                 self.clients.append((conn, addr))
                 threading.Thread(target=self.handle_client, args=(conn,addr)).start()
+                self.nr = conn.makefile("rb")
+                self.nw = conn.makefile("wb")
         except socket.error as ex:
             print("Server error:", ex)
         finally:
