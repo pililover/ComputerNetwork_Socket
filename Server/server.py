@@ -90,7 +90,7 @@ class Server:
                 else:
                     conn.sendall(bytes("Option not found", "utf8"))
                     break
-            self.clients.shutdown(socket.SHUT_RDWR)
+            # self.clients.shutdown(socket.SHUT_RDWR)
             self.clients.close()
         except socket.timeout as timeout:
             print("Timeout to client: ", addr)

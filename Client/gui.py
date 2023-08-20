@@ -25,8 +25,8 @@ class GUI:
         self.client = client
         if data == "APPLICATION":
             self.appScene()
-        elif data == "TAKEPIC":
-            self.ScreenshotScene()
+        # elif data == "TAKEPIC":
+        #     self.ScreenshotScene()
         elif data == "REGISTRY":
             self.registryScene()
         elif data == "KEYLOG":
@@ -65,8 +65,8 @@ class GUI:
 
         def view_click():
             try:
-                self.client.Cli_Sock.send("view".encode())
-                response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
+                self.client.send("view".encode())
+                response = self.client.recv(4096).decode()  # Increased buffer size for more data
                 print(response)
                 for line in response.split("\n"):
                     columns = line.split("\t")
@@ -352,18 +352,21 @@ class GUI:
 
         self.root.mainloop()
 
-    def ScreenshotScene(self):
+    #def ScreenshotScene(self):
         # Receive the image size from the server
         #size = int.from_bytes(self.client.recv(4), 'big')
-        print("Sending image")
-        filename = r"screenshot.png"
-        with open(filename, 'wb') as fw:
-            while True:
-                data = self.Cli_Sock.recv(1024)
-                if not data:
-                    break
-                fw.write(data)
-            fw.close()     
+        
+        # print("Sending image")
+        # filename = r"screenshot.png"
+        # with open(filename, 'wb') as fw:
+        #     while True:
+        #         data = self.client.recv(1024)
+        #         if not data:
+        #             break
+        #         fw.write(data)
+        #     fw.close()
+        # print("Done")     
+        
         # # Receive the image data from the server
         # image_data = b''
         # while len(image_data) < size:
