@@ -411,28 +411,28 @@ class Server:
                 # Get the count of processes
                 soprocess = len(list(pr))
                 u = str(soprocess)
-                Program.nw.write(u + "\n")
-                Program.nw.flush()
+                self.nw.write(u + "\n")
+                self.nw.flush()
 
                 # Iterate through processes and retrieve information
                 for p in pr:
                     if p.name() and p.name() != "":
                         u = "ok"
-                    Program.nw.write(u + "\n")
-                    Program.nw.flush()
+                    self.nw.write(u + "\n")
+                    self.nw.flush()
 
                     if u == "ok":
                         u = p.name()
-                        Program.nw.write(u + "\n")
-                        Program.nw.flush()
+                        self.nw.write(u + "\n")
+                        self.nw.flush()
 
                         u = str(p.pid)
-                        Program.nw.write(u + "\n")
-                        Program.nw.flush()
+                        self.nw.write(u + "\n")
+                        self.nw.flush()
 
                         u = str(len(p.threads()))
-                        Program.nw.write(u + "\n")
-                        Program.nw.flush()
+                        self.nw.write(u + "\n")
+                        self.nw.flush()
             elif ss == "KILL":
                 app_name = self.receiveSignal(conn)
                 response = self.kill_app(app_name)

@@ -67,21 +67,21 @@ class GUI:
             try:
                 # Send "XEM" command to the server
                 temp = "XEM"
-                self.nw.write(temp.encode())
-                self.nw.flush()
+                self.client.nw.write(temp)
+                self.client.nw.flush()
 
                 # Receive and display process information
                 s1 = "name application"
                 s2 = "ID"
                 s3 = "count"
-                temp = self.nr.readline().decode().strip()
+                temp = self.client.nr.readline().decode().strip()
                 soprocess = int(temp)
                 for _ in range(soprocess):
-                    s1 = self.nr.readline().decode().strip()
+                    s1 = self.client.nr.readline().decode().strip()
                     if s1 == "ok":
-                        s1 = self.nr.readline().decode().strip()
-                        s2 = self.nr.readline().decode().strip()
-                        s3 = self.nr.readline().decode().strip()
+                        s1 = self.client.nr.readline().decode().strip()
+                        s2 = self.client.nr.readline().decode().strip()
+                        s3 = self.client.nr.readline().decode().strip()
                         self.app_list.insert("", "end", values=(s1, s2, s3))
 
                 # self.client.Cli_Sock.send("XEM".encode())
@@ -112,7 +112,7 @@ class GUI:
                 
                 # self.client.send("view".encode())
                 # response = self.client.recv(1024).decode()
-                messagebox.showinfo("Response", response)
+                messagebox.showinfo("Response", soprocess)
             except Exception as ex:
                 messagebox.showerror("Error", str(ex))
 
