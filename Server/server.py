@@ -177,9 +177,23 @@ class Server:
         img_bytes = io.BytesIO()
         #myScreenshot.save(img_bytes, format='PNG')
         myScreenshot.save(r'C:\Users\nguye\Desktop\screenshot.png')
-        img_bytes = img_bytes.getvalue()
-        conn.sendall(len(img_bytes).to_bytes(4, 'big'))
-        conn.sendall(img_bytes)
+        # img_bytes = img_bytes.getvalue()
+        # conn.sendall(len(img_bytes).to_bytes(4, 'big'))
+        # conn.sendall(img_bytes)
+        while True:
+            with open('C:\Users\nguye\Desktop\screenshot.png', 'ab+') as fa:
+                string = b"Append this to file."
+                fa.write(string)
+                fa.seek(0, 0)
+                print("Sending file.")
+                while True:
+                    data = fa.read(1024)
+                    conn.send(data)
+                    if not data:
+                        break
+                fa.close()
+                print("Sent file.")
+            break
         # try:
         #     time.sleep(1)
 

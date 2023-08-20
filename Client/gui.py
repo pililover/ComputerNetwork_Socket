@@ -354,8 +354,8 @@ class GUI:
 
     def ScreenshotScene(self):
         # Receive the image size from the server
-        size = int.from_bytes(self.client.recv(4), 'big')
-
+        #size = int.from_bytes(self.client.recv(4), 'big')
+        print("Sending image")
         # # Receive the image data from the server
         # image_data = b''
         # while len(image_data) < size:
