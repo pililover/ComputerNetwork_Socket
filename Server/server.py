@@ -180,20 +180,18 @@ class Server:
         # img_bytes = img_bytes.getvalue()
         # conn.sendall(len(img_bytes).to_bytes(4, 'big'))
         # conn.sendall(img_bytes)
+        filename = 'C:\Users\nguye\Desktop\screenshot.png'
         while True:
-            with open('C:\Users\nguye\Desktop\screenshot.png', 'ab+') as fa:
-                string = b"Append this to file."
-                fa.write(string)
-                fa.seek(0, 0)
+            with open(filename, 'rb') as fs:
                 print("Sending file.")
                 while True:
-                    data = fa.read(1024)
+                    data = fs.read(1024)
                     conn.send(data)
                     if not data:
                         break
-                fa.close()
+                fs.close()
                 print("Sent file.")
-            break
+                break
         # try:
         #     time.sleep(1)
 
