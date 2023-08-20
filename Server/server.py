@@ -355,10 +355,16 @@ class Server:
         try:
             processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
             app_list = []
+            seen_pids = set()
 
             def enum_windows_callback(hwnd, _):
                 if win32gui.IsWindowVisible(hwnd):
                     _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                    if pid in seen_pids:  # Check if PID has already been processed
+                        return
+
+                    seen_pids.add(pid)  # Add the PID to the set of seen PIDs
+
                     try:
                         p = psutil.Process(pid)
                         app_list.append(f"{p.name()}\t{pid}\t{p.num_threads()}")
@@ -370,7 +376,7 @@ class Server:
             return '\n'.join(app_list)
         except Exception as e:
             return f"Error viewing apps: {e}"
-    
+
     def handle_request(self, request, conn):
         request = request.strip().split()
         command = request[0]
