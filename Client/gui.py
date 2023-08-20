@@ -34,6 +34,31 @@ class GUI:
         elif data == "PROCESS":
             self.processScene()
             
+    def startScene(self):
+        start_scene = tk.Tk()
+        start_scene.title("Start")
+        text = tk.Label(start_scene, text="Enter Name:")
+        text.grid(row=0, column=0, padx=10, pady=10)
+        inputBox = tk.Entry(start_scene, width=30)
+        inputBox.grid(row=0, column=1,pady=10)
+        
+        def clicked():
+            self.start_app(inputBox.get())
+        
+        connectButt = tk.Button(start_scene, text="Start",
+                                width=10, command=clicked)
+        connectButt.grid(row=0, column=2, padx=10, pady=10)
+        
+        start_scene.mainloop()
+    
+    def start_app(self, app_name):
+        try:
+            self.client.Cli_Sock.send(f"run {app_name}".encode())
+            response = self.client.Cli_Sock.recv(1024).decode()
+            messagebox.showinfo("Response", response)
+        except Exception as ex:
+            messagebox.showerror("Error", str(ex))
+        
     
     def processScene(self):
         process_window = Process(self.client)
@@ -44,12 +69,12 @@ class GUI:
         app_window = tk.Tk()
         app_window.title("App")
 
-        def get_running_apps(self):
-            # Get the list of running applications on the server
-            cmd = 'tasklist'
-            proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-            output = proc.communicate()[0].decode('utf-8')
-            return output
+        # def get_running_apps(self):
+        #     # Get the list of running applications on the server
+        #     cmd = 'tasklist'
+        #     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        #     output = proc.communicate()[0].decode('utf-8')
+        #     return output
 
         def kill_click():
             try:
@@ -102,16 +127,11 @@ class GUI:
                 messagebox.showerror("Error", str(ex))
 
         def start_click():
-            try:
             #     self.client.send_data("START")
             #     view_start = Start(self.client)
             #     view_start.run()
-                app_name = input("Enter the name of the app to start: ")
-                self.client.send(f"run {app_name}".encode())
-                response = self.client.recv(1024).decode()
-                messagebox.showinfo("Response", response)
-            except Exception as ex:
-                messagebox.showerror("Error", str(ex))
+                self.startScene()
+                
 
         def delete_click():
             if self.app_list.selection():
