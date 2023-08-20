@@ -379,7 +379,7 @@ class Server:
         except Exception as e:
             return f"Error killing {app_name}: {e}"
 
-    def view_apps():
+    def view_apps(self):
         try:
             apps = subprocess.check_output('tasklist', shell=True)
             return apps.decode()
@@ -405,8 +405,34 @@ class Server:
         # while True:
             ss = self.receiveSignal(conn)
             if ss == "XEM" or ss == "view":
-                response = self.view_apps()
-                conn.send(response.encode())
+                u = ""
+                pr = psutil.process_iter()
+
+                # Get the count of processes
+                soprocess = len(list(pr))
+                u = str(soprocess)
+                Program.nw.write(u + "\n")
+                Program.nw.flush()
+
+                # Iterate through processes and retrieve information
+                for p in pr:
+                    if p.name() and p.name() != "":
+                        u = "ok"
+                    Program.nw.write(u + "\n")
+                    Program.nw.flush()
+
+                    if u == "ok":
+                        u = p.name()
+                        Program.nw.write(u + "\n")
+                        Program.nw.flush()
+
+                        u = str(p.pid)
+                        Program.nw.write(u + "\n")
+                        Program.nw.flush()
+
+                        u = str(len(p.threads()))
+                        Program.nw.write(u + "\n")
+                        Program.nw.flush()
             elif ss == "KILL":
                 app_name = self.receiveSignal(conn)
                 response = self.kill_app(app_name)
