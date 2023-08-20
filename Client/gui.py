@@ -65,18 +65,13 @@ class GUI:
 
         def view_click():
             try:
-                self.client.Cli_Sock.send("XEM".encode())
+                self.client.Cli_Sock.send("view".encode())
                 response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
-
-                # Clear the app_list
-                for item in self.app_list.get_children():
-                    self.app_list.delete(item)
-
-                # Update the app_list with the received data
+                print(response)
                 for line in response.split("\n"):
-                    columns = line.split()
-                if len(columns) == 3:  # Expecting three columns: Image name, PID, Thread count
-                    self.app_list.insert("", "end", values=columns)
+                    columns = line.split("\t")
+                    if len(columns) == 3:  # Expecting three columns: Image name, PID, Thread count
+                        self.app_list.insert("", "end", values=columns)
                 # self.client.Cli_Sock.send("XEM".encode())
                 # response = self.client.Cli_Sock.recv(1024).decode()
                 # # Clear the app_list

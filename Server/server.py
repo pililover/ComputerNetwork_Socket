@@ -380,17 +380,14 @@ class Server:
 
     def view_apps(self):
         try:
-            apps = subprocess.check_output('tasklist', shell=True).decode()
-            app_lines = apps.strip().split('\n')[1:]  # Remove header and split by lines
-            app_info_list = []
-
-            for line in app_lines:
-                columns = line.split()
-                if len(columns) >= 5:  # Check if there are enough columns
-                    image_name = columns[0]
-                    pid = columns[1]
-                    thread_count = columns[4]
-                    app_info_list.append(f"{image_name} {pid} {thread_count}")
+            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
+            process_list = []
+            for process in processes:
+                pid = process.info['pid']
+                name = process.info['name']
+                num_threads = process.info['num_threads']
+                process_list.append(f"{name}\t{pid}\t{num_threads}")
+            return '\n'.join(process_list)
 
             return '\n'.join(app_info_list)
         except Exception as e:
