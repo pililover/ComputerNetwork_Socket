@@ -192,6 +192,7 @@ class Server:
                 fs.close()
                 print("Sent file.")
                 break
+        print("Done sending")
         # try:
         #     time.sleep(1)
 
