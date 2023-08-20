@@ -411,7 +411,7 @@ class Server:
                 # Get the count of processes
                 soprocess = len(list(pr))
                 u = str(soprocess)
-                self.nw.write(u + "\n")
+                self.nw.write((u + "\n").encode())
                 self.nw.flush()
 
                 # Iterate through processes and retrieve information
