@@ -65,33 +65,11 @@ class GUI:
 
         def view_click():
             try:
-                # Send "XEM" command to the server
-                temp = "XEM"
-                self.client.nw.write(temp)
-                self.client.nw.flush()
-
-                # Receive and display process information
-                s1 = "name application"
-                s2 = "ID"
-                s3 = "count"
-                temp = self.client.nr.readline().decode().strip()
-                soprocess = int(temp)
-                for _ in range(soprocess):
-                    s1 = self.client.nr.readline().decode().strip()
-                    if s1 == "ok":
-                        s1 = self.client.nr.readline().decode().strip()
-                        s2 = self.client.nr.readline().decode().strip()
-                        s3 = self.client.nr.readline().decode().strip()
-                        self.app_list.insert("", "end", values=(s1, s2, s3))
-
                 # self.client.Cli_Sock.send("XEM".encode())
                 # response = self.client.Cli_Sock.recv(1024).decode()
-                # # Clear the app_list
+                # Clear the app_list
                 # for item in self.app_list.get_children():
                 #     self.app_list.delete(item)
-                # while (response):
-                    
-
                 # # Update the app_list with the received data
                 # for line in response.split("\n"):
                 #     if line.startswith("Name App"):
@@ -99,16 +77,16 @@ class GUI:
                 #     columns = line.split()
                 #     if len(columns) == 3:
                 #         self.app_list.insert("", "end", values=columns)
-                # self.client.send_data("XEM")
-                # soprocess = int(self.client.receive_data())
-                # for _ in range(soprocess):
-                #     s1 = self.client.receive_data()
-                #     if s1 == "ok":
-                #         s1 = self.client.receive_data()
-                #         s2 = self.client.receive_data()
-                #         s3 = self.client.receive_data()
-                #         one = (s1, s2, s3)
-                #         self.app_list.insert("", "end", values=one)
+                self.client.send_data("XEM")
+                soprocess = int(self.client.receive_data())
+                for _ in range(soprocess):
+                    s1 = self.client.receive_data()
+                    if s1 == "ok":
+                        s1 = self.client.receive_data()
+                        s2 = self.client.receive_data()
+                        s3 = self.client.receive_data()
+                        one = (s1, s2, s3)
+                        self.app_list.insert("", "end", values=one)
                 
                 # self.client.send("view".encode())
                 # response = self.client.recv(1024).decode()

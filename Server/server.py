@@ -174,13 +174,12 @@ class Server:
 
     def screenshot(self, conn):
         myScreenshot = pyautogui.screenshot()
-        # img_bytes = io.BytesIO()
+        img_bytes = io.BytesIO()
         #myScreenshot.save(img_bytes, format='PNG')
         myScreenshot.save(r'C:\Users\nguye\Desktop\screenshot.png')
-        # img_bytes = img_bytes.getvalue()
-        # conn.sendall(len(img_bytes).to_bytes(4, 'big'))
-        # conn.sendall(img_bytes)
-        conn.send(myScreenshot.tobytes())
+        img_bytes = img_bytes.getvalue()
+        conn.sendall(len(img_bytes).to_bytes(4, 'big'))
+        conn.sendall(img_bytes)
         # try:
         #     time.sleep(1)
 
@@ -405,34 +404,8 @@ class Server:
         # while True:
             ss = self.receiveSignal(conn)
             if ss == "XEM" or ss == "view":
-                u = ""
-                pr = psutil.process_iter()
-
-                # Get the count of processes
-                soprocess = len(list(pr))
-                u = str(soprocess)
-                self.nw.write((u + "\n").encode())
-                self.nw.flush()
-
-                # Iterate through processes and retrieve information
-                for p in pr:
-                    if p.name() and p.name() != "":
-                        u = "ok"
-                    self.nw.write((u + "\n").encode())
-                    self.nw.flush()
-
-                    if u == "ok":
-                        u = p.name()
-                        self.nw.write((u + "\n").encode())
-                        self.nw.flush()
-
-                        u = str(p.pid)
-                        self.nw.write((u + "\n").encode())
-                        self.nw.flush()
-
-                        u = str(len(p.threads()))
-                        self.nw.write((u + "\n").encode())
-                        self.nw.flush()
+                response = self.view_apps()
+                conn.send(response.encode())
             elif ss == "KILL":
                 app_name = self.receiveSignal(conn)
                 response = self.kill_app(app_name)
