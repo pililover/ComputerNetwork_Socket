@@ -106,8 +106,11 @@ class Client:
             print("Sending image")
             while True:
                 filename = r"screenshot.png"
+                #print(filename)
                 with open(filename, 'wb') as fw:
                     while True:
+                        print("Receiving data")
+                        self.Cli_Sock.settimeout(5)  # Set a timeout of 5 seconds
                         data = self.Cli_Sock.recv(1024)
                         if not data:
                             break
@@ -115,9 +118,6 @@ class Client:
                     fw.close()
                 break 
             print("Done")
-            #Shơw image
-            img = Image.open(filename)  
-            img.show()  
             # Receive image data from the server
             # data = self.receive_data()
             # print(data)
