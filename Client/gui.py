@@ -65,20 +65,27 @@ class GUI:
 
         def view_click():
             try:
-                self.client.send("XEM".encode())
-                response = self.client.recv(1024).decode()
-                # Clear the app_list
-                for item in self.app_list.get_children():
-                    self.app_list.delete(item)
-                # Update the app_list with the received data
+                self.client.Cli_Sock.send("view".encode())
+                response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
+                print(response)
                 for line in response.split("\n"):
-                    if line.startswith("Name App"):
-                        continue
-                    columns = line.split()
-                    if len(columns) == 3:
+                    columns = line.split("\t")
+                    if len(columns) == 3:  # Expecting three columns: Image name, PID, Thread count
                         self.app_list.insert("", "end", values=columns)
+                # self.client.Cli_Sock.send("XEM".encode())
+                # response = self.client.Cli_Sock.recv(1024).decode()
+                # # Clear the app_list
+                # for item in self.app_list.get_children():
+                #     self.app_list.delete(item)
+                # # Update the app_list with the received data
+                # for line in response.split("\n"):
+                #     if line.startswith("Name App"):
+                #         continue
+                #     columns = line.split()
+                #     if len(columns) == 3:
+                #         self.app_list.insert("", "end", values=columns)
                 # self.client.send_data("XEM")
-                # soprocess = int(self.client.receive_data())
+                # soprocess = int(self.client.receive_data().strip())
                 # for _ in range(soprocess):
                 #     s1 = self.client.receive_data()
                 #     if s1 == "ok":
@@ -346,31 +353,50 @@ class GUI:
         self.root.mainloop()
 
     def ScreenshotScene(self):
-        self.root = tk.Tk()
-        self.root.title("Pic")
+        # Receive the image size from the server
+        size = int.from_bytes(self.client.recv(4), 'big')
 
-        # Create the picture label
-        self.picture = tk.Label(self.root)
-        self.picture.pack(side=tk.LEFT)
+        # # Receive the image data from the server
+        # image_data = b''
+        # while len(image_data) < size:
+        #     data = self.client.recv(1024)
+        #     if not data:
+        #         break
+        #     image_data += data
 
-        # Create the Take button
-        self.butTake = tk.Button(
-            self.root, text="Screenshot", command=self.butTake_click)
-        self.butTake.pack(side=tk.TOP)
+        # # Save the image to a file
+        # image_path = 'screenshot.jpg'
+        # with open(image_path, 'wb') as f:
+        #     f.write(image_data)
 
-        # Create the Save button
-        self.button1 = tk.Button(
-            self.root, text="SAVE", command=self.buttonSAVE_click)
-        self.button1.pack(side=tk.TOP)
+        # # Open the image using the default image viewer
+        # os.startfile(image_path)
+        # self.root = tk.Tk()
+        # self.root.title("Pic")
 
-    def butTake_click(self):
+        # # Create the picture label
+        # self.picture = tk.Label(self.root)
+        # self.picture.pack(side=tk.LEFT)
+
+        # # Create the Take button
+        # # self.butTake = tk.Button(
+        # #     self.root, text="Screenshot", command=self.butTake_click)
+        # # self.butTake.pack(side=tk.TOP)
+
+        # # Create the Save button
+        # self.button1 = tk.Button(
+        #     self.root, text="SAVE", command=self.buttonSAVE_click)
+        # self.button1.pack(side=tk.TOP)
+
+    #def butTake_click(self):
         #try:
-        self.client.sendall(b"TAKEPIC")
-        img_size = int.from_bytes(self.client.recv(4), 'big')
-        img_data = self.client.recv(img_size)
-        with open(r'C:\Users\Admin\Desktop\screenshot.png', 'wb') as f:
-            f.write(img_data)
-        os.startfile(r'C:\Users\Admin\Desktop\screenshot.png')
+        #self.client.sendall(b"TAKEPIC")
+        # img_size = int.from_bytes(self.recv(4), 'big')
+        # img_data = self.recv(img_size)
+        # with open(r'D:\screenshot.png', 'wb') as f:
+        #     f.write(img_data)
+        #     f.close()
+        # os.startfile(r'D:\screenshot.png')
 
 
         #     #Display screenshot in a new tab
@@ -404,21 +430,21 @@ class GUI:
         #         img = Image.frombytes(data=screenshot, size=(500, 500), mode="RGB")
         #         img.show()
 
-    def buttonSAVE_click(self, img_bytes):
-        # Show the save file dialog
-        filename = filedialog.asksaveasfilename(
-            title="Save Screenshot",
-            filetypes=(("PNG Files", "*.png"), ("All Files", "*.*")),
-            defaultextension=".png"
-        )
-        if filename:
-            with open(filename, 'wb') as f:
-                f.write(img_bytes)
+    # def buttonSAVE_click(self, img_bytes):
+    #     # Show the save file dialog
+    #     filename = filedialog.asksaveasfilename(
+    #         title="Save Screenshot",
+    #         filetypes=(("PNG Files", "*.png"), ("All Files", "*.*")),
+    #         defaultextension=".png"
+    #     )
+    #     if filename:
+    #         with open(filename, 'wb') as f:
+    #             f.write(img_bytes)
 
-    def pic_closing(self):
-        if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
-            self.client.sendall(b"EXIT")
-            self.client.close()
+    # def pic_closing(self):
+    #     if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
+    #         self.client.sendall(b"EXIT")
+    #         self.client.close()
 
     def run(self):
         self.root.mainloop()  # Start the main event loop

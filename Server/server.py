@@ -378,10 +378,18 @@ class Server:
         except Exception as e:
             return f"Error killing {app_name}: {e}"
 
-    def view_apps():
+    def view_apps(self):
         try:
-            apps = subprocess.check_output('tasklist', shell=True)
-            return apps.decode()
+            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
+            process_list = []
+            for process in processes:
+                pid = process.info['pid']
+                name = process.info['name']
+                num_threads = process.info['num_threads']
+                process_list.append(f"{name}\t{pid}\t{num_threads}")
+            return '\n'.join(process_list)
+
+            return '\n'.join(app_info_list)
         except Exception as e:
             return f"Error viewing apps: {e}"
     
