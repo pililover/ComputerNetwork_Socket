@@ -91,7 +91,7 @@ class Server:
                     conn.sendall(bytes("Option not found", "utf8"))
                     break
             # self.clients.shutdown(socket.SHUT_RDWR)
-            self.clients.close()
+            #self.clients.close()
         except socket.timeout as timeout:
             print("Timeout to client: ", addr)
         except socket.error as error:
@@ -193,49 +193,7 @@ class Server:
                 print("Sent file.")
                 break
         print("Done sending")
-        # try:
-        #     time.sleep(1)
-
-        #     # Screenshot
-        #     screenshot = pyautogui.screenshot()
-
-        #     resized_screenshot = screenshot.resize((800, 600))
-
-        #     img_bytes = io.BytesIO()
-        #     resized_screenshot.save(img_bytes, format='PNG')
-        #     img_bytes = img_bytes.getvalue()
-
-        #     conn.sendall(len(img_bytes).to_bytes(4, 'big'))  # Send screenshot size
-        #     conn.sendall(img_bytes)  # Send screenshot
-        #     print('Done sending')
         
-            # img = ImageGrab.grab(bbox=(10, 10, 500, 500))
-            # photo_to_send = img.tobytes()
-
-            # size = len(photo_to_send)
-            # print(size)
-            # print(photo_to_send)
-            # conn.send(bytes(str(size), 'utf-8'))
-
-            # conn.send(photo_to_send)
-        # except Exception as ex:
-        #     conn.sendall(bytes("Error: " + str(ex), "utf8"))
-        # while True:
-        #     data = conn.recv(4096)
-        #     decoded_data = data.decode(encoding="utf-8")
-        #     if decoded_data == "screenshot":
-        #         # If we receive a string from the server which equals "screenshot" then we grab a screenshot
-        #         # We turn that screenshot into a byte object which we send back to the server and then we decrypt there.
-        #         img = ImageGrab.grab()
-
-        #         bytes_img = img.tobytes()
-
-        #         # Send that we have taken a screenshot
-        #         conn.send("returnedScreenshot".encode("utf-8"))
-
-        #         # Send the screenshot over.
-        #         conn.send(bytes_img)
-
     def shutdown(self):
         # Thuong thi os.name cua Linux hoac Mac la "posix"
         system_name = platform.system()
@@ -402,7 +360,7 @@ class Server:
                 process_list.append(f"{name}\t{pid}\t{num_threads}")
             return '\n'.join(process_list)
 
-            return '\n'.join(app_info_list)
+            #return '\n'.join(app_info_list)
         except Exception as e:
             return f"Error viewing apps: {e}"
     
@@ -604,6 +562,7 @@ class ServerGUI(tk.Frame):
     def shutdown_server(self):
         # Implement your server shutdown logic here
         print("Shutting down the server...")
+        self.server.stop()  # Call the server's stop method
         # For example, you could call your Server's shutdown method
 
 def main():
