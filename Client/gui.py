@@ -65,9 +65,21 @@ class GUI:
 
         def view_click():
             try:
+                self.client.Cli_Sock.send("XEM".encode())
+                response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
+
+                # Clear the app_list
+                for item in self.app_list.get_children():
+                    self.app_list.delete(item)
+
+                # Update the app_list with the received data
+                for line in response.split("\n"):
+                    columns = line.split()
+                if len(columns) == 3:  # Expecting three columns: Image name, PID, Thread count
+                    self.app_list.insert("", "end", values=columns)
                 # self.client.Cli_Sock.send("XEM".encode())
                 # response = self.client.Cli_Sock.recv(1024).decode()
-                # Clear the app_list
+                # # Clear the app_list
                 # for item in self.app_list.get_children():
                 #     self.app_list.delete(item)
                 # # Update the app_list with the received data
@@ -77,20 +89,20 @@ class GUI:
                 #     columns = line.split()
                 #     if len(columns) == 3:
                 #         self.app_list.insert("", "end", values=columns)
-                self.client.send_data("XEM")
-                soprocess = int(self.client.receive_data())
-                for _ in range(soprocess):
-                    s1 = self.client.receive_data()
-                    if s1 == "ok":
-                        s1 = self.client.receive_data()
-                        s2 = self.client.receive_data()
-                        s3 = self.client.receive_data()
-                        one = (s1, s2, s3)
-                        self.app_list.insert("", "end", values=one)
+                # self.client.send_data("XEM")
+                # soprocess = int(self.client.receive_data().strip())
+                # for _ in range(soprocess):
+                #     s1 = self.client.receive_data()
+                #     if s1 == "ok":
+                #         s1 = self.client.receive_data()
+                #         s2 = self.client.receive_data()
+                #         s3 = self.client.receive_data()
+                #         one = (s1, s2, s3)
+                #         self.app_list.insert("", "end", values=one)
                 
                 # self.client.send("view".encode())
                 # response = self.client.recv(1024).decode()
-                messagebox.showinfo("Response", soprocess)
+                messagebox.showinfo("Response", response)
             except Exception as ex:
                 messagebox.showerror("Error", str(ex))
 

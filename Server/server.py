@@ -380,8 +380,19 @@ class Server:
 
     def view_apps(self):
         try:
-            apps = subprocess.check_output('tasklist', shell=True)
-            return apps.decode()
+            apps = subprocess.check_output('tasklist', shell=True).decode()
+            app_lines = apps.strip().split('\n')[1:]  # Remove header and split by lines
+            app_info_list = []
+
+            for line in app_lines:
+                columns = line.split()
+                if len(columns) >= 5:  # Check if there are enough columns
+                    image_name = columns[0]
+                    pid = columns[1]
+                    thread_count = columns[4]
+                    app_info_list.append(f"{image_name} {pid} {thread_count}")
+
+            return '\n'.join(app_info_list)
         except Exception as e:
             return f"Error viewing apps: {e}"
     
