@@ -180,7 +180,7 @@ class Server:
         # img_bytes = img_bytes.getvalue()
         # conn.sendall(len(img_bytes).to_bytes(4, 'big'))
         # conn.sendall(img_bytes)
-        filename = 'C:\Users\nguye\Desktop\screenshot.png'
+        filename = r'C:\Users\nguye\Desktop\screenshot.png'
         while True:
             with open(filename, 'rb') as fs:
                 print("Sending file.")
