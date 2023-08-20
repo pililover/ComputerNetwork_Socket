@@ -65,8 +65,8 @@ class GUI:
 
         def view_click():
             try:
-                self.client.send("view".encode())
-                response = self.client.recv(4096).decode()  # Increased buffer size for more data
+                self.client.Cli_Sock.send("view".encode())
+                response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
                 print(response)
                 for line in response.split("\n"):
                     columns = line.split("\t")

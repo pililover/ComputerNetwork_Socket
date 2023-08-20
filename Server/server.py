@@ -351,16 +351,16 @@ class Server:
 
     def view_apps(self):
         try:
-            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
-            process_list = []
+            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads', 'num_handles'])
+            app_list = []
             for process in processes:
                 pid = process.info['pid']
                 name = process.info['name']
                 num_threads = process.info['num_threads']
-                main_window_title = process.info.get('name', '')
-                if main_window_title:
-                    process_list.append(f"{name}\t{pid}\t{num_threads}")
-            return '\n'.join(process_list)
+                num_handles = process.info['num_handles']
+                if process.info['num_handles'] > 0:
+                    app_list.append(f"{name}\t{pid}\t{num_threads}")
+            return '\n'.join(app_list)
 
             #return '\n'.join(app_info_list)
         except Exception as e:
