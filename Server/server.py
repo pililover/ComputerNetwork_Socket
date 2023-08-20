@@ -357,7 +357,9 @@ class Server:
                 pid = process.info['pid']
                 name = process.info['name']
                 num_threads = process.info['num_threads']
-                process_list.append(f"{name}\t{pid}\t{num_threads}")
+                main_window_title = process.info.get('name', '')
+                if main_window_title:
+                    process_list.append(f"{name}\t{pid}\t{num_threads}")
             return '\n'.join(process_list)
 
             #return '\n'.join(app_info_list)
