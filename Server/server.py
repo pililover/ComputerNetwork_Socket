@@ -418,20 +418,20 @@ class Server:
                 for p in pr:
                     if p.name() and p.name() != "":
                         u = "ok"
-                    self.nw.write(u + "\n")
+                    self.nw.write((u + "\n").encode())
                     self.nw.flush()
 
                     if u == "ok":
                         u = p.name()
-                        self.nw.write(u + "\n")
+                        self.nw.write((u + "\n").encode())
                         self.nw.flush()
 
                         u = str(p.pid)
-                        self.nw.write(u + "\n")
+                        self.nw.write((u + "\n").encode())
                         self.nw.flush()
 
                         u = str(len(p.threads()))
-                        self.nw.write(u + "\n")
+                        self.nw.write((u + "\n").encode())
                         self.nw.flush()
             elif ss == "KILL":
                 app_name = self.receiveSignal(conn)
