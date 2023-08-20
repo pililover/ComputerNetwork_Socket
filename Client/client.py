@@ -104,7 +104,7 @@ class Client:
             # tk.Label(self.root, text=data).pack()
         elif res == "TAKEPIC":
             # Receive image data from the server
-            #data = self.receive_data()
+            data = self.receive_data()
             # self.gui.ScreenshotScene
             # gui.GUI.ScreenshotScene
             # size = int(self.Cli_Sock.recv(10).decode('utf-8'))
