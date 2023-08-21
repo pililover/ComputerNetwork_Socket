@@ -177,13 +177,13 @@ class Server:
 
     def screenshot(self, conn):
         myScreenshot = pyautogui.screenshot()
-        img_bytes = io.BytesIO()
+        #img_bytes = io.BytesIO()
         #myScreenshot.save(img_bytes, format='PNG')
-        myScreenshot.save(r'C:\Users\nguye\Desktop\screenshot.png')
+        myScreenshot.save(r'screenshot.png')
         # img_bytes = img_bytes.getvalue()
         # conn.sendall(len(img_bytes).to_bytes(4, 'big'))
         # conn.sendall(img_bytes)
-        filename = r'C:\Users\nguye\Desktop\screenshot.png'
+        filename = r'screenshot.png'
         while True:
             with open(filename, 'rb') as fs:
                 print("Sending file.")
@@ -417,7 +417,7 @@ class Server:
                 app_name = self.receiveSignal(conn)
                 response = self.run_app(app_name)
                 conn.send(response.encode())
-            elif ss[0] == "QUIT":
+            elif cm == "QUIT":
                 return
         # while True:
         #     ss = self.receiveSignal(conn)
