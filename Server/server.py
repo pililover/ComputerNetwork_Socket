@@ -345,8 +345,7 @@ class Server:
         except Exception as e:
             return f"Error starting {app_name}: {e}"
 
-    def kill_app(app_name):
-
+    def kill_app(self, app_name):
         try:        
             subprocess.call(["taskkill","/F","/IM",app_name])
             # os.system(f"taskkill /f /im {app_name}")
