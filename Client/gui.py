@@ -81,8 +81,7 @@ class GUI:
                 app_name = entry.get()
                 top.destroy()
                 try:
-                    self.client.Cli_Sock.send("kill".encode())
-                    self.client.Cli_Sock.send(app_name.encode())
+                    self.client.Cli_Sock.send(f"kill {app_name}".encode())
                     response = self.client.Cli_Sock.recv(1024).decode()
                     messagebox.showinfo("Response", response)
                 except Exception as ex:
