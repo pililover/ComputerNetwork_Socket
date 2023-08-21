@@ -118,7 +118,7 @@ class Server:
             conn.sendall(bytes(res, "utf8"))
         except Exception as ex:
             conn.sendall(bytes("Error: " + str(ex), "utf8"))
-
+    
     def PCRegistryValue(link):
         value = None
         if "\\" in link:
@@ -284,7 +284,7 @@ class Server:
                     elif option == "Delete key":
                         res = self.PCRemoveKey(base_key, link2)
                     elif option == "Get value":
-                        res = self.PCGetValue(base_key, link2, value_name)
+                        res = self.PCRegistryValue(base_key, link2, value_name)
                     elif option == "Set value":
                         res = self.PCSetValue(
                             base_key, link2, value_name, value, value_type)
