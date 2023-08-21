@@ -345,13 +345,14 @@ class Server:
         except Exception as e:
             return f"Error starting {app_name}: {e}"
 
-    def kill_app(self, app_name):
+    def kill_app(self, pid):
         try:        
-            subprocess.call(["taskkill","/F","/IM",app_name])
+            # subprocess.call(["taskkill","/F","/IM",app_name])
+            subprocess.call(["taskkill","/F","/PID",str(pid)])
             # os.system(f"taskkill /f /im {app_name}")
-            return f"{app_name} killed successfully"
+            return f"{pid} killed successfully"
         except Exception as e:
-            return f"Error killing {app_name}: {e}"
+            return f"Error killing {pid}: {e}"
 
     def view_apps(self):
         try:
@@ -408,9 +409,9 @@ class Server:
                 conn.send(response.encode())
             elif cm == "KILL" or cm == "kill":
                 #app_name = self.receiveSignal(conn)
-                app_name = s1[1]
-                print(app_name)
-                response = self.kill_app(app_name)
+                pid = s1[1]
+                print(pid)
+                response = self.kill_app(pid)
                 conn.send(response.encode())
             elif cm == "START":
                 app_name = self.receiveSignal(conn)

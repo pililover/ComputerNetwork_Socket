@@ -78,10 +78,10 @@ class GUI:
 
         def kill_click():
             def submit():
-                app_name = entry.get()
+                pid = entry.get()
                 top.destroy()
                 try:
-                    self.client.Cli_Sock.send(f"kill {app_name}".encode())
+                    self.client.Cli_Sock.send(f"kill {pid}".encode())
                     response = self.client.Cli_Sock.recv(1024).decode()
                     messagebox.showinfo("Response", response)
                 except Exception as ex:
@@ -89,7 +89,7 @@ class GUI:
 
             top = tk.Toplevel()
             top.title("Kill App")
-            label = tk.Label(top, text="Enter the name of the app to kill:")
+            label = tk.Label(top, text="Enter the PID of the app to kill:")
             label.pack()
             entry = tk.Entry(top)
             entry.pack()
