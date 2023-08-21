@@ -346,8 +346,10 @@ class Server:
             return f"Error starting {app_name}: {e}"
 
     def kill_app(app_name):
-        try:
-            os.system(f"taskkill /f /im {app_name}")
+
+        try:        
+            subprocess.call(["taskkill","/F","/IM",app_name])
+            # os.system(f"taskkill /f /im {app_name}")
             return f"{app_name} killed successfully"
         except Exception as e:
             return f"Error killing {app_name}: {e}"
