@@ -399,7 +399,9 @@ class Server:
         while True:
         # while True:
             ss = self.receiveSignal(conn)
+            print(ss)
             ss = ss.strip().split()
+            print(ss[1])
             #if ss == "XEM" or ss == "view":
             if ss[0] == "XEM" or ss[0] == "view":
                 response = self.view_apps()
