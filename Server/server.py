@@ -403,6 +403,7 @@ class Server:
                 conn.send(response.encode())
             elif ss == "KILL" or ss == "kill":
                 #app_name = self.receiveSignal(conn)
+                app_name = conn.recv(1024).decode("utf8")
                 response = self.kill_app(app_name)
                 conn.send(response.encode())
             elif ss == "START":

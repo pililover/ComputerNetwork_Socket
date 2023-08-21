@@ -81,7 +81,8 @@ class GUI:
                 app_name = entry.get()
                 top.destroy()
                 try:
-                    self.client.Cli_Sock.send(f"kill {app_name}".encode())
+                    self.client.Cli_Sock.send("kill".encode())
+                    self.client.Cli_Sock.send(app_name.encode())
                     response = self.client.Cli_Sock.recv(1024).decode()
                     messagebox.showinfo("Response", response)
                 except Exception as ex:
@@ -96,9 +97,6 @@ class GUI:
             submit_button = tk.Button(top, text="Submit", command=submit)
             submit_button.pack()
             #try:
-                # self.client.send_data("KILL")
-                # view_kill = Kill(self.client)
-                # view_kill.run()
                 
             #     app_name = input("Enter the name of the app to kill: ")
             #     self.client.Cli_Sock.send(f"kill {app_name}".encode())
