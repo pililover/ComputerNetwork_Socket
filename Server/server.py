@@ -388,6 +388,7 @@ class Server:
             return self.run_app(app_name)
         elif command == "kill":
             app_name = request[1]
+            print(app_name)
             return self.kill_app(app_name)
         elif command == "view":
             return self.view_apps()
