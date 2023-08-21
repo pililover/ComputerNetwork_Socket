@@ -401,7 +401,7 @@ class Server:
             ss = self.receiveSignal(conn)
             print(ss)
             ss = ss.strip().split()
-            print(ss[1])
+            #print(ss[1])
             #if ss == "XEM" or ss == "view":
             if ss[0] == "XEM" or ss[0] == "view":
                 response = self.view_apps()
@@ -409,6 +409,7 @@ class Server:
             elif ss[0] == "KILL" or ss[0] == "kill":
                 #app_name = self.receiveSignal(conn)
                 app_name = ss[1]
+                print(app_name)
                 response = self.kill_app(app_name)
                 conn.send(response.encode())
             elif ss[0] == "START":
