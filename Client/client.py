@@ -109,7 +109,7 @@ class Client:
                 with open(filename, 'wb') as fw:
                     while True:
                         print("Receiving data")
-                        self.Cli_Sock.settimeout(5)  # Set a timeout of 5 seconds
+                        self.Cli_Sock.settimeout(10)  # Set a timeout of 5 seconds
                         data = self.Cli_Sock.recv(1024)
                         if not data:
                             break
