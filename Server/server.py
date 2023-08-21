@@ -400,10 +400,10 @@ class Server:
         # while True:
             ss = self.receiveSignal(conn)
             print(ss)
-            ss = ss.strip().split()
+            ss = ss.split()
             #print(ss[1])
             #if ss == "XEM" or ss == "view":
-            if ss[0] == "XEM" or ss[0] == "view":
+            if ss == "XEM" or ss == "view":
                 response = self.view_apps()
                 conn.send(response.encode())
             elif ss[0] == "KILL" or ss[0] == "kill":
