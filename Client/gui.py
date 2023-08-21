@@ -77,20 +77,39 @@ class GUI:
         #     return output
 
         def kill_click():
-            try:
+            def submit():
+                app_name = entry.get()
+                top.destroy()
+                try:
+                    self.client.Cli_Sock.send(f"kill {app_name}".encode())
+                    response = self.client.Cli_Sock.recv(1024).decode()
+                    messagebox.showinfo("Response", response)
+                except Exception as ex:
+                    messagebox.showerror("Error", str(ex))
+
+            top = tk.Toplevel()
+            top.title("Kill App")
+            label = tk.Label(top, text="Enter the name of the app to kill:")
+            label.pack()
+            entry = tk.Entry(top)
+            entry.pack()
+            submit_button = tk.Button(top, text="Submit", command=submit)
+            submit_button.pack()
+            #try:
                 # self.client.send_data("KILL")
                 # view_kill = Kill(self.client)
                 # view_kill.run()
-                app_name = input("Enter the name of the app to kill: ")
-                self.client.send(f"kill {app_name}".encode())
-                response = self.client.recv(1024).decode()
-                messagebox.showinfo("Response", response)
-            except Exception as ex:
-                messagebox.showerror("Error", str(ex))
+                
+            #     app_name = input("Enter the name of the app to kill: ")
+            #     self.client.Cli_Sock.send(f"kill {app_name}".encode())
+            #     response = self.client.recv(1024).decode()
+            #     messagebox.showinfo("Response", response)
+            # except Exception as ex:
+            #     messagebox.showerror("Error", str(ex))
 
         def view_click():
             try:
-                self.client.Cli_Sock.send("view".encode())
+                self.client.Cli_Sock.send("view".encode()) # Send the command to the server
                 response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
                 print(response)
                 for line in response.split("\n"):
