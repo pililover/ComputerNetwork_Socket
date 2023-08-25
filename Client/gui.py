@@ -50,6 +50,23 @@ class GUI:
         connectButt.grid(row=0, column=2, padx=10, pady=10)
         
         start_scene.mainloop()
+        
+    def killScene(self):
+        kill_scene = tk.Tk()
+        kill_scene.title("kill")
+        text = tk.Label(kill_scene, text="Enter PID:")
+        text.grid(row=0, column=0, padx=10, pady=10)
+        inputBox = tk.Entry(kill_scene, width=30)
+        inputBox.grid(row=0, column=1,pady=10)
+        
+        def clicked():
+            self.kill_app(inputBox.get())
+        
+        connectButt = tk.Button(kill_scene, text="Kill",
+                                width=10, command=clicked)
+        connectButt.grid(row=0, column=2, padx=10, pady=10)
+        
+        kill_scene.mainloop()
     
     def start_app(self, app_name):
         try:
@@ -58,7 +75,14 @@ class GUI:
             messagebox.showinfo("Response", response)
         except Exception as ex:
             messagebox.showerror("Error", str(ex))
-        
+            
+    def kill_app(self, pid):
+        try:
+            self.client.Cli_Sock.send(f"kill {pid}".encode())
+            response = self.client.Cli_Sock.recv(1024).decode()
+            messagebox.showinfo("Response", response)
+        except Exception as ex:
+            messagebox.showerror("Error", str(ex))
     
     def processScene(self):
         process_window = Process(self.client)
@@ -77,24 +101,7 @@ class GUI:
         #     return output
 
         def kill_click():
-            def submit():
-                pid = entry.get()
-                top.destroy()
-                try:
-                    self.client.Cli_Sock.send(f"kill {pid}".encode())
-                    response = self.client.Cli_Sock.recv(1024).decode()
-                    messagebox.showinfo("Response", response)
-                except Exception as ex:
-                    messagebox.showerror("Error", str(ex))
-
-            top = tk.Toplevel()
-            top.title("Kill App")
-            label = tk.Label(top, text="Enter the PID of the app to kill:")
-            label.pack()
-            entry = tk.Entry(top)
-            entry.pack()
-            submit_button = tk.Button(top, text="Submit", command=submit)
-            submit_button.pack()
+            self.killScene()
             #try:
                 
             #     app_name = input("Enter the name of the app to kill: ")
@@ -127,13 +134,15 @@ class GUI:
                 
 
         def delete_click():
-            if self.app_list.selection():
-                selected_item = self.app_list.selection()[0]
-                app_name = self.app_list.item(selected_item)["values"][0]
-                self.client.send(f"delete {app_name}".encode())
-                response = self.client.recv(1024).decode()
-                messagebox.showinfo("Response", response)
-                self.app_list.delete(selected_item)
+            for item in self.app_list.get_children():
+                self.app_list.delete(item)
+            # if self.app_list.selection():
+            #     selected_item = self.app_list.selection()[0]
+            #     app_name = self.app_list.item(selected_item)["values"][0]
+            #     self.client.send(f"delete {app_name}".encode())
+            #     response = self.client.recv(1024).decode()
+            #     messagebox.showinfo("Response", response)
+            #     self.app_list.delete(selected_item)
 
         self.app_list = ttk.Treeview(app_window, columns=(
             "Name App", "ID App", "Count Thread"), show="headings")
