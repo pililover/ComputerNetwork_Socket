@@ -23,11 +23,6 @@ class Client:
         self.port = port
         self.Cli_Sock = None
         self.network_file = None
-        # self.gui = gui.GUI(self)
-        # self.root = self.gui.root  # Store the main Tkinter window reference here
-        # self.ip = self.gui.ip
-        #print(self.ip)
-        # self.connect(self.host)  # Automatically connect on initialization
     def connect(self,ip):
         """Connect to the server."""
         try:
@@ -146,10 +141,10 @@ class Client:
         self.send_command("SHUTDOWN")
         self.handle_response("SHUTDOWN")
 
-    def registry_click(self):
-        """Send the REGISTRY command to the server and handle the response."""
-        self.send_command("REGISTRY")
-        self.handle_response("REGISTRY")
+    # def registry_click(self):
+    #     """Send the REGISTRY command to the server and handle the response."""
+    #     self.send_command("REGISTRY")
+    #     self.handle_response("REGISTRY")
 
     def exit_click(self):
         """Send the QUIT command to the server, close the connection, and exit the application."""

