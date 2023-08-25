@@ -381,6 +381,19 @@ class Server:
         except Exception as e:
             return f"Error killing {pid}: {e}"
 
+    def view_processes(self):
+        try:
+            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
+            process_list = []
+            for process in processes:
+                pid = process.info['pid']
+                name = process.info['name']
+                num_threads = process.info['num_threads']
+                process_list.append(f"{name}\t{pid}\t{num_threads}")
+            return '\n'.join(process_list)
+        except Exception as e:
+            return f"Error viewing apps: {e}"
+
     def view_apps(self):
         try:
             processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
@@ -509,46 +522,71 @@ class Server:
         #     elif ss == "QUIT":
         #         return
 
-    def process(conn):
+    def process(self, conn):
         while True:
-            data = conn.recv(4092).decode("utf8")
-            if data == "QUIT":
+        # while True:
+            ss = self.receiveSignal(conn)
+            print(ss)
+            s1 = ss.split()
+            cm = s1[0] 
+            if len(s1) > 1:
+                data = s1[1]
+            #print(ss[1])
+            #if ss == "XEM" or ss == "view":
+            if cm == "XEM" or cm == "view":
+                response = self.view_processes()
+                conn.send(response.encode())
+            elif cm == "KILL" or cm == "kill":
+                #app_name = self.receiveSignal(conn)
+                print(data)
+                response = self.kill_app(data)
+                conn.send(response.encode())
+            elif cm == "START" or cm == "start":
+                # app_name = self.receiveSignal(conn)
+                response = self.run_app(data)
+                conn.send(response.encode())
+            elif cm == "QUIT":
                 return
-            elif data == "XEM":
-                processes = subprocess.check_output(
-                    ['wmic', 'process', 'get', 'name,processid']).decode().split("\r\r\n")
-                conn.sendall(bytes(str(len(processes)), "utf8"))
-                for process in processes:
-                    name, pid = process.split()
-                    conn.sendall(bytes(name, "utf8"))
-                    conn.sendall(bytes(pid, "utf8"))
-            elif data == "KILL":
-                while True:
-                    option = conn.recv(1024).decode("utf8")
-                    if option == "KILLID":
-                        pid = conn.recv(1024).decode("utf8")
-                        try:
-                            os.kill(int(pid), 9)
-                            conn.sendall(bytes("Process killed", "utf8"))
-                        except Exception as ex:
-                            conn.sendall(bytes("Error", "utf8"))
-                    elif option == "QUIT":
-                        break
-            elif data == "START":
-                while True:
-                    option = conn.recv(1024).decode("utf8")
-                    if option == "STARTID":
-                        name = conn.recv(1024).decode("utf8")
-                        if name != "":
-                            name += ".exe"
-                            try:
-                                subprocess.Popen(name)
-                                conn.sendall(
-                                    bytes("Process started successfully", "utf8"))
-                            except Exception as ex:
-                                conn.sendall(bytes("Error", "utf8"))
-                    elif option == "QUIT":
-                        break
+        
+        # while True:
+        #     data = conn.recv(4092).decode("utf8")
+        #     if data == "QUIT":
+        #         return
+        #     elif data == "XEM":
+        #         processes = subprocess.check_output(
+        #             ['wmic', 'process', 'get', 'name,processid']).decode().split("\r\r\n")
+        #         conn.sendall(bytes(str(len(processes)), "utf8"))
+        #         for process in processes:
+        #             name, pid = process.split()
+        #             conn.sendall(bytes(name, "utf8"))
+        #             conn.sendall(bytes(pid, "utf8"))
+        #     elif data == "KILL":
+        #         while True:
+        #             option = conn.recv(1024).decode("utf8")
+        #             if option == "KILLID":
+        #                 pid = conn.recv(1024).decode("utf8")
+        #                 try:
+        #                     os.kill(int(pid), 9)
+        #                     conn.sendall(bytes("Process killed", "utf8"))
+        #                 except Exception as ex:
+        #                     conn.sendall(bytes("Error", "utf8"))
+        #             elif option == "QUIT":
+        #                 break
+        #     elif data == "START":
+        #         while True:
+        #             option = conn.recv(1024).decode("utf8")
+        #             if option == "STARTID":
+        #                 name = conn.recv(1024).decode("utf8")
+        #                 if name != "":
+        #                     name += ".exe"
+        #                     try:
+        #                         subprocess.Popen(name)
+        #                         conn.sendall(
+        #                             bytes("Process started successfully", "utf8"))
+        #                     except Exception as ex:
+        #                         conn.sendall(bytes("Error", "utf8"))
+        #             elif option == "QUIT":
+        #                 break
 
     def button1_Click(self):
         ip = '' #'192.168.1.3'
