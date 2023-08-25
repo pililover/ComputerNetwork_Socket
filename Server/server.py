@@ -425,7 +425,8 @@ class Server:
             print(ss)
             s1 = ss.split()
             cm = s1[0] 
-            data = s1[1]
+            if len(s1) > 1:
+                data = s1[1]
             #print(ss[1])
             #if ss == "XEM" or ss == "view":
             if cm == "XEM" or cm == "view":
