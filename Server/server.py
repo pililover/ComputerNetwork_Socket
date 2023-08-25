@@ -362,10 +362,11 @@ class Server:
 
     def run_app(app_name):
         try:
-            subprocess.Popen(app_name)
-            return f"{app_name} started successfully"
+            full_name = f"{app_name}.exe"
+            subprocess.Popen(full_name)
+            return f"{full_name} started successfully"
         except Exception as e:
-            return f"Error starting {app_name}: {e}"
+            return f"Error starting {full_name}: {e}"
 
     def kill_app(self, pid):
         try:        
@@ -424,6 +425,7 @@ class Server:
             print(ss)
             s1 = ss.split()
             cm = s1[0] 
+            data = s1[1]
             #print(ss[1])
             #if ss == "XEM" or ss == "view":
             if cm == "XEM" or cm == "view":
@@ -435,9 +437,9 @@ class Server:
                 print(pid)
                 response = self.kill_app(pid)
                 conn.send(response.encode())
-            elif cm == "START":
-                app_name = self.receiveSignal(conn)
-                response = self.run_app(app_name)
+            elif cm == "START" or cm == "start":
+                # app_name = self.receiveSignal(conn)
+                response = self.run_app(data)
                 conn.send(response.encode())
             elif cm == "QUIT":
                 return
