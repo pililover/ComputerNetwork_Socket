@@ -99,6 +99,7 @@ class Server:
 
 
     def screenshot(self, conn):
+        # Capture a screenshot using pyautogui
         myScreenshot = pyautogui.screenshot()
         myScreenshot.save(r'screenshot.png')
         filename = r'screenshot.png'
@@ -383,16 +384,18 @@ class ServerGUI(tk.Frame):
         self.server.stop()  # Call the server's stop method
 
 def main():
+    # Create a Server instance and start the server thread
     server = Server('0.0.0.0')
     server_thread = threading.Thread(target=server.start)
     server_thread.start()
-
+    
+    # Create a GUI window using Tkinter
     root = tk.Tk()
     server_app = ServerGUI(master=root)
     root.protocol("WM_DELETE_WINDOW", server_app.on_closing)  # Handle window closing event
     server_app.mainloop()
     
-    server.stop()  # You should implement this method in your Server class
+    server.stop()  # Stop the server
     server_thread.join()  # Wait for the server thread to finish before exiting
     
 if __name__ == "__main__":
