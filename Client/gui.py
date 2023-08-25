@@ -31,6 +31,7 @@ class GUI:
         #     self.registryScene()
         elif data == "KEYLOG":
             self.keystrokeScene()
+            self.textbox = tk.Text(self)
         elif data == "PROCESS":
             self.processScene()
             
