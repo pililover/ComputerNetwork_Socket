@@ -53,7 +53,7 @@ class GUI:
     
     def start_app(self, app_name):
         try:
-            self.client.Cli_Sock.send(f"run {app_name}".encode())
+            self.client.Cli_Sock.send(f"start {app_name}".encode())
             response = self.client.Cli_Sock.recv(1024).decode()
             messagebox.showinfo("Response", response)
         except Exception as ex:
@@ -108,7 +108,9 @@ class GUI:
             try:
                 self.client.Cli_Sock.send("view".encode()) # Send the command to the server
                 response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
-                print(response)
+                # print(response)
+                for item in self.app_list.get_children():
+                    self.app_list.delete(item)
                 for line in response.split("\n"):
                     columns = line.split("\t")
                     if len(columns) == 3:  # Expecting three columns: Image name, PID, Thread count
