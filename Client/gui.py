@@ -166,6 +166,20 @@ class GUI:
         key_window = tk.Tk()
         key_window.title("Keystroke Log")
 
+        def hook_click():
+            self.client.Cli_Sock.send("HOOK".encode()) # Send the command to the server
+
+        def unhook_click():
+            self.client.Cli_Sock.send("UNHOOK".encode())
+
+        def print_click():
+            self.client.Cli_Sock.send("PRINT".encode())
+            data = self.client.Cli_Sock.recv(5000).decode()
+            self.textbox.insert(tk.END, data)
+
+        def delete_click():
+            self.textbox.delete("1.0", tk.END)
+            
         # Buttons
         hook_button = tk.Button(
             key_window, text="Hook", width=10, command=hook_click)
@@ -186,20 +200,6 @@ class GUI:
         # KeyLog text box
         self.txtKQ = tk.Text(key_window, width=50, height=20)
         self.txtKQ.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
-
-        def hook_click():
-            self.client.Cli_Sock.send("HOOK".encode()) # Send the command to the server
-
-        def unhook_click():
-            self.client.Cli_Sock.send("UNHOOK".encode())
-
-        def print_click():
-            self.client.Cli_Sock.send("PRINT".encode())
-            data = self.client.Cli_Sock.recv(5000).decode()
-            self.textbox.insert(tk.END, data)
-
-        def delete_click():
-            self.textbox.delete("1.0", tk.END)
 
         key_window.mainloop()
 
