@@ -15,10 +15,6 @@ class GUI:
         self.client = client
         if data == "APPLICATION":
             self.appScene()
-        # elif data == "TAKEPIC":
-        #     self.ScreenshotScene()
-        # elif data == "REGISTRY":
-        #     self.registryScene()
         elif data == "KEYLOG":
             self.keystrokeScene()
         elif data == "PROCESS":
