@@ -8,7 +8,7 @@ from io import BytesIO
 import pynput.keyboard
 import pynput.mouse
 from Process import Start, Kill, Process
-import Keylog
+# import Keylog
 import whois
 import Program
 import subprocess
