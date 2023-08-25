@@ -80,8 +80,6 @@ class Server:
                     self.screenshot(conn)
                 elif option == "SHUTDOWN":
                     self.shutdown()
-                # elif option == "REGISTRY":
-                #     self.pc_registry(conn)
                 elif option == "KEYLOG":
                     self.keylog(conn)
                 elif option == "PROCESS":
@@ -89,12 +87,11 @@ class Server:
                 elif option == "APPLICATION":
                     self.application(conn)
                 elif option == "QUIT":
+                    self.stop()
                     break
                 else:
                     conn.sendall(bytes("Option not found", "utf8"))
                     break
-            # self.clients.shutdown(socket.SHUT_RDWR)
-            #self.clients.close()
         except socket.timeout as timeout:
             print("Timeout to client: ", addr)
         except socket.error as error:
@@ -177,12 +174,7 @@ class Server:
 
     def screenshot(self, conn):
         myScreenshot = pyautogui.screenshot()
-        #img_bytes = io.BytesIO()
-        #myScreenshot.save(img_bytes, format='PNG')
         myScreenshot.save(r'screenshot.png')
-        # img_bytes = img_bytes.getvalue()
-        # conn.sendall(len(img_bytes).to_bytes(4, 'big'))
-        # conn.sendall(img_bytes)
         filename = r'screenshot.png'
         while True:
             with open(filename, 'rb') as fs:
@@ -201,7 +193,6 @@ class Server:
         # Thuong thi os.name cua Linux hoac Mac la "posix"
         system_name = platform.system()
         if system_name == "Windows":
-            #subprocess.run(["shutdown", "-s"])
             return os.system("shutdown /s /t 1")
         elif system_name == "Darwin" or system_name == "Linux":
             os.system("sudo shutdown -h now")
@@ -218,8 +209,6 @@ class Server:
             return ""
         
     def start_keylog (self):
-        # with keyboard.Listener(on_press = self.on_key_press) as listener:
-        #         listener.join()
         self.listener = keyboard.Listener(on_press=self.on_key_press)
         self.listener.start()            
     
@@ -386,67 +375,6 @@ class Server:
                 conn.send(response.encode())
             elif cm == "QUIT":
                 return
-        # while True:
-        #     ss = self.receiveSignal(conn)
-        #     if ss == "XEM":
-        #         pr = psutil.process_iter(
-        #             ['pid', 'name', 'num_threads', 'num_handles', 'memory_info'])
-        #         self.nw.write(str(len(list(pr))) + "\n")
-        #         for p in pr:
-        #             try:
-        #                 if p.info['name'] and p.info['name'] != "":
-        #                     self.nw.write("ok\n")
-        #                     self.nw.write(p.info['name'] + "\n")
-        #                     self.nw.write(str(p.info['pid']) + "\n")
-        #                     self.nw.write(str(p.info['num_threads']) + "\n")
-        #                     self.nw.flush()
-        #             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-        #                 pass
-
-        #     elif ss == "KILL":
-        #         while True:
-        #             ss = self.receiveSignal()
-        #             if ss == "KILLID":
-        #                 u = self.receiveSignal()
-        #                 test2 = False
-        #                 if u:
-        #                     try:
-        #                         process = psutil.Process(int(u))
-        #                         process.terminate()
-        #                         self.nw.write("Đã diệt chương trình\n")
-        #                         self.nw.flush()
-        #                         test2 = True
-        #                     except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-        #                         pass
-
-        #                 if not test2:
-        #                     self.nw.write("Không tìm thấy chương trình\n")
-        #                     self.nw.flush()
-        #             elif ss == "QUIT":
-        #                 break
-
-        #     elif ss == "START":
-        #         while True:
-        #             ss = self.receiveSignal()
-        #             if ss == "STARTID":
-        #                 u = self.receiveSignal()
-        #                 if u:
-        #                     u += ".exe"
-        #                     try:
-        #                         subprocess.Popen(u, shell=True)
-        #                         self.nw.write("Chương trình đã được bật\n")
-        #                         self.nw.flush()
-        #                     except Exception as ex:
-        #                         self.nw.write("Lỗi\n")
-        #                         self.nw.flush()
-        #                 else:
-        #                     self.nw.write("Lỗi\n")
-        #                     self.nw.flush()
-        #             elif ss == "QUIT":
-        #                 break
-
-        #     elif ss == "QUIT":
-        #         return
 
     def process(self, conn):
         while True:
@@ -473,46 +401,6 @@ class Server:
                 conn.send(response.encode())
             elif cm == "QUIT":
                 return
-        
-        # while True:
-        #     data = conn.recv(4092).decode("utf8")
-        #     if data == "QUIT":
-        #         return
-        #     elif data == "XEM":
-        #         processes = subprocess.check_output(
-        #             ['wmic', 'process', 'get', 'name,processid']).decode().split("\r\r\n")
-        #         conn.sendall(bytes(str(len(processes)), "utf8"))
-        #         for process in processes:
-        #             name, pid = process.split()
-        #             conn.sendall(bytes(name, "utf8"))
-        #             conn.sendall(bytes(pid, "utf8"))
-        #     elif data == "KILL":
-        #         while True:
-        #             option = conn.recv(1024).decode("utf8")
-        #             if option == "KILLID":
-        #                 pid = conn.recv(1024).decode("utf8")
-        #                 try:
-        #                     os.kill(int(pid), 9)
-        #                     conn.sendall(bytes("Process killed", "utf8"))
-        #                 except Exception as ex:
-        #                     conn.sendall(bytes("Error", "utf8"))
-        #             elif option == "QUIT":
-        #                 break
-        #     elif data == "START":
-        #         while True:
-        #             option = conn.recv(1024).decode("utf8")
-        #             if option == "STARTID":
-        #                 name = conn.recv(1024).decode("utf8")
-        #                 if name != "":
-        #                     name += ".exe"
-        #                     try:
-        #                         subprocess.Popen(name)
-        #                         conn.sendall(
-        #                             bytes("Process started successfully", "utf8"))
-        #                     except Exception as ex:
-        #                         conn.sendall(bytes("Error", "utf8"))
-        #             elif option == "QUIT":
-        #                 break
 
     def button1_Click(self):
         ip = '' #'192.168.1.3'
