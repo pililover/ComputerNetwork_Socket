@@ -246,10 +246,10 @@ class clientScene:
             self.root, text="Keystroke", padx=39, pady=20, command=self.client.key_lock_click)
         keyStrokeButt.grid(row=3, column=0, padx=40, pady=10, columnspan=2)
 
-        # Registry
-        registryButt = tk.Button(
-            self.root, text="Edit Registry", padx=33, pady=20, command=self.client.registry_click)
-        registryButt.grid(row=3, column=2, pady=10)
+        # # Registry
+        # registryButt = tk.Button(
+        #     self.root, text="Edit Registry", padx=33, pady=20, command=self.client.registry_click)
+        # registryButt.grid(row=3, column=2, pady=10)
 
         # Exit
         exit = tk.Button(self.root, text="Quit", bg="red", padx=30,
