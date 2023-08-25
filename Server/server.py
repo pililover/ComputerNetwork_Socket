@@ -14,7 +14,7 @@ from contextlib import closing
 import tkinter as tk
 from pynput import keyboard
 import Program
-import Keylog
+# import Keylog
 from tkinter import *
 import signal
 from PIL import ImageGrab
