@@ -20,16 +20,10 @@ import signal
 from PIL import ImageGrab
 import win32gui
 import win32process
-import ctypes
 
-# HOST = '192.168.1.3'
 PORT = 4444 #Server Port is listening
 img_bytes = b'\x00\x01\x02...'
-
-FONT = ("Arial", 20, "bold")
-LOGIN = "login"
-REGISTER = "register"
-LOGOUT = "logout"
+# Replace with actual binary image data
 EXIT = "exit"
 
 
