@@ -208,92 +208,92 @@ class Server:
         else:
             print("Shutdown command not supported on this platform.")
 
-    def pc_registry(self, conn):
-        try:
-            data = conn.recv(4092).decode("utf8")
+    # def pc_registry(self, conn):
+    #     try:
+    #         data = conn.recv(4092).decode("utf8")
 
-            base_key, link, value_name, value, value_type = data.split(";")
+    #         base_key, link, value_name, value, value_type = data.split(";")
 
-            if value_type == "DELETE_VALUE":
-                res = self.PCRemoveValue(base_key, link, value_name)
-            elif value_type == "DELETE_KEY":
-                res = self.PCRemoveKey(base_key, link)
-            else:
-                res = self.PCSetValue(
-                    base_key, link, value_name, value, value_type)
+    #         if value_type == "DELETE_VALUE":
+    #             res = self.PCRemoveValue(base_key, link, value_name)
+    #         elif value_type == "DELETE_KEY":
+    #             res = self.PCRemoveKey(base_key, link)
+    #         else:
+    #             res = self.PCSetValue(
+    #                 base_key, link, value_name, value, value_type)
 
-            self.send_response(conn, res)
-        except Exception as ex:
-            self.send_response(conn, "Error: " + str(ex))
+    #         self.send_response(conn, res)
+    #     except Exception as ex:
+    #         self.send_response(conn, "Error: " + str(ex))
 
-    def send_response(self, conn, response):
-        conn.sendall(bytes(response, "utf8"))
+    # def send_response(self, conn, response):
+    #     conn.sendall(bytes(response, "utf8"))
 
-    def delete_value(base_key, link, value_name):
-        try:
-            with winreg.OpenKey(base_key, link, 0, winreg.KEY_SET_VALUE) as key:
-                winreg.DeleteValue(key, value_name)
-                return "Value deleted successfully"
-        except Exception as ex:
-            return "Error: " + str(ex)
+    # def delete_value(base_key, link, value_name):
+    #     try:
+    #         with winreg.OpenKey(base_key, link, 0, winreg.KEY_SET_VALUE) as key:
+    #             winreg.DeleteValue(key, value_name)
+    #             return "Value deleted successfully"
+    #     except Exception as ex:
+    #         return "Error: " + str(ex)
 
-    def delete_key(base_key, link):
-        try:
-            winreg.DeleteKey(base_key, link)
-            return "Key deleted successfully"
-        except Exception as ex:
-            return "Error: " + str(ex)
+    # def delete_key(base_key, link):
+    #     try:
+    #         winreg.DeleteKey(base_key, link)
+    #         return "Key deleted successfully"
+    #     except Exception as ex:
+    #         return "Error: " + str(ex)
 
-    def send_response(self, conn, response):
-        with self.nw_lock:
-            conn.sendall(bytes(response, "utf8"))
+    # def send_response(self, conn, response):
+    #     with self.nw_lock:
+    #         conn.sendall(bytes(response, "utf8"))
 
-    def base_registry_key(self, link):
-        base_key = None
-        if "\\" in link:
-            if link.startswith("HKEY_CLASSES_ROOT"):
-                base_key = winreg.HKEY_CLASSES_ROOT
-            elif link.startswith("HKEY_CURRENT_USER"):
-                base_key = winreg.HKEY_CURRENT_USER
-            elif link.startswith("HKEY_LOCAL_MACHINE"):
-                base_key = winreg.HKEY_LOCAL_MACHINE
-            elif link.startswith("HKEY_USERS"):
-                base_key = winreg.HKEY_USERS
-            elif link.startswith("HKEY_CURRENT_CONFIG"):
-                base_key = winreg.HKEY_CURRENT_CONFIG
-        return base_key
+    # def base_registry_key(self, link):
+    #     base_key = None
+    #     if "\\" in link:
+    #         if link.startswith("HKEY_CLASSES_ROOT"):
+    #             base_key = winreg.HKEY_CLASSES_ROOT
+    #         elif link.startswith("HKEY_CURRENT_USER"):
+    #             base_key = winreg.HKEY_CURRENT_USER
+    #         elif link.startswith("HKEY_LOCAL_MACHINE"):
+    #             base_key = winreg.HKEY_LOCAL_MACHINE
+    #         elif link.startswith("HKEY_USERS"):
+    #             base_key = winreg.HKEY_USERS
+    #         elif link.startswith("HKEY_CURRENT_CONFIG"):
+    #             base_key = winreg.HKEY_CURRENT_CONFIG
+    #     return base_key
 
-    def registry(self, conn):
-        while True:
-            data = conn.recv(4092).decode("utf8")
-            if data == "QUIT":
-                return
-            elif data == "SEND":
-                option = conn.recv(1024).decode("utf8")
-                link = conn.recv(1024).decode("utf8")
-                value_name = conn.recv(1024).decode("utf8")
-                value = conn.recv(1024).decode("utf8")
-                value_type = conn.recv(1024).decode("utf8")
-                base_key = self.base_registry_key(link)
-                link2 = link[link.index("\\")+1:]
-                if base_key is None:
-                    res = "Error"
-                else:
-                    if option == "Create key":
-                        base_key.CreateSubKey(link2)
-                        res = "Key created successfully"
-                    elif option == "Delete key":
-                        res = self.PCRemoveKey(base_key, link2)
-                    elif option == "Get value":
-                        res = self.PCRegistryValue(base_key, link2, value_name)
-                    elif option == "Set value":
-                        res = self.PCSetValue(
-                            base_key, link2, value_name, value, value_type)
-                    elif option == "Delete value":
-                        res = self.PCRemoveValue(base_key, link2, value_name)
-                    else:
-                        res = "Error"
-                self.send_response(conn, res)
+    # def registry(self, conn):
+    #     while True:
+    #         data = conn.recv(4092).decode("utf8")
+    #         if data == "QUIT":
+    #             return
+    #         elif data == "SEND":
+    #             option = conn.recv(1024).decode("utf8")
+    #             link = conn.recv(1024).decode("utf8")
+    #             value_name = conn.recv(1024).decode("utf8")
+    #             value = conn.recv(1024).decode("utf8")
+    #             value_type = conn.recv(1024).decode("utf8")
+    #             base_key = self.base_registry_key(link)
+    #             link2 = link[link.index("\\")+1:]
+    #             if base_key is None:
+    #                 res = "Error"
+    #             else:
+    #                 if option == "Create key":
+    #                     base_key.CreateSubKey(link2)
+    #                     res = "Key created successfully"
+    #                 elif option == "Delete key":
+    #                     res = self.PCRemoveKey(base_key, link2)
+    #                 elif option == "Get value":
+    #                     res = self.PCRegistryValue(base_key, link2, value_name)
+    #                 elif option == "Set value":
+    #                     res = self.PCSetValue(
+    #                         base_key, link2, value_name, value, value_type)
+    #                 elif option == "Delete value":
+    #                     res = self.PCRemoveValue(base_key, link2, value_name)
+    #                 else:
+    #                     res = "Error"
+    #             self.send_response(conn, res)
 
     def hookKey(self):
         self.tklog.resume()
@@ -331,7 +331,6 @@ class Server:
     def receiveSignal(self, conn):
         try:
             with self.nr_lock:
-                # signal_size = int(conn.recv(4).decode("utf-8"))
                 signal_data = conn.recv(1024).decode("utf-8")
                 return signal_data
         except Exception as e:

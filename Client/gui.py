@@ -158,33 +158,6 @@ class GUI:
                 messagebox.showinfo("Response", response)
                 self.app_list.delete(selected_item)
 
-        # # TreeView for App List
-        # self.app_list = ttk.Treeview(app_window, columns=(
-        #     "Name App", "ID App", "Count Thread"), show="headings")
-        # self.app_list.heading("#1", text="Name App")
-        # self.app_list.heading("#2", text="ID App")
-        # self.app_list.heading("#3", text="Count Thread")
-        # self.app_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
-
-        # # Buttons
-        # kill_button = tk.Button(app_window, text="Kill",
-        #                         width=10, command=kill_click)
-        # kill_button.grid(row=0, column=0, padx=10, pady=10)
-
-        # view_button = tk.Button(app_window, text="Xem",
-        #                         width=10, command=view_click)
-        # view_button.grid(row=0, column=1, padx=10, pady=10)
-
-        # start_button = tk.Button(
-        #     app_window, text="Start", width=10, command=start_click)
-        # start_button.grid(row=0, column=2, padx=10, pady=10)
-
-        # delete_button = tk.Button(
-        #     app_window, text="Xóa", width=10, command=delete_click)
-        # delete_button.grid(row=0, column=3, padx=10, pady=10)
-
-        # app_window.mainloop()
-        # TreeView for App List
         self.app_list = ttk.Treeview(app_window, columns=(
             "Name App", "ID App", "Count Thread"), show="headings")
         self.app_list.heading("#1", text="Name App")
@@ -220,10 +193,14 @@ class GUI:
             self.key_listener = pynput.keyboard.Listener(
                 on_press=self.on_key_press)
             self.key_listener.start()
+            self.nw.write("HOOK")
+            self.nw.flush()
 
         def unhook_click():
             if hasattr(self, 'key_listener'):
                 self.key_listener.stop()
+                self.nw.write("UNHOOK")
+                self.nw.flush()
 
         def print_click():
             try:
@@ -265,128 +242,128 @@ class GUI:
 
         key_window.mainloop()
 
-    def registryScene(self):
+    # def registryScene(self):
 
-        self.root = tk.Tk()
-        self.root.title("Registry")
+    #     self.root = tk.Tk()
+    #     self.root.title("Registry")
 
-        def butSend_click():
-            operation = self.opApp.get()
-            link = self.txtLink.get()
-            name_value = self.txtNameValue.get()
-            value = self.txtValue.get()
-            type_value = self.opTypeValue.get()
+    #     def butSend_click():
+    #         operation = self.opApp.get()
+    #         link = self.txtLink.get()
+    #         name_value = self.txtNameValue.get()
+    #         value = self.txtValue.get()
+    #         type_value = self.opTypeValue.get()
 
-            # Send data to the server and receive response
-            self.client.send_command("SEND")
-            self.client.send_data(operation)
-            self.client.send_data(link)
-            self.client.send_data(name_value)
-            self.client.send_data(value)
-            self.client.send_data(type_value)
-            response = self.client.receive_data()
+    #         # Send data to the server and receive response
+    #         self.client.send_command("SEND")
+    #         self.client.send_data(operation)
+    #         self.client.send_data(link)
+    #         self.client.send_data(name_value)
+    #         self.client.send_data(value)
+    #         self.client.send_data(type_value)
+    #         response = self.client.receive_data()
 
-            # Update the result textbox
-            self.txtKQ.insert(tk.END, response + "\n")
+    #         # Update the result textbox
+    #         self.txtKQ.insert(tk.END, response + "\n")
 
-        def butBro_click():
-            try:
-                # Open the file dialog to choose a .reg file
-                file_path = filedialog.askopenfilename(
-                    filetypes=[("Registry Files", "*.reg")])
+    #     def butBro_click():
+    #         try:
+    #             # Open the file dialog to choose a .reg file
+    #             file_path = filedialog.askopenfilename(
+    #                 filetypes=[("Registry Files", "*.reg")])
 
-                if file_path:
-                    # Update the file path in the entry widget
-                    self.txtBro.delete(0, tk.END)  # Clear existing content
-                    self.txtBro.insert(0, file_path)
+    #             if file_path:
+    #                 # Update the file path in the entry widget
+    #                 self.txtBro.delete(0, tk.END)  # Clear existing content
+    #                 self.txtBro.insert(0, file_path)
 
-                    # Read the content of the selected file and populate the text box
-                    with open(file_path, "r") as file:
-                        reg_content = file.read()
-                        # Clear existing content
-                        self.txtReg.delete(1.0, tk.END)
-                        self.txtReg.insert(tk.END, reg_content)
-            except Exception as e:
-                messagebox.showerror("Error", str(e))
+    #                 # Read the content of the selected file and populate the text box
+    #                 with open(file_path, "r") as file:
+    #                     reg_content = file.read()
+    #                     # Clear existing content
+    #                     self.txtReg.delete(1.0, tk.END)
+    #                     self.txtReg.insert(tk.END, reg_content)
+    #         except Exception as e:
+    #             messagebox.showerror("Error", str(e))
 
-        def button1_click(self):
-            s = "SEND"
-            self.nw.write(s + "\n")
-            self.nw.flush()
-            s = self.opApp.get()
-            self.nw.write(s + "\n")
-            self.nw.flush()
-            s = self.txtLink.get()
-            self.nw.write(s + "\n")
-            self.nw.flush()
-            s = self.txtNameValue.get()
-            self.nw.write(s + "\n")
-            self.nw.flush()
-            s = self.txtValue.get()
-            self.nw.write(s + "\n")
-            self.nw.flush()
-            s = self.opTypeValue.get()
-            self.nw.write(s + "\n")
-            self.nw.flush()
-            s = self.nr.readline().strip()
-            self.txtKQ.insert(tk.END, s + "\n")
+    #     def button1_click(self):
+    #         s = "SEND"
+    #         self.nw.write(s + "\n")
+    #         self.nw.flush()
+    #         s = self.opApp.get()
+    #         self.nw.write(s + "\n")
+    #         self.nw.flush()
+    #         s = self.txtLink.get()
+    #         self.nw.write(s + "\n")
+    #         self.nw.flush()
+    #         s = self.txtNameValue.get()
+    #         self.nw.write(s + "\n")
+    #         self.nw.flush()
+    #         s = self.txtValue.get()
+    #         self.nw.write(s + "\n")
+    #         self.nw.flush()
+    #         s = self.opTypeValue.get()
+    #         self.nw.write(s + "\n")
+    #         self.nw.flush()
+    #         s = self.nr.readline().strip()
+    #         self.txtKQ.insert(tk.END, s + "\n")
 
-        def butXoa_click():
-            self.txtKQ.delete(1.0, tk.END)
+    #     def butXoa_click():
+    #         self.txtKQ.delete(1.0, tk.END)
 
-        self.butBro = tk.Button(
-            self.root, text="Browser...", command=butBro_click, width=15)
-        self.butBro.grid(row=0, column=3, padx=10, pady=10)
+    #     self.butBro = tk.Button(
+    #         self.root, text="Browser...", command=butBro_click, width=15)
+    #     self.butBro.grid(row=0, column=3, padx=10, pady=10)
 
-        self.butSend = tk.Button(
-            self.root, text="Gửi nội dung", pady=33, command=butSend_click, width=15)
-        self.butSend.grid(row=1, column=3, padx=10,  pady=10)
+    #     self.butSend = tk.Button(
+    #         self.root, text="Gửi nội dung", pady=33, command=butSend_click, width=15)
+    #     self.butSend.grid(row=1, column=3, padx=10,  pady=10)
 
-        self.txtBro = tk.Entry(self.root, width=67)
-        self.txtBro.grid(row=0, column=0, padx=10, pady=10)
+    #     self.txtBro = tk.Entry(self.root, width=67)
+    #     self.txtBro.grid(row=0, column=0, padx=10, pady=10)
 
-        self.txtReg = tk.Text(self.root, height=5, width=50)
-        self.txtReg.grid(row=1, column=0, padx=10, pady=10)
+    #     self.txtReg = tk.Text(self.root, height=5, width=50)
+    #     self.txtReg.grid(row=1, column=0, padx=10, pady=10)
 
-        self.groupBox1 = ttk.LabelFrame(
-            self.root, text="  Sửa giá trị trực tiếp  ")
-        self.groupBox1.grid(row=2, column=0, columnspan=4, padx=10, pady=10)
+    #     self.groupBox1 = ttk.LabelFrame(
+    #         self.root, text="  Sửa giá trị trực tiếp  ")
+    #     self.groupBox1.grid(row=2, column=0, columnspan=4, padx=10, pady=10)
 
-        self.opApp = ttk.Combobox(self.groupBox1, values=[
-                                  "Get value", "Set value", "Delete value", "Create key", "Delete key"])
-        self.opApp.set("Chọn chức năng")
-        self.opApp.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+    #     self.opApp = ttk.Combobox(self.groupBox1, values=[
+    #                               "Get value", "Set value", "Delete value", "Create key", "Delete key"])
+    #     self.opApp.set("Chọn chức năng")
+    #     self.opApp.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
 
-        self.txtLink = tk.Entry(self.groupBox1, width=50)
-        self.txtLink.insert(0, "Đường dẫn")
-        self.txtLink.grid(row=1, column=0, columnspan=2,
-                          padx=10, pady=10, sticky=tk.W)
+    #     self.txtLink = tk.Entry(self.groupBox1, width=50)
+    #     self.txtLink.insert(0, "Đường dẫn")
+    #     self.txtLink.grid(row=1, column=0, columnspan=2,
+    #                       padx=10, pady=10, sticky=tk.W)
 
-        self.txtValue = tk.Entry(self.groupBox1, width=20)
-        self.txtValue.insert(0, "Name value")
-        self.txtValue.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
+    #     self.txtValue = tk.Entry(self.groupBox1, width=20)
+    #     self.txtValue.insert(0, "Name value")
+    #     self.txtValue.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
 
-        self.txtNameValue = tk.Entry(self.groupBox1, width=20)
-        self.txtNameValue.insert(0, "Value")
-        self.txtNameValue.grid(row=2, column=1, padx=10, pady=10)
+    #     self.txtNameValue = tk.Entry(self.groupBox1, width=20)
+    #     self.txtNameValue.insert(0, "Value")
+    #     self.txtNameValue.grid(row=2, column=1, padx=10, pady=10)
 
-        self.opTypeValue = ttk.Combobox(self.groupBox1, values=[
-            "String", "Binary", "DWORD", "QWORD", "Multi-String", "Expandable String"])
-        self.opTypeValue.set("Kiểu dữ liệu")
-        self.opTypeValue.grid(row=2, column=2, padx=10, pady=10)
+    #     self.opTypeValue = ttk.Combobox(self.groupBox1, values=[
+    #         "String", "Binary", "DWORD", "QWORD", "Multi-String", "Expandable String"])
+    #     self.opTypeValue.set("Kiểu dữ liệu")
+    #     self.opTypeValue.grid(row=2, column=2, padx=10, pady=10)
 
-        self.txtKQ = tk.Text(self.groupBox1, height=5, width=60)
-        self.txtKQ.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
+    #     self.txtKQ = tk.Text(self.groupBox1, height=5, width=60)
+    #     self.txtKQ.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
 
-        self.button1 = tk.Button(
-            self.groupBox1, text="Gởi", command=button1_click, width=15)
-        self.button1.grid(row=4, column=0, padx=10, pady=10, sticky=tk.E)
+    #     self.button1 = tk.Button(
+    #         self.groupBox1, text="Gởi", command=button1_click, width=15)
+    #     self.button1.grid(row=4, column=0, padx=10, pady=10, sticky=tk.E)
 
-        self.butXoa = tk.Button(
-            self.groupBox1, text="Xóa", command=butXoa_click, width=15)
-        self.butXoa.grid(row=4, column=2, padx=10, pady=10, sticky=tk.W)
+    #     self.butXoa = tk.Button(
+    #         self.groupBox1, text="Xóa", command=butXoa_click, width=15)
+    #     self.butXoa.grid(row=4, column=2, padx=10, pady=10, sticky=tk.W)
 
-        self.root.mainloop()
+    #     self.root.mainloop()
 
     #def ScreenshotScene(self):
         # Receive the image size from the server
