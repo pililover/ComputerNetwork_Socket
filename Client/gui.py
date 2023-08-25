@@ -97,7 +97,7 @@ class GUI:
             try:
                 self.client.Cli_Sock.send("view".encode()) # Send the command to the server
                 response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
-                # print(response)
+                print(response)
                 for item in self.process_list.get_children():
                     self.process_list.delete(item)
                 for line in response.split("\n"):
@@ -169,7 +169,7 @@ class GUI:
             try:
                 self.client.Cli_Sock.send("view".encode()) # Send the command to the server
                 response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
-                # print(response)
+                print(response)
                 for item in self.app_list.get_children():
                     self.app_list.delete(item)
                 for line in response.split("\n"):

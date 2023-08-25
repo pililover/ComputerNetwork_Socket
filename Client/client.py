@@ -122,7 +122,8 @@ class Client:
             # Display data in a tkinter widget
             # tk.Label(self.root, text=data).pack()
         elif res == "PROCESS":
-            data = self.receive_data()
+            print(res)
+            # data = self.receive_data()
             # gui.GUI.processScene
             # Display data in a tkinter widget
             # tk.Label(self.root, text=data).pack()

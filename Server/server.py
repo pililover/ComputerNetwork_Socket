@@ -311,7 +311,7 @@ class Server:
 
     def view_apps(self):
         try:
-            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
+            app_list = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
             app_list = []
             seen_pids = set()
 
