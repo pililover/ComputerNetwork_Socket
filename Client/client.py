@@ -82,6 +82,7 @@ class Client:
     def handle_response(self, res):
         """Handle the response from the server based on the response type."""
         # self.root = tk.Tk()
+        print(res)
         gui.GUI(self, res)
         if res == "APPLICATION":
             print(res)

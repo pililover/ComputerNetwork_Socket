@@ -340,6 +340,7 @@ class Server:
         # self.tklog.start()
         while True:
             s = self.receiveSignal(conn)
+            print(s)
             if s == "PRINT":
                 data = self.read_log_file()
                 print(data)
