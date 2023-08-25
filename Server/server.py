@@ -360,7 +360,7 @@ class Server:
             print("Error receiving signal:", str(e))
             return ""
 
-    def run_app(app_name):
+    def run_app(self, app_name):
         try:
             full_name = f"{app_name}.exe"
             subprocess.Popen(full_name)
@@ -434,9 +434,8 @@ class Server:
                 conn.send(response.encode())
             elif cm == "KILL" or cm == "kill":
                 #app_name = self.receiveSignal(conn)
-                pid = s1[1]
-                print(pid)
-                response = self.kill_app(pid)
+                print(data)
+                response = self.kill_app(data)
                 conn.send(response.encode())
             elif cm == "START" or cm == "start":
                 # app_name = self.receiveSignal(conn)
