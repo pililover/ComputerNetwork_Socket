@@ -336,8 +336,8 @@ class Server:
         pass
     
     def keylog(self, conn):
-        self.tklog = threading.Thread(target=Keylog.startKLog)
-        self.tklog.start()
+        # self.tklog = threading.Thread(target=Keylog.startKLog)
+        # self.tklog.start()
         while True:
             s = self.receiveSignal(conn)
             if s == "PRINT":
