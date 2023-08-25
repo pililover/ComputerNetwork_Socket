@@ -238,7 +238,7 @@ class clientScene:
 
         # Screenshot
         screenShotButt = tk.Button(
-            self.root, text="Screenshot", padx=34, pady=20, command=self.client.pic_click)
+            self.root, text="Screenshot", padx=35, pady=20, command=self.client.pic_click)
         screenShotButt.grid(row=2, column=2, pady=10)
 
         # Keystroke
@@ -252,9 +252,9 @@ class clientScene:
         # registryButt.grid(row=3, column=2, pady=10)
 
         # Exit
-        exit = tk.Button(self.root, text="Quit", bg="red", padx=30,
-                         pady=10, command=self.client.exit_click)
-        exit.grid(row=2, column=6, padx=10, pady=20)
+        exit = tk.Button(self.root, text="Quit", bg="red", padx=53,
+                         pady=20, command=self.client.exit_click)
+        exit.grid(row=3, column=2, padx=10, pady=10)
 
 
 clientScene(Client(PORT))
