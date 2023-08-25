@@ -110,9 +110,6 @@ class Client:
             print(res)
         elif res == "PROCESS":
             data = self.receive_data()
-            # gui.GUI.processScene
-            # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()
         elif res == "QUIT":
             data = self.receive_data()
         else:
