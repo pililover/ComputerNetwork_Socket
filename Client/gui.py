@@ -114,6 +114,7 @@ class GUI:
         def delete_click():
             for item in self.process_list.get_children():
                 self.process_list.delete(item)
+            self.client.Cli_Sock.send("QUIT".encode())
                 
         self.process_list = ttk.Treeview(process_window, columns=(
             "Name process", "ID process", "Count Thread"), show="headings")
@@ -190,6 +191,7 @@ class GUI:
         def delete_click():
             for item in self.app_list.get_children():
                 self.app_list.delete(item)
+            self.client.Cli_Sock.send("QUIT".encode())
             # if self.app_list.selection():
             #     selected_item = self.app_list.selection()[0]
             #     app_name = self.app_list.item(selected_item)["values"][0]
