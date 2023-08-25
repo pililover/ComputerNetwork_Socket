@@ -85,8 +85,62 @@ class GUI:
             messagebox.showerror("Error", str(ex))
     
     def processScene(self):
-        process_window = Process(self.client)
+        # process_window = Process(self.client)
+        # process_window.mainloop()
+        process_window = tk.Tk()
+        process_window.title("Process")
+        
+        def kill_click():
+            self.killScene()
+            
+        def view_click():
+            try:
+                self.client.Cli_Sock.send("view".encode()) # Send the command to the server
+                response = self.client.Cli_Sock.recv(4096).decode()  # Increased buffer size for more data
+                # print(response)
+                for item in self.process_list.get_children():
+                    self.process_list.delete(item)
+                for line in response.split("\n"):
+                    columns = line.split("\t")
+                    if len(columns) == 3:  # Expecting three columns: Image name, PID, Thread count
+                        self.process_list.insert("", "end", values=columns)
+                messagebox.showinfo("Response", response)
+            except Exception as ex:
+                messagebox.showerror("Error", str(ex))
+        
+        def start_click():
+            self.startScene()
+            
+        def delete_click():
+            for item in self.process_list.get_children():
+                self.process_list.delete(item)
+                
+        self.process_list = ttk.Treeview(process_window, columns=(
+            "Name process", "ID process", "Count Thread"), show="headings")
+        self.process_list.heading("#1", text="Name process")
+        self.process_list.heading("#2", text="ID process")
+        self.process_list.heading("#3", text="Count Thread")
+        self.process_list.grid(row=1, column=0, columnspan=4, padx=20, pady=20)
+
+        # Buttons
+        kill_button = tk.Button(process_window, text="Kill",
+                                width=10, command=kill_click)
+        kill_button.grid(row=0, column=0, padx=10, pady=10)
+
+        view_button = tk.Button(process_window, text="View",
+                                width=10, command=view_click)
+        view_button.grid(row=0, column=1, padx=10, pady=10)
+
+        start_button = tk.Button(
+            process_window, text="Start", width=10, command=start_click)
+        start_button.grid(row=0, column=2, padx=10, pady=10)
+        
+        delete_button = tk.Button(
+            process_window, text="Delete", width=10, command=delete_click) 
+        delete_button.grid(row=0, column=3, padx=10, pady=10)
+
         process_window.mainloop()
+        
 
     def appScene(self):
 
