@@ -289,9 +289,7 @@ class Server:
 
     def kill_app(self, pid):
         try:        
-            # subprocess.call(["taskkill","/F","/IM",app_name])
             subprocess.call(["taskkill","/F","/PID",str(pid)])
-            # os.system(f"taskkill /f /im {app_name}")
             return f"{pid} killed successfully"
         except Exception as e:
             return f"Error killing {pid}: {e}"
@@ -311,7 +309,7 @@ class Server:
 
     def view_apps(self):
         try:
-            processes = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
+            app_list = psutil.process_iter(attrs=['pid', 'name', 'num_threads'])
             app_list = []
             seen_pids = set()
 
@@ -352,25 +350,20 @@ class Server:
     
     def application(self, conn):
         while True:
-        # while True:
             ss = self.receiveSignal(conn)
             print(ss)
             s1 = ss.split()
             cm = s1[0] 
             if len(s1) > 1:
                 data = s1[1]
-            #print(ss[1])
-            #if ss == "XEM" or ss == "view":
             if cm == "XEM" or cm == "view":
                 response = self.view_apps()
                 conn.send(response.encode())
             elif cm == "KILL" or cm == "kill":
-                #app_name = self.receiveSignal(conn)
                 print(data)
                 response = self.kill_app(data)
                 conn.send(response.encode())
             elif cm == "START" or cm == "start":
-                # app_name = self.receiveSignal(conn)
                 response = self.run_app(data)
                 conn.send(response.encode())
             elif cm == "QUIT":
@@ -385,18 +378,14 @@ class Server:
             cm = s1[0] 
             if len(s1) > 1:
                 data = s1[1]
-            #print(ss[1])
-            #if ss == "XEM" or ss == "view":
             if cm == "XEM" or cm == "view":
                 response = self.view_processes()
                 conn.send(response.encode())
             elif cm == "KILL" or cm == "kill":
-                #app_name = self.receiveSignal(conn)
                 print(data)
                 response = self.kill_app(data)
                 conn.send(response.encode())
             elif cm == "START" or cm == "start":
-                # app_name = self.receiveSignal(conn)
                 response = self.run_app(data)
                 conn.send(response.encode())
             elif cm == "QUIT":
@@ -460,14 +449,12 @@ class ServerGUI(tk.Frame):
         
     def on_closing(self):
         if self.server:
-            self.server.stop()  # Call the server's stop method
+            self.server.stop()
         self.master.destroy()
 
     def shutdown_server(self):
-        # Implement your server shutdown logic here
         print("Shutting down the server...")
         self.server.stop()  # Call the server's stop method
-        # For example, you could call your Server's shutdown method
 
 def main():
     server = Server('0.0.0.0')

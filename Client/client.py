@@ -81,7 +81,6 @@ class Client:
 
     def handle_response(self, res):
         """Handle the response from the server based on the response type."""
-        # self.root = tk.Tk()
         print(res)
         gui.GUI(self, res)
         if res == "APPLICATION":
@@ -89,23 +88,16 @@ class Client:
         elif res == "SHUTDOWN":
             print("Shutting down")
             print(res)
-            # data = self.receive_data()
-            # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()
         elif res == "REGISTRY":
             print(res)
-            #data = self.receive_data()
-            # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()
         elif res == "TAKEPIC":
             print("Sending image")
             while True:
                 filename = r"screenshot.png"
-                #print(filename)
                 with open(filename, 'wb') as fw:
                     while True:
                         print("Receiving data")
-                        self.Cli_Sock.settimeout(10)  # Set a timeout of 5 seconds
+                        self.Cli_Sock.settimeout(10)  # Set a timeout of 10 seconds
                         data = self.Cli_Sock.recv(1024)
                         if not data:
                             break
@@ -116,20 +108,10 @@ class Client:
                
         elif res == "KEYLOG":
             print(res)
-            # data = self.receive_data()
-            # self.gui.keystrokeScene
-            # gui.GUI.keystrokeScene
-            # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()
         elif res == "PROCESS":
             data = self.receive_data()
-            # gui.GUI.processScene
-            # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()
         elif res == "QUIT":
             data = self.receive_data()
-            # Display data in a tkinter widget
-            # tk.Label(self.root, text=data).pack()
         else:
             messagebox.showerror("Error", f"Unknown response: {res}")
             
@@ -143,11 +125,6 @@ class Client:
         self.send_command("SHUTDOWN")
         self.handle_response("SHUTDOWN")
 
-    # def registry_click(self):
-    #     """Send the REGISTRY command to the server and handle the response."""
-    #     self.send_command("REGISTRY")
-    #     self.handle_response("REGISTRY")
-
     def exit_click(self):
         """Send the QUIT command to the server, close the connection, and exit the application."""
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
@@ -158,16 +135,9 @@ class Client:
                     self.send_command("QUIT")
                     # Close socket connection
                     self.Cli_Sock.close()
-                    #if (self.root is not None):
-                        # Close main Tkinter window
-                    #SSself.root.destroy()
-                    # Close main Tkinter window
-                    #if (self.root is not None): 
                 except Exception as ex:
                     messagebox.showerror("Error", f"Error quitting: {ex}")
             
-            #self.destroy()
-            #self.destroy()
             sys.exit(0)
 
     def pic_click(self):
@@ -202,8 +172,6 @@ class clientScene:
         self.root.mainloop()
 
     def scene(self):
-        # root = tk.Tk()
-        # self.root.title("Client")
         # Input Box
         text = tk.Label(self.root, text="Enter IP:")
         text.grid(row=0, column=0, pady=10)
@@ -247,11 +215,6 @@ class clientScene:
         keyStrokeButt = tk.Button(
             self.root, text="Keystroke", padx=39, pady=20, command=self.client.key_lock_click)
         keyStrokeButt.grid(row=3, column=0, padx=40, pady=10, columnspan=2)
-
-        # # Registry
-        # registryButt = tk.Button(
-        #     self.root, text="Edit Registry", padx=33, pady=20, command=self.client.registry_click)
-        # registryButt.grid(row=3, column=2, pady=10)
 
         # Exit
         exit = tk.Button(self.root, text="Quit", bg="red", padx=53,
