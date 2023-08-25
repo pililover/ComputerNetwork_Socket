@@ -1,9 +1,6 @@
 # gui.py
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-from PIL import Image, ImageTk
-from io import BytesIO
-from pynput import keyboard
+from tkinter import ttk, messagebox
 
 img_bytes = b'\x00\x01\x02...'
 
