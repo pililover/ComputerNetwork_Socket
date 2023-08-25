@@ -1,15 +1,10 @@
 import socket
-import json
 import sys
 from PIL import Image, ImageTk
-import io
 from io import BytesIO
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-import pynput.keyboard
 import gui
-import os
-import Program
 import logging
 
 HOST = '127.0.0.1'

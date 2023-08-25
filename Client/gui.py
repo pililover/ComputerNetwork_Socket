@@ -1,19 +1,9 @@
 # gui.py
-import logging
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
-import io
 from io import BytesIO
 from pynput import keyboard
-import pynput.mouse
-from Process import Start, Kill, Process
-# import Keylog
-import whois
-import Program
-import subprocess
-import os
-import sys
 
 img_bytes = b'\x00\x01\x02...'
 

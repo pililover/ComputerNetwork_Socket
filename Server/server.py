@@ -1,9 +1,6 @@
 import socket
 import threading
-import winreg
 import pyautogui
-import io
-import time
 import platform
 import os
 import subprocess
@@ -13,10 +10,7 @@ from ipaddress import ip_address
 from contextlib import closing
 import tkinter as tk
 from pynput import keyboard
-import Program
-# import Keylog
 from tkinter import *
-import signal
 from PIL import ImageGrab
 import win32gui
 import win32process
