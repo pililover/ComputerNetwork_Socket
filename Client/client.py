@@ -1,9 +1,7 @@
 import socket
 import sys
-from PIL import Image, ImageTk
-from io import BytesIO
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import messagebox
 import gui
 import logging
 
