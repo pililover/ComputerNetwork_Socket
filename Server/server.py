@@ -43,9 +43,9 @@ class Server:
             print("SERVER: Waiting for Clients")
             while True:
                 conn, addr = self.server.accept()  # Accept incoming client connection
-                print("Connected by", addr)  # Print client address
-                self.clients.append((conn, addr))  # Add client connection to the list
-                threading.Thread(target=self.handle_client, args=(conn, addr)).start()
+                print("Connected by", conn.getpeername())  # Print client address
+                self.clients.append(conn)  # Add client connection to the list
+                threading.Thread(target=self.handle_client, args=((conn,))).start()
                 # Create a new thread to handle the client and start it
                 self.nr = conn.makefile("rb")  # Create a network stream for reading binary data
                 self.nw = conn.makefile("wb")  # Create a network stream for writing binary data
@@ -56,13 +56,13 @@ class Server:
 
     def stop(self):
         self.is_running = False  # Signal the server loop to stop
-        for conn, _ in self.clients:
-            conn.close()  # Close connections with all clients
+        for conn in self.clients:
+            conn.close()# Close connections with all clients
         self.server.close()  # Close the server socket
         sys.exit(0)  # Exit the program
         
-    def handle_client(self, conn, addr):
-        self.clients.append(conn)  # Add client connection to the list
+    def handle_client(self, conn):
+        # self.clients.append(conn)  # Add client connection to the list
         try:
             while True:
                 option = conn.recv(1024).decode("utf8")  # Receive client's command
@@ -89,12 +89,12 @@ class Server:
                     conn.sendall(bytes("Option not found", "utf8"))  # Send an error response
                     break
         except socket.timeout as timeout:
-            print("Timeout to client:", addr)  # Handle timeout to client
+            print("Timeout to client:", conn.getpeername())  # Handle timeout to client
         except socket.error as error:
-            print("Disconnected to client:", addr)  # Handle disconnection from client
+            print("Disconnected to client:", conn.getpeername())  # Handle disconnection from client
         finally:
-            conn.close()  # Close the connection with the client
-            self.clients.remove((conn, addr))  # Remove client connection from the list
+            # conn.close()  # Close the connection with the client
+            self.clients.remove(conn)  # Remove client connection from the list
 
 
     def screenshot(self, conn):
@@ -293,6 +293,7 @@ class Server:
                 response = self.run_app(data)
                 conn.send(response.encode())
             elif cm == "QUIT":
+                conn.close()
                 return
 
     def process(self, conn):
@@ -315,6 +316,7 @@ class Server:
                 response = self.run_app(data)
                 conn.send(response.encode())
             elif cm == "QUIT":
+                conn.close()
                 return
 
     def button1_Click(self):
