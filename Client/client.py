@@ -148,11 +148,6 @@ class Client:
         self.send_command("PROCESS")
         self.handle_response("PROCESS")
 
-
-def blank():
-    root = tk.Tk()
-    text = tk.Label(root, text="This is a blanked scene!")
-    text.pack(padx=20, pady=20)
     # Create a Client instance
 
 class clientScene:
