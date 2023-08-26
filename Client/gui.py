@@ -4,7 +4,6 @@ from tkinter import ttk, messagebox
 
 img_bytes = b'\x00\x01\x02...'
 
-# Create the main GUI window
 
 
 class GUI:
