@@ -210,11 +210,4 @@ class clientScene:
         exit.grid(row=3, column=2, padx=10, pady=10)
 
 
-clientScene(Client(PORT))
-    # Create a GUI instance and pass in the client
-
-    #gui.GUI(client)
-    #gui = gui.GUI(client)
-
-    # Run the GUI
-    #gui.run()
+clientScene(Client(PORT)) # Create a GUI instance and pass in the client

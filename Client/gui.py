@@ -134,27 +134,12 @@ class GUI:
         app_window = tk.Tk()
         app_window.title("App")
 
-        # def get_running_apps(self):
-        #     # Get the list of running applications on the server
-        #     cmd = 'tasklist'
-        #     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-        #     output = proc.communicate()[0].decode('utf-8')
-        #     return output
-
         def quit_signal():
             self.client.Cli_Sock.send("QUIT".encode())
             app_window.destroy()
 
         def kill_click():
             self.killScene()
-            #try:
-                
-            #     app_name = input("Enter the name of the app to kill: ")
-            #     self.client.Cli_Sock.send(f"kill {app_name}".encode())
-            #     response = self.client.recv(1024).decode()
-            #     messagebox.showinfo("Response", response)
-            # except Exception as ex:
-            #     messagebox.showerror("Error", str(ex))
 
         def view_click():
             try:
@@ -172,22 +157,12 @@ class GUI:
                 messagebox.showerror("Error", str(ex))
 
         def start_click():
-            #     self.client.send_data("START")
-            #     view_start = Start(self.client)
-            #     view_start.run()
             self.startScene()
                 
 
         def delete_click():
             for item in self.app_list.get_children():
                 self.app_list.delete(item)
-            # if self.app_list.selection():
-            #     selected_item = self.app_list.selection()[0]
-            #     app_name = self.app_list.item(selected_item)["values"][0]
-            #     self.client.send(f"delete {app_name}".encode())
-            #     response = self.client.recv(1024).decode()
-            #     messagebox.showinfo("Response", response)
-            #     self.app_list.delete(selected_item)
             
         app_window.protocol("WM_DELETE_WINDOW", quit_signal)
 
