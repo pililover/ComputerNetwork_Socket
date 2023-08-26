@@ -73,6 +73,10 @@ class GUI:
         process_window = tk.Tk()
         process_window.title("Process")
         
+        def quit_signal():
+            self.client.Cli_Sock.send("QUIT".encode())
+            process_window.destroy()
+        
         def kill_click():
             self.killScene()
             
@@ -97,6 +101,8 @@ class GUI:
         def delete_click():
             for item in self.process_list.get_children():
                 self.process_list.delete(item)
+
+        process_window.protocol("WM_DELETE_WINDOW", quit_signal)
                 
         self.process_list = ttk.Treeview(process_window, columns=(
             "Name process", "ID process", "Count Thread"), show="headings")
@@ -123,7 +129,6 @@ class GUI:
         delete_button.grid(row=0, column=3, padx=10, pady=10)
 
         process_window.mainloop()
-        self.client.Cli_Sock.send("QUIT".encode())
 
     def appScene(self):
 
@@ -136,6 +141,10 @@ class GUI:
         #     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         #     output = proc.communicate()[0].decode('utf-8')
         #     return output
+
+        def quit_signal():
+            self.client.Cli_Sock.send("QUIT".encode())
+            app_window.destroy()
 
         def kill_click():
             self.killScene()
@@ -180,6 +189,8 @@ class GUI:
             #     response = self.client.recv(1024).decode()
             #     messagebox.showinfo("Response", response)
             #     self.app_list.delete(selected_item)
+            
+        app_window.protocol("WM_DELETE_WINDOW", quit_signal)
 
         self.app_list = ttk.Treeview(app_window, columns=(
             "Name App", "ID App", "Count Thread"), show="headings")
@@ -206,7 +217,6 @@ class GUI:
         delete_button.grid(row=0, column=3, padx=10, pady=10)
 
         app_window.mainloop()
-        self.client.Cli_Sock.send("QUIT".encode())
         
     def keystrokeScene(self):
 
