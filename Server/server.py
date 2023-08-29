@@ -106,7 +106,7 @@ class Server:
             with open(filename, 'rb') as fs:
                 print("Sending file.")
                 while True:
-                    data = fs.read(1024)
+                    data = fs.read(4096)
                     conn.send(data)
                     if not data:
                         break
